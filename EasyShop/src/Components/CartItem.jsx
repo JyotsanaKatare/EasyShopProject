@@ -1,0 +1,209 @@
+
+//updated
+import React from 'react'
+import { useNavigate } from 'react-router-dom';
+import { FaMinus } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
+import { useCart } from './CartContext';
+import { HiOutlineHeart } from "react-icons/hi";
+
+function CartItem() {
+
+    const navigate = useNavigate();
+    const { cartItems, removeFromCart, updateQuantity } = useCart();  //from context api
+
+    const subtotal = cartItems.reduce((acc, item) => acc + (item.price * (item.quantity || 1)), 0);
+    const discount = subtotal * 0.10;
+    const quantity = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
+    const tax = (subtotal - discount) * 0.10; // Tax hamesha discounted price par lagta hai
+    const total = subtotal - discount + tax;
+
+    const handleCheckout = () => {
+        if (cartItems.length === 0) {
+            alert("cart empty");
+            return;
+        }
+
+        navigate("/place_order", {
+            state: {
+                items: cartItems,
+                total: subtotal // Hum Subtotal bhej rahe hain kyunki final page par tax calculation humne wahan likha hai
+            }
+        })
+    }
+
+    return (
+        <section className="w-full min-h-[70vh] bg-white py-8 md:py-16 px-4 lg:px-6">
+            <div className="max-w-6xl mx-auto">
+
+                {/* heading */}
+                <div className="flex flex-col items-center mb-12">
+                    <h1 className='text-2xl md:text-3xl text-pink-500 font-bold tracking-tight'>
+                        My Cart Items
+                    </h1>
+                    <div className="h-1 w-15 md:w-20 bg-pink-500 rounded-full mt-2 opacity-30"></div>
+                </div>
+
+                {cartItems.length > 0 ? (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+                        {/* LEFT: Product List (2 Columns on Large screens) */}
+                        <div className="lg:col-span-2 space-y-4">
+                            {cartItems.map((item, index) => (
+                                <div
+                                    key={index}
+                                    onClick={() => navigate(`/product_detail/${item.id}`)}
+                                    className="bg-white p-3 md:p-4 rounded-2xl shadow-sm border border-gray-100 flex items-start md:items-center gap-3 md:gap-4 transition-all hover:border-pink-100 cursor-pointer">
+
+                                    <img
+                                        src={item.img}
+                                        className="w-20 h-20 md:w-28 md:h-28 rounded-2xl object-cover bg-gray-50 shrink-0" />
+
+                                    <div className="flex-1 min-w-0">
+                                        <h3
+                                            className="font-bold text-gray-800 text-sm md:text-base cursor-pointer truncate pr-2">
+                                            {item.name}
+                                        </h3>
+
+                                        <p className="text-[11px] md:text-sm text-gray-400 mt-1 font-medium">
+                                            Size: {item.size} | Color: {item.color}
+                                        </p>
+
+                                        {/* price */}
+                                        <div className="md:hidden mt-1">
+                                            <p className="font-black text-pink-500">
+                                                ₹ {item.price * (item.quantity || 1)}
+                                            </p>
+                                        </div>
+
+                                        {/* quantity */}
+                                        <div className="flex items-center gap-4 mt-3">
+                                            <div className="flex items-center bg-gray-50 border border-gray-100 rounded-xl px-1 py-1">
+
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        updateQuantity(item.id, "dec");
+                                                    }}
+                                                    className="p-1.5 text-pink-500 hover:bg-white rounded-lg transition-all cursor-pointer">
+                                                    <FaMinus size={10} />
+                                                </button>
+
+                                                <span className="px-3 font-bold text-gray-700 text-xs md:text-sm">
+                                                    {item.quantity || 1}
+                                                </span>
+
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        updateQuantity(item.id, "inc");
+                                                    }}
+                                                    className="p-1.5 text-pink-500 hover:bg-white rounded-lg transition-all cursor-pointer">
+                                                    <FaPlus size={10} />
+                                                </button>
+                                            </div>
+
+                                            {/* remove button */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    removeFromCart(item.id);
+                                                }}
+                                                className="text-[11px] font-black text-gray-300 hover:text-red-400 uppercase tracking-wider transition-colors cursor-pointer">
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* price */}
+                                    <div className="hidden md:block text-right min-w-25">
+                                        <p className="text-xl font-black text-pink-500 tracking-tight">₹ {item.price * (item.quantity || 1)}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* RIGHT: Order Summary (Sticky) */}
+                        <div className="lg:col-span-1">
+                            <div className="bg-white p-5 md:p-8 rounded-[30px] shadow-lg shadow-pink-100/20 border border-pink-50 lg:sticky lg:top-24">
+
+                                <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-6">
+                                    Order Summary
+                                </h2>
+
+                                <div className="space-y-4 border-b border-gray-100 pb-6 text-sm text-gray-600">
+
+                                    <div className="flex justify-between">
+                                        <span>Subtotal</span>
+                                        <span className="font-bold text-gray-800">₹ {subtotal}</span>
+                                    </div>
+
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-gray-500 font-medium">Discount</span>
+                                        <span className="text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-lg">-₹{discount}.00</span>
+                                    </div>
+
+                                    <div className="flex justify-between">
+                                        <span>Shipping</span>
+                                        <span className="text-green-500 font-bold text-sm underline cursor-help">
+                                            FREE
+                                        </span>
+                                    </div>
+
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-gray-500 font-medium">Total Quantity</span>
+                                        <span className="text-gray-900">{quantity}</span>
+                                    </div>
+
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-gray-500 font-medium">Tax (10% GST)</span>
+                                        <span className="text-gray-900">₹ {tax.toFixed(2)}</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between items-center py-6">
+                                    <span className="text-base md:text-lg font-bold text-gray-800">Total Price</span>
+                                    <span className="text-xl md:text-2xl font-black text-pink-500 tracking-tighter">₹ {total}</span>
+                                </div>
+
+                                {/* checkout button */}
+                                <button
+                                    onClick={handleCheckout}
+                                    className="w-full text-sm md:text-base bg-pink-500 hover:bg-pink-600 text-white font-bold py-3.5 md:py-4 uppercase tracking-wider rounded-2xl shadow-lg shadow-pink-200 transition-all active:scale-[0.98] cursor-pointer">
+                                    Checkout Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                ) : (
+                    /* Empty State with Icon */
+                    <div className="flex flex-col items-center justify-center text-center py-20 px-4 min-h-100">
+                        <div className="w-18 h-18 md:w-24 md:h-24 bg-pink-50 rounded-full flex items-center justify-center mb-6 animate-pulse">
+                            <HiOutlineHeart className="text-pink-300 text-3xl md:text-5xl" />
+                        </div>
+
+                        <h2 className="text-xl md:text-3xl font-black text-gray-900 tracking-tight">
+                            Oh no! Your cart feels so light 🌸
+                        </h2>
+
+                        <p className="text-sm md:text-lg text-gray-500 mt-3 mb-10 max-w-70 md:max-w-md mx-auto leading-relaxed">
+                            Don't let the best deals slip away. Start adding now!
+                        </p>
+
+                        <button
+                            onClick={() => navigate('/')}
+                            className="w-full sm:w-auto bg-pink-500 text-white px-10 py-4 rounded-2xl font-black text-sm md:text-base shadow-xl shadow-pink-100 hover:bg-pink-600 transition-all active:scale-95 cursor-pointer uppercase tracking-widest"
+                        >
+                            Explore Products
+                        </button>
+                    </div>
+                )}
+
+
+            </div>
+        </section>
+    )
+}
+
+export default CartItem

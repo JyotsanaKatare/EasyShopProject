@@ -1,0 +1,13 @@
+
+# backend
+API/node_modules/
+API/.env
+
+# frontend
+EasyShop/node_modules/
+EasyShop/dist/
+
+# common
+npm-debug.log*
+yarn-debug.log*
+*.zip
