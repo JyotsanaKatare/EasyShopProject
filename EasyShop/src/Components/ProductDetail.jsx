@@ -38,6 +38,7 @@ import ProductDetailSimilarProd from './ProductDetailSimilarProd';
 import ProductDetailReview from './ProductDetailReview';
 import { useWishList } from './WishListContext';
 import EasyShopLoader from './EasyShopLoader';
+import UserChat from './UserChat';
 
 function ProductDetail() {
 
@@ -406,6 +407,7 @@ function ProductDetail() {
     const [estimatedDate, setEstimatedDate] = useState("");
     const [qty, setQty] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     const product = newProducts.find((p) => String(p.id) === String(prodId) || p.name === prodName);
 
@@ -728,7 +730,9 @@ function ProductDetail() {
                     </div>
 
                     {/* chat with seller button */}
-                    <button className="w-full mt-4 flex items-center justify-center gap-2 py-3 px-6 border-2 border-pink-500 text-pink-500 font-bold rounded-lg transition-all duration-300 hover:bg-pink-500 hover:text-white hover:shadow-lg hover:shadow-pink-200 active:scale-[0.98] group cursor-pointer">
+                    <button 
+                    onClick={() => setIsChatOpen(true)}
+                    className="w-full mt-4 flex items-center justify-center gap-2 py-3 px-6 border-2 border-pink-500 text-pink-500 font-bold rounded-lg transition-all duration-300 hover:bg-pink-500 hover:text-white hover:shadow-lg hover:shadow-pink-200 active:scale-[0.98] group cursor-pointer">
                         <IoChatbubblesOutline className="text-lg md:text-xl group-hover:scale-110 transition-transform" />
                         <span className="tracking-wide uppercase text-xs md:text-sm">Chat with Seller</span>
                     </button>
@@ -909,6 +913,9 @@ function ProductDetail() {
 
             {/* similar products */}
             <ProductDetailSimilarProd similarProducts={similarProducts} catName={catName} />
+
+            {/* chat */}
+            {/* <UserChat isOpen={isChatOpen} setIsOpen={setIsChatOpen}/> */}
 
             {/* popup section */}
             <div

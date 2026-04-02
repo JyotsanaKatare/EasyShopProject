@@ -11,7 +11,9 @@ import { FaCity } from "react-icons/fa";
 import { FaMapPin } from "react-icons/fa";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { HiOutlineBadgeCheck } from "react-icons/hi";
+import { HiOutlineCamera } from "react-icons/hi2";
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import confetti from 'canvas-confetti';
 
 import { useSendOTP, useSignup, useVerifyOtp } from '../hook/useAuth';
@@ -23,11 +25,12 @@ function UserSignUp() {
     const [showOtpModal, setShowOtpModal] = useState(false);
     const [isSubmitOpen, setIsSubmitOpen] = useState(false);
     const [isEmailVerified, setIsEmailVerified] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null); // Asli file ke liye
+    const [previewImage, setPreviewImage] = useState("https://i.pinimg.com/1200x/f9/1f/ba/f91fba046dd5208787a3ffa5c1f299e7.jpg"); // Preview ke liye
 
-    const { mutate: sendOTP, isLoading: isSending } = useSendOTP();
-    const { mutate: signupUser, isLoading: isRegistering } = useSignup();
-    const { mutate: verifyOtp, isLoading: isVerifying } = useVerifyOtp();
-    const login = useAuthStore((state) => state.login); // Store ka action
+    const { mutate: sendOTP, isPending: isSending } = useSendOTP();
+    const { mutate: verifyOtp, isPending: isVerifying } = useVerifyOtp();
+    const { mutate: signupUser, isPending: isRegistering } = useSignup();
 
     const [formData, setFormData] = useState({
         name: '',
@@ -42,56 +45,84 @@ function UserSignUp() {
         otp: ''
     });
 
+    // Zustand store se login function uthayein
+    const login = useAuthStore((state) => state.login);
+
     // Input change handler
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    // verify otp
-    const handleVerifyOTP = () => {
-        console.log("Sending data to backend:", { email: formData.email, otp: formData.otp });
-        if (formData.otp.length !== 6) return alert("Please enter 6-digit OTP");
+    // image upload
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
 
-        verifyOtp({ email: formData.email, otp: formData.otp }, {
-            onSuccess: (data) => {
-                setIsEmailVerified(true);
-                alert("Email Verified Successfully! ✅");
+            // Clean up the old URL to prevent memory leaks
+            if (previewImage) URL.revokeObjectURL(previewImage);
 
-                setTimeout(() => {
-                    setShowOtpModal(false);
-                }, 1000);
-            },
-            onError: (err) => {
-                alert(err.response?.data?.message || "Invalid OTP, please try again!");
-            }
-        })
+            setSelectedFile(file);
+            setPreviewImage(URL.createObjectURL(file)); // Yeh turant dikhega
+        }
     };
 
-    // otp handle
-    const handleOTP = () => {
-        if (!formData.email) return alert("Please enter email firstly!");
-
+    // handle otp send
+    const handleSendOTP = () => {
         sendOTP({ email: formData.email, role: 'user' }, {
             onSuccess: () => {
-                alert("OTP Sent!");
+                toast.success("OTP sent!");
                 setShowOtpModal(true);
             },
-            onError: (err) => alert(err.response?.data?.message || "Error sending OTP")
+            onError: (err) => toast.error(err.response?.data?.message || "Error!")
         });
-    }
+    };
 
+    // handle otp verify
+    const handleVerifyOTP = () => {
+        verifyOtp({ email: formData.email, otp: formData.otp, role: 'user' }, {
+            onSuccess: () => {
+                setIsEmailVerified(true);
+                setShowOtpModal(false);
+                toast.success("OTP Verified!");
+            },
+            onError: (err) => {
+                const errorMessage = err.response?.data?.message || "Invalid OTP. Please try again.";
+                toast.error(errorMessage);
+
+                // Optional: OTP field ko clear kar dena agar galat ho
+                setFormData({ ...formData, otp: '' });
+            }
+        });
+    };
+    
+    // submit
     const handleCreateAccount = () => {
 
-        console.log("HandleCreateAccount trigger hua!");
-
         if (formData.password !== formData.confirmPassword) {
-            return alert("Passwords does not match");
+            return toast.error("Passwords does not match");
         }
 
-        console.log("Validation pass! Calling signupUser...");
+        if (!isEmailVerified) {
+            return toast.error("Please verify your email first");
+        }
 
-        signupUser(formData, {
-            onSuccess: (data) => {
+        const data = new FormData();
+        data.append("name", formData.name);
+        data.append("email", formData.email);
+        data.append("contact", formData.contact);
+        data.append("password", formData.password);
+        data.append("address", formData.address);
+        data.append("city", formData.city);
+        data.append("pincode", formData.pincode);
+        data.append("state", formData.state);
+        data.append("otp", formData.otp);
+
+        if (selectedFile) {
+            data.append("profilePhoto", selectedFile);
+        }
+
+        signupUser(data, {
+            onSuccess: (res) => {
                 confetti({
                     particleCount: 150,
                     spread: 70,
@@ -99,11 +130,12 @@ function UserSignUp() {
                     colors: ['#ec4899', '#f472b6', '#db2777']
                 });
 
-                login(data.user, data.token); // Zustand store mein save
+                // Zustand store mein user aur token bharo
+                login(res.user, res.token);
                 setIsSubmitOpen(true); // Success modal/message dikhao
-                setTimeout(() => navigate('/'), 2000); // 2 second baad bhej do
+                setFormData(null);
             },
-            onError: (err) => alert(err.response?.data?.message || "Failed in signup")
+            onError: (err) => toast.error(err.response?.data?.message || "Failed in signup")
         });
     };
 
@@ -124,6 +156,44 @@ function UserSignUp() {
                         <p className='text-gray-500 text-xs md:text-sm mt-2'>
                             Please provide your basic contact details to get started.
                         </p>
+                    </div>
+
+                    {/* user image upload */}
+                    <div className="flex flex-col items-center md:items-start gap-6 pb-6 md:pb-8 border-b border-slate-50">
+                        <div className="relative group">
+                            {/* Profile Image Preview */}
+                            <img
+                                src={previewImage}
+                                alt="Profile"
+                                className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-white shadow-xl group-hover:opacity-90 transition-all"
+                            />
+
+                            {/* Hidden File Input */}
+                            <input
+                                type="file"
+                                id="profilePhoto"
+                                hidden
+                                accept="image/*"
+                                onChange={handleFileChange}
+                            />
+
+                            {/* Upload Button (Camera Icon) */}
+                            <label
+                                htmlFor="profilePhoto"
+                                className="absolute bottom-1 right-1 bg-pink-500 p-2.5 rounded-full text-white cursor-pointer shadow-lg hover:bg-pink-600 hover:scale-110 transition-all border-2 border-white"
+                            >
+                                <HiOutlineCamera size={18} />
+                            </label>
+                        </div>
+
+                        <div className="text-center md:text-left">
+                            <h4 className="text-[13px] md:text-sm font-black text-slate-800 uppercase tracking-tight">
+                                Profile Photo
+                            </h4>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">
+                                JPG, GIF or PNG. Max size of 2MB
+                            </p>
+                        </div>
                     </div>
 
                     {/* form detail */}
@@ -171,7 +241,7 @@ function UserSignUp() {
                                         onClick={(e) => {
                                             e.stopPropagation(); // Click event ko upar jaane se roko
                                             console.log("Verify Clicked!");
-                                            handleOTP();
+                                            handleSendOTP();
                                         }}
                                         // Agar email nahi hai ya loading hai toh disable
                                         disabled={isSending || !formData.email}
@@ -338,7 +408,7 @@ function UserSignUp() {
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    Creating Account...
+                                    Creating...
                                 </span>
                             ) : "Create Account"}
                         </button>
@@ -407,7 +477,7 @@ function UserSignUp() {
                         </p>
 
                         <button
-                            onClick={() => navigate("/")} // Ya jo bhi aapka route ho
+                            onClick={() => navigate("/")}
                             className="w-full bg-pink-500 text-white py-3 rounded-xl font-bold shadow-lg shadow-pink-200 hover:bg-pink-600 transition-all active:scale-95 cursor-pointer"
                         >
                             Start Shopping

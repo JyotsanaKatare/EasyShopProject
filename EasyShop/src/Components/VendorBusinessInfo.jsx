@@ -1,73 +1,112 @@
 
 //updated
 import React, { useState } from 'react'
+import toast from 'react-hot-toast';
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
 
-function VendorBusinessInfo({ prev, next, setFormData }) {
+const businessMenu = [
+    { id: 1, businessName: "Individual / Sole Proprietorship" },
+    { id: 2, businessName: "Private Limited Company" },
+    { id: 3, businessName: "Partnership Firm" },
+    { id: 4, businessName: "Limited Liability Partnership (LLP)" },
+    { id: 5, businessName: "Manufacturer" },
+    { id: 6, businessName: "Wholesaler / Distributor" }
+];
 
-    const [file, setFile] = useState({
-        logo: null,
-        license: null,
-        pan: null,
-        gst: null
-    });
+const categoryMenu = [
+    { id: 1, categoryName: "Clothing & Apparel" },
+    { id: 2, categoryName: "Footwear & Shoes" },
+    { id: 3, categoryName: "Electronics & Gadgets" },
+    { id: 4, categoryName: "Beauty & Personal Care" },
+    { id: 5, categoryName: "Home & Kitchen Decor" },
+    { id: 6, categoryName: "Furniture & Living" },
+    { id: 7, categoryName: "Jewelry & Accessories" },
+    { id: 8, categoryName: "Handicrafts & Arts" },
+    { id: 9, categoryName: "Toys & Baby Products" }
+];
+
+const licenseLabels = {
+    "Footwear & Shoes": "BIS Certification",
+    "Electronics & Gadgets": "BIS/WPC License",
+    "Beauty & Personal Care": "CDSCO License",
+    "Jewelry & Accessories": "BIS Hallmarking License",
+    "Handicrafts & Arts": "Artisan Card",
+    "Toys & Baby Products": "BIS Certification (ISI Mark)"
+};
+
+function VendorBusinessInfo({ prev, next, formData, setFormData }) {
 
     const [isBusinessOpen, setIsBusinessOpen] = useState(false);
-    const [isBusinessSelected, setIsBusinessSelected] = useState("");
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-    const [isCategorySelected, setIsCategorySelected] = useState("");
 
-    const [gstNumber, setGstNumber] = useState("");
-
-    //common for all uploadations
-    const handleFileChange = (e) => {
-        const { name, files } = e.target;
-
-        setFile(prev => ({
-            ...prev, [name]: files[0]
-        }));
+    // input handler
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const businessMenu = [
-        { id: 1, businessName: "Individual / Sole Proprietorship" },
-        { id: 2, businessName: "Private Limited Company" },
-        { id: 3, businessName: "Partnership Firm" },
-        { id: 4, businessName: "Limited Liability Partnership (LLP)" },
-        { id: 5, businessName: "Manufacturer" },
-        { id: 6, businessName: "Wholesaler / Distributor" }
-    ];
+    //common for all uploads
+    const handleFileChange = (e) => {
+        const { name, files } = e.target;
+        if (files[0]) {
+            setFormData(prev => ({ ...prev, [name]: files[0] }));
+        }
+    };
 
-    const categoryMenu = [
-        { id: 1, categoryName: "Clothing & Apparel" },
-        { id: 2, categoryName: "Footwear & Shoes" },
-        { id: 3, categoryName: "Electronics & Gadgets" },
-        { id: 4, categoryName: "Beauty & Personal Care" },
-        { id: 5, categoryName: "Home & Kitchen Decor" },
-        { id: 6, categoryName: "Furniture & Living" },
-        { id: 7, categoryName: "Jewelry & Accessories" },
-        { id: 8, categoryName: "Handicrafts & Arts" },
-        { id: 9, categoryName: "Toys & Baby Products" }
-    ];
-
-    const licenseLabels = {
-        "Footwear & Shoes": "BIS Certification",
-        "Electronics & Gadgets": "BIS/WPC License",
-        "Beauty & Personal Care": "CDSCO License",
-        "Jewelry & Accessories": "BIS Hallmarking License",
-        "Handicrafts & Arts": "Artisan Card",
-        "Toys & Baby Products": "BIS Certification (ISI Mark)"
-    }
-
-    const handleBusiness = (business) => {
-        setIsBusinessSelected(business.businessName);
+    const handleBusiness = (businessName) => {
+        setFormData(prev => ({ ...prev, businessType: businessName }));
         setIsBusinessOpen(false);
-    }
+    };
 
-    const handleCategory = (category) => {
-        setIsCategorySelected(category.categoryName);
+    const handleCategory = (categoryName) => {
+        setFormData(prev => ({ ...prev, category: categoryName }));
         setIsCategoryOpen(false);
-    }
+    };
+
+    // submit
+    const countinueToAccountDetail = () => {
+
+        // 1. Basic Required Fields
+        const requiredFields = [
+            'storeName', 'businessEmail', 'businessContact',
+            'businessType', 'category', 'address',
+            'city', 'pincode', 'state', 'businessPAN'
+        ];
+
+        for (const field of requiredFields) {
+            if (!formData[field]) {
+                return toast.error(`${field.replace(/([A-Z])/g, ' $1')} is required`);
+            }
+        }
+
+        // 2. Logo Check
+        if (!formData.storeLogo) {
+            return toast.error("Please upload store logo");
+        }
+
+        // 3. Conditional License Check (Only if the category requires one)
+        if (licenseLabels[formData.category] && !formData.categoryLicenseUpload) {
+            return toast.error(`Please upload ${licenseLabels[formData.category]}`);
+        }
+
+        // 4. PAN Card File Check
+        if (!formData.panCardUpload) {
+            return toast.error("Please upload Business PAN Card");
+        }
+
+        // 5. Conditional GST Check (Only if GST number is provided)
+        if (formData.gstNumber && formData.gstNumber.length > 0) {
+            if (formData.gstNumber.length !== 15) {
+                return toast.error("GST Number must be 15 characters");
+            }
+            if (!formData.gstDocumentUpload) {
+                return toast.error("Please upload GST Certificate");
+            }
+        }
+
+        // If all pass
+        next();
+    };
 
     return (
         <section className="w-full">
@@ -85,24 +124,21 @@ function VendorBusinessInfo({ prev, next, setFormData }) {
                 </p>
             </div>
 
-            {/* form section */}
-            {/* <div className='space-y-6'> */}
-
             {/* Store Logo Section */}
             <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mb-8 p-5 sm:p-6 bg-pink-50/50 rounded-2xl border border-dashed border-pink-200 transition-all">
 
                 {/* Hidden File Input */}
                 <input
                     type="file"
-                    id='logo'
-                    name='logo'
+                    id='storeLogo'
+                    name='storeLogo'
                     className="hidden"
                     accept="image/*"
                     onChange={handleFileChange}
                 />
 
                 <label
-                    htmlFor="logo"
+                    htmlFor="storeLogo"
                     className="w-20 h-20 bg-white border-2 border-gray-100 rounded-full flex flex-col items-center justify-center text-gray-400 text-[10px] sm:text-xs text-center p-3 cursor-pointer hover:border-pink-500 hover:text-pink-500 transition-all shadow-sm shrink-0 active:scale-95"
                 >
                     <span className="font-bold">Upload Logo</span>
@@ -110,7 +146,7 @@ function VendorBusinessInfo({ prev, next, setFormData }) {
 
                 <div className="text-center sm:text-left overflow-hidden w-full">
                     <span className="block font-bold text-gray-700 text-sm md:text-base truncate">
-                        {file.logo ? file.logo.name : "Store Logo"}
+                        {formData.storeLogo ? formData.storeLogo.name : "Store Logo"}
                     </span>
                     <p className="text-[10px] sm:text-xs text-gray-500 mt-1 leading-tight">
                         Recommended: 500x500px <br className="sm:hidden" /> (PNG/JPG)
@@ -118,30 +154,73 @@ function VendorBusinessInfo({ prev, next, setFormData }) {
                 </div>
             </div>
 
+            {/* form section */}
             <div className='grid md:grid-cols-2 gap-5 md:gap-6'>
 
                 {/* Store Name */}
                 <div className='flex flex-col gap-1.5'>
-                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Store Name</label>
+                    <label
+                        htmlFor='storeName'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                        Store Name
+                    </label>
                     <input
                         type="text"
+                        name='storeName'
+                        value={formData.storeName || ""}
+                        onChange={handleChange}
                         placeholder="e.g. Trendify Fashion"
+                        className="w-full p-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all" />
+                </div>
+
+                {/* business email */}
+                <div className='flex flex-col gap-1.5'>
+                    <label
+                        htmlFor='businessEmail'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Business Email</label>
+                    <input
+                        type="email"
+                        name='businessEmail'
+                        value={formData.businessEmail || ""}
+                        onChange={handleChange}
+                        placeholder="Business Email"
+                        className="w-full p-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all" />
+                </div>
+
+                {/* business contact */}
+                <div className='flex flex-col gap-1.5'>
+                    <label
+                        htmlFor='businessContact'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Business Mobile Number</label>
+                    <input
+                        type="text"
+                        name='businessContact'
+                        value={formData.businessContact || ""}
+                        onChange={handleChange}
+                        placeholder="Business Mobile Number"
                         className="w-full p-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all" />
                 </div>
 
                 {/* Business type dropdown */}
                 <div className='flex flex-col gap-1.5'>
-                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Buisness Type</label>
+                    <label
+                        htmlFor='businessType'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                        Business Type
+                    </label>
 
                     <div className='cursor-pointer'>
                         <div
                             onClick={() => setIsBusinessOpen(!isBusinessOpen)}
                             className={`w-full flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white transition-all outline-none
-                                        ${isBusinessOpen ? "border-pink-500 ring-pink-500 bg-white" : "border-gray-200"}`}
+                                ${isBusinessOpen
+                                    ? "border-pink-500 ring-pink-500 bg-white"
+                                    : "border-gray-200"}`
+                            }
                         >
                             <span className={`text-sm md:text-base truncate 
-                                ${isBusinessSelected ? "text-gray-900 font-medium" : "text-gray-400"}`}>
-                                {isBusinessSelected || "Select Business"}
+                                ${formData.businessType ? "text-gray-900 font-medium" : "text-gray-400"}`}>
+                                {formData.businessType || "Select Business"}
                             </span>
 
                             <div className="text-gray-400 group-hover:text-pink-500">
@@ -159,7 +238,7 @@ function VendorBusinessInfo({ prev, next, setFormData }) {
                             {businessMenu.map((item, index) => (
                                 <div
                                     key={index}
-                                    onClick={() => handleBusiness(item)}
+                                    onClick={() => handleBusiness(item.businessName)}
                                     className='hover:text-pink-600 flex justify-start items-center py-2 px-2 hover:bg-pink-100'
                                 >
                                     <p>{item.businessName}</p>
@@ -173,18 +252,25 @@ function VendorBusinessInfo({ prev, next, setFormData }) {
 
                 {/* Category dropdown */}
                 <div className='flex flex-col gap-1.5'>
-                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Category</label>
+                    <label
+                        htmlFor='category'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                        Category
+                    </label>
 
                     <div className='cursor-pointer'>
                         <div
                             onClick={() => setIsCategoryOpen(!isCategoryOpen)}
                             className={`w-full flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white transition-all outline-none
-                                        ${isCategoryOpen ? "border-pink-500 ring-pink-500 bg-white" : "border-gray-200"}`}
+                                    ${isCategoryOpen
+                                    ? "border-pink-500 ring-pink-500 bg-white"
+                                    : "border-gray-200"}`
+                            }
                         >
 
                             <span className={`text-sm md:text-base truncate 
-                                ${isCategorySelected ? "text-gray-900 font-medium" : "text-gray-400"}`}>
-                                {isCategorySelected || "Select Category"}
+                                ${formData.category ? "text-gray-900 font-medium" : "text-gray-400"}`}>
+                                {formData.category || "Select Category"}
                             </span>
 
                             <div className="text-gray-400 group-hover:text-pink-500">
@@ -202,7 +288,7 @@ function VendorBusinessInfo({ prev, next, setFormData }) {
                             {categoryMenu.map((item, index) => (
                                 <div
                                     key={index}
-                                    onClick={() => handleCategory(item)}
+                                    onClick={() => handleCategory(item.categoryName)}
                                     className='hover:text-pink-600 flex justify-start items-center py-2 px-2 hover:bg-pink-100'
                                 >
                                     <p>{item.categoryName}</p>
@@ -215,15 +301,19 @@ function VendorBusinessInfo({ prev, next, setFormData }) {
                 </div>
 
                 {/* license upload*/}
-                {licenseLabels[isCategorySelected] && (
+                {formData.category && licenseLabels[formData.category] && (
                     <div className='relative flex flex-col gap-1.5'>
-                        <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">{licenseLabels[isCategorySelected]}</label>
+                        <label
+                            htmlFor='categoryLicenseUpload'
+                            className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                            {licenseLabels[formData.category]
+                            }</label>
 
                         <div className="relative">
                             {/* Input ko 'peer' banaya aur z-index diya taaki click pakde */}
                             <input
                                 type="file"
-                                name='license'
+                                name='categoryLicenseUpload'
                                 accept='image/*'
                                 onChange={handleFileChange}
                                 className='absolute inset-0 opacity-0 cursor-pointer z-10 peer'
@@ -234,7 +324,7 @@ function VendorBusinessInfo({ prev, next, setFormData }) {
                                     Upload
                                 </button>
                                 <span className='text-sm md:text-base text-gray-500 truncate'>
-                                    {file.license ? file.license.name : "No file chosen"}
+                                    {formData.categoryLicenseUpload ? formData.categoryLicenseUpload.name : "No file chosen"}
                                 </span>
                             </div>
                         </div>
@@ -243,57 +333,97 @@ function VendorBusinessInfo({ prev, next, setFormData }) {
 
                 {/* business address */}
                 <div className='flex flex-col gap-1.5'>
-                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Business Address</label>
+                    <label
+                        htmlFor='address'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                        Business Address
+                    </label>
                     <input
                         type="text"
+                        name='address'
+                        value={formData.address || ""}
+                        onChange={handleChange}
                         placeholder="Address"
                         className="w-full p-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all" />
+
+                    <span className='text-[11px] text-gray-500 ml-1 tracking-wide'>"This address will be used as your primary pickup point for orders."</span>
                 </div>
 
                 {/* city */}
                 <div className='flex flex-col gap-1.5'>
-                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">City</label>
+                    <label
+                        htmlFor='city'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                        City
+                    </label>
                     <input
                         type="text"
+                        name='city'
+                        value={formData.city || ""}
+                        onChange={handleChange}
                         placeholder="e.g. Indore"
                         className="w-full p-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all" />
                 </div>
 
                 {/* state */}
                 <div className='flex flex-col gap-1.5'>
-                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">State</label>
+                    <label
+                        htmlFor='state'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                        State
+                    </label>
                     <input
                         type="text"
+                        name='state'
+                        value={formData.state || ""}
+                        onChange={handleChange}
                         placeholder="e.g. Madhya Pradesh..."
                         className="w-full p-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all" />
                 </div>
 
                 {/* pincode */}
                 <div className='flex flex-col gap-1.5'>
-                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Pin Code</label>
+                    <label
+                        htmlFor='pincode'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                        Pin Code
+                    </label>
                     <input
                         type="text"
+                        name='pincode'
+                        value={formData.pincode || ""}
+                        onChange={handleChange}
                         placeholder="123456"
                         className="w-full p-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all" />
                 </div>
 
                 {/* pan num */}
                 <div className='flex flex-col gap-1.5'>
-                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Business PAN Number</label>
+                    <label
+                        htmlFor='businessPAN'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                        Business PAN Number</label>
                     <input
                         type="text"
+                        name='businessPAN'
+                        value={formData.businessPAN || ""}
+                        onChange={handleChange}
                         placeholder="ABCDE1234F"
                         className="w-full p-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all" />
                 </div>
 
                 {/* pan upload */}
                 <div className='relative flex flex-col gap-1.5'>
-                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Business PAN Upload</label>
+                    <label
+                        htmlFor='panCardUpload'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                        Business PAN Upload
+                    </label>
 
                     <div className="relative">
                         <input
                             type="file"
-                            name='pan'
+                            name='panCardUpload'
                             accept='image/*'
                             onChange={handleFileChange}
                             className='absolute inset-0 opacity-0 cursor-pointer z-10 peer'
@@ -304,7 +434,7 @@ function VendorBusinessInfo({ prev, next, setFormData }) {
                                 Upload
                             </button>
                             <span className='text-sm md:text-base text-gray-500 truncate'>
-                                {file.pan ? file.pan.name : "No file chosen"}
+                                {formData.panCardUpload ? formData.panCardUpload.name : "No file chosen"}
                             </span>
                         </div>
                     </div>
@@ -312,25 +442,34 @@ function VendorBusinessInfo({ prev, next, setFormData }) {
 
                 {/* gst */}
                 <div className='flex flex-col gap-1.5'>
-                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">GST Number (if available)</label>
+                    <label
+                        htmlFor='gstNumber'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                        GST Number (if available)
+                    </label>
                     <input
                         type="text"
-                        value={gstNumber}
-                        onChange={(e) => setGstNumber(e.target.value.toUpperCase())}
+                        name='gstNumber'
+                        value={formData.gstNumber}
+                        onChange={handleChange}
                         maxLength={15}
                         placeholder="22AAAAA0000A1Z5"
                         className="w-full p-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all" />
                 </div>
 
                 {/* gst upload */}
-                {gstNumber.length === 15 && (
+                {(formData.gstNumber?.length === 15) && (
                     <div className='relative flex flex-col gap-1.5'>
-                        <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">GST Certificate Upload</label>
+                        <label
+                            htmlFor='gstDocumentUpload'
+                            className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                            GST Certificate Upload
+                        </label>
 
                         <div className="relative">
                             <input
                                 type="file"
-                                name='gst'
+                                name='gstDocumentUpload'
                                 accept='image/*'
                                 onChange={handleFileChange}
                                 className='absolute inset-0 opacity-0 cursor-pointer z-10 peer'
@@ -341,7 +480,7 @@ function VendorBusinessInfo({ prev, next, setFormData }) {
                                     Upload
                                 </button>
                                 <span className='text-sm md:text-base text-gray-500 truncate'>
-                                    {file.gst ? file.gst.name : "No file chosen"}
+                                    {formData.gstDocumentUpload ? formData.gstDocumentUpload.name : "No file chosen"}
                                 </span>
                             </div>
                         </div>
@@ -361,13 +500,13 @@ function VendorBusinessInfo({ prev, next, setFormData }) {
                 </button>
 
                 <button
-                    onClick={next}
+                    onClick={countinueToAccountDetail}
                     className="w-full sm:w-auto bg-pink-500 text-white px-8 py-3.5 md:py-3 rounded-xl font-bold shadow-lg shadow-pink-200 hover:bg-pink-600 md:hover:scale-105 active:scale-95 transition-all cursor-pointer text-sm md:text-base"
                 >
                     Continue to Account Details
                 </button>
+
             </div>
-            {/* </div> */}
 
         </section>
     )

@@ -12,7 +12,7 @@ createRoot(document.getElementById('root')).render(
   <QueryClientProvider client={queryClient}>
   <WishListProvider>
     <CartProvider>
-      <BrowserRouter>
+      <BrowserRouter >
         <App />
       </BrowserRouter>
     </CartProvider>

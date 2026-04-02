@@ -8,11 +8,47 @@ import VendorPersonalInfo from "../Components/VendorPersonalInfo";
 function VendorSignupPage() {
 
     const [step, setStep] = useState(1);
-    const [formData, setFormData] = useState({}); // Saare steps ka data yahan store hoga
+    const [isEmailVerified, setIsEmailVerified] = useState(false);
+    const [formData, setFormData] = useState({
 
+        // step 1
+        name: "",
+        email: "",
+        contact: "",
+        password: "",
+        confirmPassword: "",
+        profilePhoto: null,
+
+        // step 2
+        storeLogo: null,
+        storeName: "",
+        businessEmail: "",
+        businessContact: "",
+        businessType: "",
+        category: "",
+        categoryLicenseUpload: null,
+        address: "",
+        city: "",
+        state: "",
+        pincode: "",
+        businessPAN: "",
+        panCardUpload: null,
+        gstNumber: "",
+        gstDocumentUpload: null,
+
+        // step 3
+        accHolder: "",
+        bank: "",
+        accNumber: "",
+        ifsc: "",
+        bankDocumentUpload: null,
+        otp: ""
+    });
+
+    // Jab step 1 se 2 ya 2 se 3 hoga, scroll top par jayega
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, [step]); // Jab step 1 se 2 ya 2 se 3 hoga, scroll top par jayega
+    }, [step]); 
 
     const nextStep = () => setStep((prev) => prev + 1);
     const prevStep = () => setStep((prev) => prev - 1);
@@ -66,9 +102,29 @@ function VendorSignupPage() {
 
                 {/* Form Content */}
                 <div className="bg-pink-50/30 rounded-[25px] md:rounded-[30px] shadow-sm p-6 md:p-12 border border-gray-100 mt-12 md:mt-16">
-                    {step === 1 && <VendorPersonalInfo next={nextStep} setFormData={setFormData} />}
-                    {step === 2 && <VendorBusinessInfo next={nextStep} prev={prevStep} setFormData={setFormData} />}
-                    {step === 3 && <VendorAccountInfo prev={prevStep} setFormData={setFormData} />}
+                    {step === 1 &&
+                        <VendorPersonalInfo
+                            next={nextStep}
+                            formData={formData}
+                            setFormData={setFormData}
+                            isEmailVerified={isEmailVerified}
+                            setIsEmailVerified={setIsEmailVerified} />
+                    }
+
+                    {step === 2 &&
+                        <VendorBusinessInfo
+                            next={nextStep}
+                            prev={prevStep}
+                            formData={formData}
+                            setFormData={setFormData} />
+                    }
+
+                    {step === 3 &&
+                        <VendorAccountInfo
+                            prev={prevStep}
+                            formData={formData}
+                            setFormData={setFormData} />
+                    }
                 </div>
             </div>
         </div>

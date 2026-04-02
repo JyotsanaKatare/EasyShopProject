@@ -5,8 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import { RxCross2 } from "react-icons/rx";
 import { HiOutlineCheckCircle } from "react-icons/hi2";
 import confetti from 'canvas-confetti';
+import { useVendorSignup } from '../hook/useAuth';
+import useAuthStore from '../store/useAuthStore';
+import toast from 'react-hot-toast';
 
-function VendorAccountInfo({ prev, setFormData }) {
+function VendorAccountInfo({ prev, formData, setFormData }) {
 
     const navigate = useNavigate();
 
@@ -15,35 +18,136 @@ function VendorAccountInfo({ prev, setFormData }) {
     const [isTermsOpen, setIsTermsOpen] = useState(false);
     const [isPolicyOpen, setIsPolicyOpen] = useState(false);
     const [isAggrementOpen, setIsAggrementOpen] = useState(false);
-    const [file, setFile] = useState(null);
     const [isSubmitted, setIsSubmitted] = useState(false);
 
-    const handleSubmit = () => {
-        if (!checkedTerms) {
-            alert("Please accept conditions");
-            return;
-        }
+    const { mutate: signupVendor, isPending: isRegistering } = useVendorSignup();
 
-        if (!checkedAgreement) {
-            alert("Please accept seller aggrement");
-            return;
-        }
+    // Zustand store se login function uthayein
+    const login = useAuthStore((state) => state.login);
 
-        if (checkedTerms && checkedAgreement) {
-            setIsSubmitted(true);
-        }
-        confetti({
-            particleCount: 150,
-            spread: 70,
-            origin: { y: 0.6 },
-            zIndex: 999,
-            colors: ['#ec4899', '#f472b6', '#db2777']
-        });
-    }
+    // input handler
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
+    //common for all uploads
     const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
-    }
+        const { name, files } = e.target;
+        if (files[0]) {
+            setFormData(prev => ({ ...prev, [name]: files[0] }));
+        }
+    };
+    
+    // validation
+    const required =
+        formData.accHolder &&
+        formData.bank &&
+        formData.accNumber &&
+        formData.ifsc &&
+        formData.bankDocumentUpload &&
+        checkedTerms &&
+        checkedAgreement;
+
+    // all input fields ko empty krna submit hone pr
+    const initialVendorState = {
+        name: "",
+        email: "",
+        contact: "",
+        password: "",
+        confirmPassword: "",
+        profilePhoto: null,
+
+        storeLogo: null,
+        storeName: "",
+        businessEmail: "",
+        businessContact: "",
+        businessType: "",
+        category: "",
+        categoryLicenseUpload: null,
+        address: "",
+        city: "",
+        state: "",
+        pincode: "",
+        businessPAN: "",
+        panCardUpload: null,
+        gstNumber: "",
+        gstDocumentUpload: null,
+
+        accHolder: "",
+        bank: "",
+        accNumber: "",
+        ifsc: "",
+        bankDocumentUpload: null,
+        otp:""
+    };
+
+    // submit
+    const handleSubmit = () => {
+
+        if (!required) {
+            return toast.error("Please fill all bank details and accept terms");
+        }
+
+        const data = new FormData();
+
+        // STEP 1: Personal Info
+        data.append("name", formData.name);
+        data.append("email", formData.email);
+        data.append("contact", formData.contact);
+        data.append("password", formData.password);
+        if (formData.profilePhoto) data.append("profilePhoto", formData.profilePhoto);
+
+        // STEP 2: Business Info
+        data.append("storeName", formData.storeName);
+        data.append("businessEmail", formData.businessEmail);
+        data.append("businessContact", formData.businessContact);
+        data.append("businessType", formData.businessType);
+        data.append("category", formData.category);
+        data.append("address", formData.address);
+        data.append("city", formData.city);
+        data.append("state", formData.state);
+        data.append("pincode", formData.pincode);
+        data.append("businessPAN", formData.businessPAN);
+        data.append("gstNumber", formData.gstNumber);
+
+        // Files (Step 2)
+        if (formData.storeLogo) data.append("storeLogo", formData.storeLogo);
+        if (formData.panCardUpload) data.append("panCardUpload", formData.panCardUpload);
+        if (formData.categoryLicenseUpload) data.append("categoryLicenseUpload", formData.categoryLicenseUpload);
+        if (formData.gstDocumentUpload) data.append("gstDocumentUpload", formData.gstDocumentUpload);
+
+        // STEP 3: Account Info & OTP
+        data.append("accHolder", formData.accHolder);
+        data.append("bank", formData.bank);
+        data.append("accNumber", formData.accNumber);
+        data.append("ifsc", formData.ifsc);
+
+        // File (Step 3)
+        if (formData.bankDocumentUpload) data.append("bankDocumentUpload", formData.bankDocumentUpload);
+
+        signupVendor(data, {
+            onSuccess: (res) => {
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    zIndex: 999,
+                    colors: ['#ec4899', '#f472b6', '#db2777']
+                });
+
+                // Zustand store mein user aur token bharo
+                login(res.vendor, res.token);
+
+                // Form reset to empty strings/null
+                setFormData(initialVendorState);
+
+                // Success modal
+                setIsSubmitted(true);
+
+            },
+            onError: (err) => toast.error(err.response?.data?.message || "Failed in signup")
+        })
+    };
 
     return (
         <section className="w-full">
@@ -66,49 +170,72 @@ function VendorAccountInfo({ prev, setFormData }) {
 
                 {/* account Name */}
                 <div className='flex flex-col gap-1.5'>
-                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Account Holder Name</label>
+                    <label
+                        htmlFor='accHolder'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Account Holder Name</label>
                     <input
-                        type="text"
+                        inputMode="numeric"
+                        name="accHolder"
+                        value={formData.accHolder}
+                        onChange={handleChange}
                         placeholder="e.g. Rahul"
                         className="w-full p-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all" />
                 </div>
 
                 {/* bank name */}
                 <div className='flex flex-col gap-1.5'>
-                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Bank Name</label>
+                    <label
+                        htmlFor='bank'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Bank Name</label>
                     <input
                         type="text"
+                        name="bank"
+                        value={formData.bank}
+                        onChange={handleChange}
                         placeholder="e.g. State Bank"
                         className="w-full p-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all" />
                 </div>
 
                 {/* acoount num */}
                 <div className='flex flex-col gap-1.5'>
-                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Account Number</label>
+                    <label
+                        htmlFor='accNumber'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Account Number</label>
                     <input
                         type="text"
+                        name="accNumber"
+                        value={formData.accNumber}
+                        onChange={handleChange}
                         placeholder="e.g. 12 or 16 digits"
                         className="w-full p-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all" />
                 </div>
 
                 {/* ifsc */}
                 <div className='flex flex-col gap-1.5'>
-                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">IFSC Code</label>
+                    <label
+                        htmlFor='ifsc'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">IFSC Code</label>
                     <input
                         type="text"
+                        name="ifsc"
+                        value={formData.ifsc}
+                        onChange={handleChange}
                         placeholder="e.g. 11 digits"
                         className="w-full p-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all" />
                 </div>
 
                 {/* cancelled cheque upload */}
                 <div className='relative flex flex-col gap-1.5'>
-                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Bank Verification Document</label>
+                    <label
+                        htmlFor='bankDocumentUpload'
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Bank Verification Document</label>
 
                     <div className="relative">
                         {/* Input ko 'peer' banaya aur z-index diya taaki click pakde */}
                         <input
                             type="file"
-                            id='cancelled_cheque'
+                            id='bankDocumentUpload'
+                            name='bankDocumentUpload'
                             accept='image/*'
                             onChange={handleFileChange}
                             className='absolute inset-0 opacity-0 cursor-pointer z-10 peer'
@@ -119,8 +246,8 @@ function VendorAccountInfo({ prev, setFormData }) {
                             <button className="text-sm md:text-base border border-pink-100 rounded-sm px-2 text-pink-600 bg-pink-50 pointer-events-none">
                                 Upload
                             </button>
-                            <span className='text-sm md:text-base text-gray-500 truncate'>
-                                {file ? file.name : "No file chosen"}
+                            <span className='flex-1 text-sm md:text-base text-gray-500 truncate'>
+                                {formData.bankDocumentUpload ? formData.bankDocumentUpload.name : "No file chosen"}
                             </span>
                         </div>
                     </div>
@@ -178,18 +305,23 @@ function VendorAccountInfo({ prev, setFormData }) {
 
                 <button
                     onClick={() => handleSubmit()}
-                    className={`w-full md:w-auto px-8 py-3 rounded-xl font-bold shadow-lg 
-                        ${checkedTerms && checkedAgreement ? "bg-pink-500 text-white shadow-pink-200 hover:bg-pink-600 hover:scale-105 active:scale-95 transition-all cursor-pointer" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}>
-                    Submit
+                    disabled={!required || isRegistering} 
+                    className={`w-full md:w-auto px-8 py-3 rounded-xl font-bold shadow-lg transition-all not-only-of-type:
+                        ${required && !isRegistering
+                            ? "bg-pink-500 text-white shadow-pink-200 hover:bg-pink-600 hover:scale-105 active:scale-95 cursor-pointer"
+                            : "bg-gray-300 text-gray-500 cursor-not-allowed opacity-70"
+                        }`}
+                >
+                    {isRegistering ? "Submitting..." : "Submit"}
                 </button>
             </div>
 
             {/* submit popup */}
             {isSubmitted && (
-                <div className="fixed inset-0 z-200 flex items-center justify-center px-4 lg:px-6">
+                <div className="fixed inset-0 z-50 flex items-center justify-center px-4 lg:px-6">
                     <div
                         className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
-                        onClick={() => setIsSubmitted(false)}
+                        // onClick={() => setIsSubmitted(false)}
                     ></div>
 
                     {/* Modal Content */}
@@ -219,7 +351,7 @@ function VendorAccountInfo({ prev, setFormData }) {
                             </button>
 
                             <button
-                                onClick={() => navigate('/vendor/profile')}
+                                onClick={() => navigate('/vendor_profile')}
                                 className="w-full text-sm md:text-base bg-white border-2 border-slate-100 text-slate-600 font-bold py-3 rounded-2xl transition-all hover:bg-slate-50 cursor-pointer"
                             >
                                 Complete My Profile

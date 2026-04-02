@@ -1,11 +1,12 @@
 
 import React, { useState } from 'react';
-import { HiOutlinePencilAlt } from "react-icons/hi";
-import { HiOutlineTrash } from "react-icons/hi";
+import { TbEdit } from "react-icons/tb";
+import { LiaTrashSolid } from "react-icons/lia";
 import { HiOutlineSearch } from "react-icons/hi";
 import { HiOutlineAdjustments } from "react-icons/hi";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
+import { HiOutlineExclamation, HiOutlineTrash, HiOutlineX } from 'react-icons/hi';
 
 const inventoryProducts = [
     {
@@ -60,6 +61,14 @@ function StockInventoryTable() {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
 
+    // edit popup
+    const [isEditOpen, setIsEditOpen] = useState(false);
+    const [isStockOpen, setIsStockOpen] = useState(false);
+    const [selectedStock, setSelectedStock] = useState("Select Stock");
+
+    // delete popup
+    const [isDeletedOpen, setIsDeletedOpen] = useState(false);
+
     const getStockStatusStyle = (status) => {
         switch (status) {
             case 'In Stock':
@@ -79,6 +88,11 @@ function StockInventoryTable() {
     const handleCategory = (cat) => {
         setSelectedCategory(cat);
         setIsOpen(false);
+    };
+
+    const handleStock = (stock) => {
+        setSelectedStock(stock);
+        setIsStockOpen(false);
     };
 
     return (
@@ -205,12 +219,17 @@ function StockInventoryTable() {
 
                                     {/* Action Buttons */}
                                     <td className="px-6 py-4">
-                                        <div className="flex items-center justify-center gap-3">
-                                            <button title="Edit Product" className="group/btn relative text-slate-400 hover:text-pink-500 transition-all p-1">
-                                                <HiOutlinePencilAlt className="text-xl group-hover/btn:scale-110 transition-transform" />
+                                        <div className="flex justify-center items-center gap-2">
+                                            <button
+                                                onClick={() => setIsEditOpen(true)}
+                                                className="p-2 rounded-lg bg-amber-50 text-amber-500 hover:bg-amber-500 hover:text-white transition-all active:scale-90 cursor-pointer">
+                                                <TbEdit className="text-lg md:text-xl" />
                                             </button>
-                                            <button title="Delete Product" className="group/btn relative text-slate-400 hover:text-red-500 transition-all p-1">
-                                                <HiOutlineTrash className="text-xl group-hover/btn:scale-110 transition-transform" />
+
+                                            <button
+                                                onClick={() => setIsDeletedOpen(true)}
+                                                className="p-2 rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90 cursor-pointer">
+                                                <LiaTrashSolid className="text-lg md:text-xl" />
                                             </button>
                                         </div>
                                     </td>
@@ -219,6 +238,203 @@ function StockInventoryTable() {
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+            {/* popup section for edit */}
+            <div
+                className={`fixed inset-0 flex justify-center items-center bg-black/50 backdrop-blur-sm z-100 px-4 transition-all duration-500 
+                ${isEditOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
+            >
+                <div
+                    onClick={() => setIsEditOpen(false)}
+                    className="absolute inset-0"
+                ></div>
+
+                {/* Content */}
+                <div className="relative transform max-h-[90vh] overflow-y-auto rounded-md bg-white dark:bg-slate-900 p-8 text-left shadow-2xl transition-all w-full max-w-md border border-pink-50 dark:border-slate-800">
+
+                    <button
+                        onClick={() => setIsEditOpen(false)}
+                        className="absolute top-6 right-6 text-slate-400 hover:text-pink-500 transition-colors"
+                    >
+                        <HiOutlineX size={20} />
+                    </button>
+
+                    <div className="text-center">
+                        <h3 className="text-xl font-bold text-slate-800 dark:text-white">
+                            Update Inventory
+                        </h3>
+                        <p className="text-xs text-slate-400 mt-1">Manage stock levels and pricing</p>
+                    </div>
+
+                    <div className='mt-5 space-y-4'>
+
+                        {/* Product SKU / ID (Read Only or Edit) */}
+                        <div className='flex flex-col gap-1.5 md:gap-2'>
+                            <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                                Product SKU / ID
+                            </label>
+                            <input
+                                type="text"
+                                disabled
+                                placeholder="SKU-12345"
+                                className="p-2.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-500 text-sm cursor-not-allowed"
+                            />
+                        </div>
+
+                        {/* Product Name (For reference) */}
+                        <div className='flex flex-col gap-1.5 md:gap-2'>
+                            <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                                Product Name
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="Product Name"
+                                className="p-2.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all"
+                            />
+                        </div>
+
+                        {/* Current Stock Quantity */}
+                        <div className='flex flex-col gap-1.5 md:gap-2'>
+                            <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                                Current Stock Quantity
+                            </label>
+                            <input
+                                type="number"
+                                placeholder="Enter quantity"
+                                className="p-2.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all"
+                            />
+                        </div>
+
+                        {/* Price Per Unit */}
+                        <div className='flex flex-col gap-1.5 md:gap-2'>
+                            <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                                Price Per Unit (₹)
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="e.g. 2999"
+                                className="p-2.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all"
+                            />
+                        </div>
+
+                        {/* Stock Status Dropdown */}
+                        <div className='flex flex-col gap-1.5 md:gap-2'>
+                            <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                                Stock Status
+                            </label>
+
+                            <button
+                                onClick={() => setIsStockOpen(!isStockOpen)}
+                                className={`w-full bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl md:rounded-2xl flex justify-between items-center transition-all border cursor-pointer
+                        ${isStockOpen ? 'border-pink-500 ring-2 ring-pink-50' : 'border-transparent'}`}
+                            >
+                                <span className={`${selectedStock ? 'text-slate-800 dark:text-white font-medium' : 'text-slate-400'} text-[11px] md:text-[14px] truncate mr-3`}>
+                                    {selectedStock || "Select Status"}
+                                </span>
+
+                                <div className="shrink-0">
+                                    {isStockOpen ? <IoIosArrowUp className='text-pink-500' /> : <IoIosArrowDown className='text-slate-400' />}
+                                </div>
+                            </button>
+
+                            {isStockOpen && (
+                                <div className='w-full mt-2 bg-white dark:bg-slate-800 rounded-b-xl shadow-xl border border-pink-50 dark:border-slate-700 py-2 overflow-hidden animate-in fade-in zoom-in duration-200'>
+                                    <div className='max-h-60 overflow-y-auto'>
+                                        {['In Stock', 'Out of Stock', 'Low Stock'].map((label, index) => (
+                                            <div
+                                                key={index}
+                                                onClick={() => handleStock(label)}
+                                                className='px-4 py-1.5 hover:bg-pink-50 dark:hover:bg-slate-700 cursor-pointer text-slate-700 dark:text-slate-300 hover:text-pink-600 font-medium transition-colors text-[11px] md:text-[13px]'
+                                            >
+                                                {label}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setIsEditOpen(false)}
+                            className="inline-flex w-full justify-center rounded-2xl bg-white px-3 py-3.5 text-sm font-bold text-slate-600 border border-slate-100 hover:bg-slate-50 transition-all sm:w-1/2 active:scale-95 cursor-pointer"
+                        >
+                            Discard
+                        </button>
+
+                        <button
+                            type="button"
+                            className="inline-flex w-full justify-center rounded-2xl bg-linear-to-br from-pink-500 to-pink-600 px-3 py-3.5 text-sm font-bold text-white shadow-lg shadow-pink-100 hover:from-pink-600 hover:to-pink-700 transition-all sm:w-1/2 items-center gap-2 active:scale-95 cursor-pointer"
+                        >
+                            Save Inventory
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* popup section for delete */}
+            <div
+                className={`fixed inset-0 flex justify-center items-center bg-black/50 backdrop-blur-sm z-100 px-4 transition-all duration-500 
+                 ${isDeletedOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
+            >
+                <div
+                    onClick={() => setIsDeletedOpen(false)}
+                    className="absolute inset-0"
+                ></div>
+
+                {/* Content */}
+                <div className="relative transform overflow-hidden rounded-[2.5rem] bg-white dark:bg-slate-900 p-8 text-left shadow-2xl transition-all w-full max-w-md border border-pink-50 dark:border-slate-800">
+
+                    {/* cross icon */}
+                    <button
+                        onClick={() => setIsDeletedOpen(false)}
+                        className="absolute top-6 right-6 text-slate-400 hover:text-pink-500 transition-colors"
+                    >
+                        <HiOutlineX size={20} />
+                    </button>
+
+                    {/* Warning Icon */}
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 dark:bg-red-900/20 mb-6">
+                        <HiOutlineExclamation className="h-8 w-8 text-red-500" />
+                    </div>
+
+                    {/* Text Content */}
+                    <div className="text-center">
+                        <h3 className="text-xl font-bold text-slate-800 dark:text-white">
+                            Remove Inventory?
+                        </h3>
+
+                        <p className="mt-3 text-sm text-slate-500 dark:text-slate-400 leading-relaxed px-2">
+                            Are you sure you want to delete <span className="font-bold text-slate-700 dark:text-white">"This Inventory"</span>?
+                            This will remove it from your store permanently.
+                        </p>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setIsDeletedOpen(false)}
+                            className="inline-flex w-full justify-center rounded-2xl bg-white px-3 py-3.5 text-sm font-bold text-slate-600 border border-slate-100 hover:bg-slate-50 transition-all sm:w-1/2 active:scale-95 cursor-pointer"
+                        >
+                            No, Keep it
+                        </button>
+
+                        <button
+                            type="button"
+                            // onClick={onConfirm}
+                            className="inline-flex w-full justify-center rounded-2xl bg-linear-to-br from-red-500 to-red-600 px-3 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-100 hover:from-red-600 hover:to-red-700 transition-all sm:w-1/2 items-center gap-2 active:scale-95 cursor-pointer"
+                        >
+                            <HiOutlineTrash />
+                            Yes, Delete
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </div>
     )

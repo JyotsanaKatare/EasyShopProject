@@ -2,6 +2,12 @@
 import mongoose from "mongoose";
 
 const vendorSchema = new mongoose.Schema({
+    
+    // step-1
+    profilePhoto: {
+        type: String,
+        default: ""
+    },
 
     name: {
         type: String,
@@ -27,7 +33,7 @@ const vendorSchema = new mongoose.Schema({
         required: true
     },
 
-    //upload
+    // step-2
     storeLogo: {
         type: String,
         required: true,
@@ -37,6 +43,19 @@ const vendorSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true
+    },
+
+    businessEmail: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+        trim: true
+    },
+
+    businessContact: {
+        type: String,
+        required: true
     },
 
     businessType: {
@@ -90,7 +109,8 @@ const vendorSchema = new mongoose.Schema({
     gstDocumentUpload: {
         type: String,
     },
-
+    
+    // step-3
     accHolder: {
         type: String,
         required: true,

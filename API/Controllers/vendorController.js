@@ -1,7 +1,8 @@
 
 import Vendor from "../Models/vendorModelSchema.js";
-import { deleteCloudinaryFiles } from '../utils/cloudinaryUtils.js';
+import OTP from '../Models/otpModel.js';
 import sendEmail from "../utils/sendEmail.js";
+import { deleteCloudinaryFiles } from '../utils/cloudinaryUtils.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -17,14 +18,24 @@ const licenseRequiredCategories = [
 export const vendorSignUp = async (req, res) => {
     try {
         // Files ka path nikalna
+        const profilePhoto = req.files['profilePhoto']?.[0]?.path;
         const storeLogo = req.files['storeLogo']?.[0]?.path;
-        const categoryLicenseUpload = req.files['categoryLicenseUpload']?.[0]?.path;
+        const categoryLicenseUpload = req.files['categoryLicenseUpload']?.[0]?.path || "";
         const panCardUpload = req.files['panCardUpload']?.[0]?.path;
-        const gstDocumentUpload = req.files['gstDocumentUpload']?.[0]?.path;
+        const gstDocumentUpload = req.files['gstDocumentUpload']?.[0]?.path || "";
         const bankDocumentUpload = req.files['bankDocumentUpload']?.[0]?.path;
 
+        console.log("PATHS:", {
+            profile: profilePhoto,
+            logo: storeLogo,
+            pan: panCardUpload,
+            license: categoryLicenseUpload,
+            gst: gstDocumentUpload,
+            bank: bankDocumentUpload
+        });
+
         const {
-            name, email, contact, password, storeName, businessType,
+            name, email, contact, password, storeName, businessEmail, businessContact, businessType,
             category, address, city, state, pincode, businessPAN,
             gstNumber, accHolder, bank, accNumber, ifsc
         } = req.body;
@@ -50,10 +61,10 @@ export const vendorSignUp = async (req, res) => {
             });
         }
 
-        if (!name || !email || !contact || !password || !storeLogo || !storeName || !businessType || !category || !address || !city || !state || !pincode || !businessPAN || !panCardUpload || !accHolder || !bank || !accNumber || !ifsc || !bankDocumentUpload) {
+        if (!profilePhoto || !name || !email || !contact || !password || !storeLogo || !storeName || !businessEmail || !businessContact || !businessType || !category || !address || !city || !state || !pincode || !businessPAN || !panCardUpload || !accHolder || !bank || !accNumber || !ifsc || !bankDocumentUpload) {
 
             // ERROR: Fields missing hain, toh upload hui images delete karo
-            await deleteCloudinaryFiles(req.files);
+            if (req.files) await deleteCloudinaryFiles(req.files);
 
             return res.status(400).json({
                 success: false,
@@ -61,12 +72,15 @@ export const vendorSignUp = async (req, res) => {
             })
         }
 
-        const isEmailExist = await Vendor.findOne({ email });
+        // const isEmailExist = await Vendor.findOne({ email });
+        const isEmailExist = await Vendor.findOne({
+            $or: [{ email: email }, { businessEmail: businessEmail }]
+        });
 
         if (isEmailExist) {
 
             // ERROR: Email exist karta hai, toh upload hui images delete karo
-            await deleteCloudinaryFiles(req.files);
+            if (req.files) await deleteCloudinaryFiles(req.files);
 
             return res.status(400).json({
                 success: false,
@@ -78,12 +92,15 @@ export const vendorSignUp = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const vendor = await Vendor.create({
+            profilePhoto,
             name,
             email,
             contact,
             password: hashedPassword,
             storeLogo,
             storeName,
+            businessEmail,
+            businessContact,
             businessType,
             category,
             categoryLicenseUpload,
@@ -102,6 +119,8 @@ export const vendorSignUp = async (req, res) => {
             bankDocumentUpload
         });
 
+        await OTP.deleteMany({ email, role: 'vendor' });
+
         return res.status(201).json({
             success: true,
             message: "Registered successfully",
@@ -113,7 +132,9 @@ export const vendorSignUp = async (req, res) => {
         })
 
     } catch (err) {
-        await deleteCloudinaryFiles(req.files);
+        if (req.files) {
+            await deleteCloudinaryFiles(req.files);
+        }
 
         console.error("Signup Error:", err);
         return res.status(500).json({
@@ -166,11 +187,12 @@ export const vendorLogin = async (req, res) => {
                 id: vendor._id,
                 name: vendor.name,
                 email: vendor.email,
+                role: vendor.role,
                 store: vendor.storeName
             }
         });
     } catch (err) {
-        // console.error("Login Error:", err);
+        console.error("Login Error:", err);
         return res.status(500).json({
             success: false,
             message: "Server Error Occur"
@@ -202,7 +224,7 @@ export const forgotPassword = async (req, res) => {
         const token = jwt.sign({ id: vendor._id, role: vendor.role }, secret, { expiresIn: '15m' });
 
         const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
-        const link = `${frontendUrl}/forgot_password/${vendor._id}/${token}`;
+        const link = `${frontendUrl}/reset_password/${vendor._id}/${token}?role=vendor`;
 
         try {
             await sendEmail(
@@ -369,10 +391,10 @@ export const updateVendorDetail = async (req, res) => {
             { returnDocument: 'after' }
         ).select("-password");
 
-        res.status(200).json({ 
-            success: true, 
-            message: "Updated & Old files cleaned!", 
-            data: updatedVendor 
+        res.status(200).json({
+            success: true,
+            message: "Updated & Old files cleaned!",
+            data: updatedVendor
         });
 
     } catch (err) {

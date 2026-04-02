@@ -27,6 +27,11 @@ const userSchema = new mongoose.Schema(
             required: true
         },
 
+        profilePhoto: {
+            type: String,
+            default: ""
+        },
+
         address: {
             type: String,
             required: true
@@ -57,10 +62,24 @@ const userSchema = new mongoose.Schema(
             default: true
         },
 
-        cart: [{
+        cart: [
+            {
+                productId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'Product'
+                },
+                
+                quantity: {
+                    type: Number,
+                    default: 1
+                }
+            }
+        ],
+
+        wishlist: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Product'
-        }],
+        }]
     },
 
     { timestamps: true }

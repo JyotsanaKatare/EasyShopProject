@@ -2,121 +2,31 @@
 import User from '../Models/userModelSchema.js';
 import OTP from '../Models/otpModel.js';
 import sendEmail from '../utils/sendEmail.js';
+import { deleteCloudinaryFiles } from '../utils/cloudinaryUtils.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-export const sendOTP = async (req, res) => {
-    try {
-        const { email } = req.body;
-
-        if (!email) {
-            return res.status(400).json({
-                success: false,
-                message: "Email is required"
-            });
-        }
-
-        // 1. Generate 6-digit OTP
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-        // 2. Save/Update in DB
-        await OTP.findOneAndUpdate(
-            { email },
-            { otp },
-            { upsert: true, new: true }
-        );
-
-        // 3. Send Email using your helper
-        const subject = "Email Verification OTP";
-        const html = `
-            <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee;">
-                <h2>Email Verification</h2>
-                <p>Your verification code is given below:</p>
-                <h1 style="color: #4CAF50;">${otp}</h1>
-                <p>This code will be expire in 5 minutes.</p>
-            </div>
-        `;
-
-        await sendEmail(email, subject, html);
-
-        res.status(200).json({
-            success: true,
-            message: "OTP sent to your email"
-        });
-
-    } catch (err) {
-        console.error("OTP Error:", err.message);
-        res.status(500).json({
-            success: false,
-            message: "Failed to send OTP"
-        });
-    }
-};
-
-export const verifyOTP = async (req, res) => {
-    try {
-        const { email, otp } = req.body;
-
-        // 1. Database se us email ka latest OTP nikalo
-        const storedOtpDetails = await OTP.findOne({ email }).sort({ createdAt: -1 });
-
-        if (!storedOtpDetails) {
-            return res.status(400).json({
-                success: false,
-                message: "OTP expired or not found!"
-            });
-        }
-
-        // 2. OTP Match karo
-        if (String(storedOtpDetails.otp).trim() !== String(otp).trim()) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid OTP!"
-            });
-        }
-
-        // 3. Agar match ho gaya
-        res.status(200).json({
-            success: true,
-            message: "Email verified successfully!"
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Server Error Occur"
-        });
-    }
-};
-
 export const userSignUp = async (req, res) => {
     try {
-        const { name, email, otp, password, contact, address, city, pincode, state } = req.body;
+        const { name, email, password, contact, address, city, pincode, state } = req.body;
+        const profilePhotoPath = req.file ? req.file.path : "";
 
-        if (!name || !email || !otp || !password || !contact || !address || !city || !pincode || !state) {
+        if (!name || !email || !password || !contact || !address || !city || !pincode || !state) {
+            if (req.file) await deleteCloudinaryFiles(req.file);
             return res.status(400).json({
                 success: false,
                 message: "Please fill all the mandatory fields"
             })
         }
 
-        // 1. Database se OTP check karein
-        const otpCheck = await OTP.findOne({ email, otp });
-
-        if (!otpCheck) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid or Expired OTP"
-            });
-        }
-
         const existingUser = await User.findOne({ email });
         if (existingUser) {
+            if (req.file) await deleteCloudinaryFiles(req.file);
             return res.status(400).json({
                 success: false,
-                message: "User already exists"
+                message: "User already registered with this email"
             });
-        }
+        };
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -126,19 +36,25 @@ export const userSignUp = async (req, res) => {
             email,
             password: hashedPassword,
             contact,
+            profilePhoto: profilePhotoPath || "",
             address,
             city,
             pincode,
             state
         });
+
         await user.save();
-        await OTP.deleteOne({ email });
+        await OTP.deleteMany({ email, role: 'user' });
 
         res.status(201).json({
             success: true,
-            message: "User registered successfully"
+            message: "User registered successfully! Welcome to EasyShop.",
+            user: { id: user._id, name: user.name, email: user.email }
         });
+
     } catch (err) {
+        console.error(err);
+        if (req.file) await deleteCloudinaryFiles(req.file);
         res.status(500).json({
             success: false,
             message: "Server Error Occur"
@@ -162,7 +78,7 @@ export const userLogin = async (req, res) => {
         if (!user) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid Email or Password"
+                message: "User not registered"
             });
         }
 
@@ -186,10 +102,11 @@ export const userLogin = async (req, res) => {
             success: true,
             message: `Welcome back, ${user.name}`,
             token,
-            vendor: {
+            user: {
                 id: user._id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                role: user.role,
             }
         });
     } catch (err) {
@@ -216,17 +133,17 @@ export const forgotPassword = async (req, res) => {
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: "Email does not exist"
+                message: "This email does not exist"
             });
         }
 
-        const secret = process.env.JWT_SECRET_KEY;
-        const token = jwt.sign({ id: user._id, role: user.role }, secret, { expiresIn: '15m' });
-
-        const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
-        const link = `${frontendUrl}/forgot_password/${user._id}/${token}`;
-
         try {
+            const secret = process.env.JWT_SECRET_KEY;
+            const token = jwt.sign({ id: user._id, role: user.role }, secret, { expiresIn: '15m' });
+
+            const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+            const link = `${frontendUrl}/reset_password/${user._id}/${token}?role=user`;
+
             await sendEmail(
                 email,
                 "Password Reset Request",
@@ -243,9 +160,10 @@ export const forgotPassword = async (req, res) => {
             });
 
         } catch (mailErr) {
+            console.error("Error in Token/Email Process:", mailErr.message);
             return res.status(500).json({
                 success: false,
-                message: "Error sending email"
+                message: "Error sending email or generating link"
             });
         }
     } catch (err) {
@@ -262,7 +180,7 @@ export const resetPassword = async (req, res) => {
         const { password, confirmPassword } = req.body;
 
         if (!password || !confirmPassword) {
-            return res.status(404).json({
+            return res.status(400).json({
                 success: false,
                 message: "New Password and Confirm Password are required"
             });
@@ -272,15 +190,6 @@ export const resetPassword = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Passwords do not match"
-            });
-        }
-
-        const user = await User.findById(user_id);
-
-        if (!user) {
-            return res.status(400).json({
-                success: false,
-                message: "User not found"
             });
         }
 
@@ -294,6 +203,14 @@ export const resetPassword = async (req, res) => {
             });
         }
 
+        const user = await User.findById(user_id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -302,13 +219,14 @@ export const resetPassword = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "Password reset successfully. You can login now."
+            message: "Password updated!. You can login now."
         });
 
     } catch (err) {
+        console.error(err);
         return res.status(500).json({
             success: false,
-            message: "Server Error Occur"
+            message: "Server Error Occurred"
         });
     }
 };
@@ -332,9 +250,19 @@ export const countUser = async (req, res) => {
 
 export const getUser = async (req, res) => {
     try {
-        const { user_id } = req.params;
+        const { user_id } = req.params; // URL se aayi ID (e.g., User B)
+        const loggedInUser = req.user;   // Token se aayi ID (e.g., User A)
 
-        const user = await User.findById(user_id);
+        // 1. Security Check: Kya logged-in user apni hi info maang raha hai?
+        // (Admin ko allowed rakhein taaki wo sab dekh sake)
+        if (loggedInUser.id !== user_id && loggedInUser.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: "Access Denied: You can only view your own profile."
+            });
+        }
+
+        const user = await User.findById(user_id).select("-password"); // password excluded
 
         if (!user) {
             return res.status(404).json({
@@ -348,27 +276,65 @@ export const getUser = async (req, res) => {
             message: "User Detail",
             data: user
         });
+
     } catch (err) {
         return res.status(500).json({
             success: false,
-            message: "Server Error Occur"
+            message: "Server Error"
         });
     }
 };
 
 export const updateUserDetail = async (req, res) => {
     try {
-        const user_id = req.user.id; // Ye ID humein authMiddleware ke token se milegi
-        const { name, contact, address, city, pincode, state } = req.body;
+        const user_id = req.user.id;
+        const { name, email, contact, address, city, pincode, state, } = req.body;
 
-        const userExists = await User.findById(user_id);
+        const user = await User.findById(user_id);
 
-        if (!userExists) {
-
+        if (!user) {
+            if (req.file) await deleteCloudinaryFiles(req.file);
             return res.status(404).json({
                 success: false,
                 message: "User not found"
             });
+        }
+
+        // Email Unique Check
+        if (email && email !== user.email) {
+            const emailExists = await User.findOne({ email });
+            if (emailExists) {
+                return res.status(400).json({
+                    success: false,
+                    message: "This email is already registered with another account"
+                });
+            }
+        }
+
+        let profilePhotoPath = user.profilePhoto; // Default purani photo rahegi
+
+        if (req.file) {
+
+            // --- OLD PHOTO DELETE LOGIC ---
+            if (user.profilePhoto) {
+
+                // 1. URL se Folder aur FileName nikalna
+                const urlParts = user.profilePhoto.split('/');
+
+                // Cloudinary URL structure: .../upload/v12345/Folder/Subfolder/filename.jpg
+                const fileNameWithExt = urlParts[urlParts.length - 1]; // e.g., "file-17118...jpg"
+                const publicIdWithoutExt = fileNameWithExt.split('.')[0]; // e.g., "file-17118..."
+
+                // Folder path (EasyShop/Users) extract karna
+                const subFolder = urlParts[urlParts.length - 2]; // "Users"
+                const rootFolder = urlParts[urlParts.length - 3]; // "EasyShop"
+
+                const fullPublicId = `${rootFolder}/${subFolder}/${publicIdWithoutExt}`;
+
+                // 2. Apne helper ko call karein
+                await deleteCloudinaryFiles({ filename: fullPublicId });
+            }
+            profilePhotoPath = req.file.path; // Nayi photo ka URL assign karein
         }
 
         const updatedUser = await User.findByIdAndUpdate(
@@ -376,18 +342,20 @@ export const updateUserDetail = async (req, res) => {
             {
                 $set: {
                     name,
+                    email,
                     contact,
                     address,
                     city,
                     pincode,
-                    state
+                    state,
+                    profilePhoto: profilePhotoPath
                 }
             },
             {
                 returnDocument: 'after',
                 runValidators: true
             }
-        ).select("-password"); // Password ko response mein nahi bhejenge
+        ).select("-password");
 
         res.status(200).json({
             success: true,
@@ -395,6 +363,7 @@ export const updateUserDetail = async (req, res) => {
             data: updatedUser
         });
     } catch (err) {
+        if (req.file) await deleteCloudinaryFiles(req.file);
         return res.status(500).json({
             success: false,
             message: "Server Error Occur"

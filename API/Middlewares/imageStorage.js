@@ -8,19 +8,23 @@ const storage = new CloudinaryStorage({
     params: async (req, file) => {
         let folderName = 'EasyShop/Others'; // Default folder
 
-        // Agar vendor registration se request aa rahi hai
+        // Check path to decide folder
         if (req.baseUrl.includes('vendor')) {
             folderName = 'EasyShop/Vendor_Docs';
         }
-        // Agar product add karne ki request hai
+        
         else if (req.baseUrl.includes('product')) {
             folderName = 'EasyShop/Products';
+        }
+
+        else if(req.baseUrl.includes('user')){
+            folderName = 'EasyShop/Users'
         }
 
         return {
             folder: folderName,
             allowed_formats: ['jpg', 'png', 'jpeg'],
-            public_id: `${Date.now()}-${file.originalname.split('.')[0]}`
+            public_id: `${file.fieldname}-${Date.now()}-${Math.round(Math.random() * 1E9)}`
         };
     },
 });

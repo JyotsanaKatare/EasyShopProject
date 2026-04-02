@@ -1,12 +1,93 @@
- 
+
 //updated
-import React from 'react'
+import React, { useState } from 'react'
 import { HiOutlineUser } from "react-icons/hi";
 import { HiOutlineMail } from "react-icons/hi";
 import { HiOutlinePhone } from "react-icons/hi";
 import { HiOutlineLockClosed } from "react-icons/hi2";
+import { HiOutlineBadgeCheck } from "react-icons/hi";
+import { HiOutlineCamera } from "react-icons/hi2";
+import { useSendOTP, useVerifyOtp } from '../hook/useAuth';
+import toast from 'react-hot-toast';
 
-function VendorPersonalInfo({ next, setFormData }) {
+function VendorPersonalInfo({ next, formData, setFormData, isEmailVerified, setIsEmailVerified }) {
+
+    const [showOtpModal, setShowOtpModal] = useState(false);
+
+    const [previewImage, setPreviewImage] = useState(
+        formData.profilePhoto 
+        ? URL.createObjectURL(formData.profilePhoto) 
+        : "https://i.pinimg.com/1200x/f9/1f/ba/f91fba046dd5208787a3ffa5c1f299e7.jpg"
+    );
+
+    const { mutate: sendOTP, isPending: isSending } = useSendOTP();
+    const { mutate: verifyOtp, isPending: isVerifying } = useVerifyOtp();
+
+    // Input change handler
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    // image upload
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setFormData({ ...formData, profilePhoto: file }); // FormData update
+            setPreviewImage(URL.createObjectURL(file)); // Preview update
+        }
+    };
+
+    // handle otp send
+    const handleSendOTP = () => {
+        sendOTP({ email: formData.email, role: 'vendor' }, {
+            onSuccess: () => {
+                toast.success("OTP sent!");
+                setShowOtpModal(true);
+            },
+            onError: (err) => toast.error(err.response?.data?.message || "Error!")
+        });
+    };
+
+    // handle otp verify
+    const handleVerifyOTP = () => {
+        verifyOtp({ email: formData.email, otp: formData.otp, role: 'vendor' }, {
+            onSuccess: () => {
+                setIsEmailVerified(true); // Parent state update
+                setShowOtpModal(false);
+                toast.success("OTP Verified");
+            },
+            onError: (err) => {
+                const errorMessage = err.response?.data?.message || "Invalid OTP. Please try again.";
+                toast.error(errorMessage);
+
+                // Optional: OTP field ko clear kar dena agar galat ho
+                setFormData({ ...formData, otp: '' });
+            }
+        });
+    };
+
+    // submit
+    const countinueToBusinessDetail = () => {
+
+        if (!formData.name || !formData.email || !formData.contact || !formData.password) {
+            return toast.error("All fields are required");
+        }
+
+        if (!isEmailVerified) {
+            return toast.error("Please verify your email first");
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            return toast.error("Passwords do not match");
+        }
+
+        if (!formData.profilePhoto) {
+            return toast.error("Please upload image");
+        }
+
+        next();
+    };
+
     return (
         <section className="w-full">
 
@@ -23,17 +104,62 @@ function VendorPersonalInfo({ next, setFormData }) {
                 </p>
             </div>
 
+            {/* vendor image upload */}
+            <div className="flex flex-col items-center md:items-start gap-6 pb-6 md:pb-8 border-b border-slate-50 ">
+                <div className="relative group">
+                    {/* Profile Image Preview */}
+                    <img
+                        src={previewImage}
+                        alt="Profile"
+                        className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-white shadow-xl group-hover:opacity-90 transition-all"
+                    />
+
+                    {/* Hidden File Input */}
+                    <input
+                        type="file"
+                        id="profilePhoto"
+                        hidden
+                        accept="image/*"
+                        onChange={handleFileChange}
+                    />
+
+                    {/* Upload Button (Camera Icon) */}
+                    <label
+                        htmlFor="profilePhoto"
+                        className="absolute bottom-1 right-1 bg-pink-500 p-2.5 rounded-full text-white cursor-pointer shadow-lg hover:bg-pink-600 hover:scale-110 transition-all border-2 border-white"
+                    >
+                        <HiOutlineCamera size={18} />
+                    </label>
+                </div>
+
+                <div className="text-center md:text-left">
+                    <h4 className="text-[13px] md:text-sm font-black text-slate-800 uppercase tracking-tight">
+                        Profile Photo
+                    </h4>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">
+                        JPG, GIF or PNG. Max size of 2MB
+                    </p>
+                </div>
+            </div>
+
             {/* form section */}
             <div className='grid md:grid-cols-2 gap-5 md:gap-6'>
 
                 {/* name */}
                 <div className='flex flex-col gap-1.5'>
-                    <label htmlFor="full name" className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Full Name</label>
+                    <label
+                        htmlFor="full name"
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                        Full Name
+                    </label>
                     <div className='relative group'>
                         <HiOutlineUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg md:text-xl group-focus-within:text-pink-500 transition-colors" />
 
                         <input
                             type="text"
+                            name='name'
+                            value={formData.name}
+                            onChange={handleChange}
                             placeholder='Full Name'
                             className="w-full pl-10 md:pl-12 pr-4 py-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all"
                             required
@@ -48,22 +174,63 @@ function VendorPersonalInfo({ next, setFormData }) {
                         <HiOutlineMail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg md:text-xl group-focus-within:text-pink-500 transition-colors" />
 
                         <input
-                            type="text"
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            disabled={isEmailVerified}
                             placeholder='Email'
                             className="w-full pl-10 md:pl-12 pr-4 py-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all"
                             required
                         />
+
+                        {/* email verify button */}
+                        {!isEmailVerified ? (
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Click event ko upar jaane se roko
+                                    console.log("Verify Clicked!");
+                                    handleSendOTP();
+                                }}
+                                // Agar email nahi hai ya loading hai toh disable
+                                disabled={isSending || !formData.email}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 text-xs md:text-sm font-bold text-white bg-pink-500 hover:bg-pink-600 rounded-md md:rounded-xl transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm active:scale-95 cursor-pointer z-20"
+                            >
+                                {isSending ? (
+                                    <span className="flex items-center gap-1">
+                                        <svg className="animate-spin h-3 w-3 text-white" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Wait...
+                                    </span>
+                                ) : "Verify"}
+                            </button>
+                        ) : (
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 font-bold text-xs flex items-center gap-1 z-20">
+                                Verified <HiOutlineBadgeCheck className="text-lg" />
+                            </span>
+                        )}
+
                     </div>
                 </div>
 
                 {/* mobile num */}
                 <div className='flex flex-col gap-1.5'>
-                    <label htmlFor="Mobile Number" className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Mobile Number</label>
+                    <label
+                        htmlFor="Mobile Number"
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                        Mobile Number
+                    </label>
                     <div className='relative group'>
                         <HiOutlinePhone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg md:text-xl group-focus-within:text-pink-500 transition-colors" />
 
                         <input
                             type="text"
+                            name='contact'
+                            value={formData.contact}
+                            onChange={handleChange}
                             placeholder='Mobile Number'
                             className="w-full pl-10 md:pl-12 pr-4 py-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all"
                             required
@@ -73,12 +240,19 @@ function VendorPersonalInfo({ next, setFormData }) {
 
                 {/* password */}
                 <div className='flex flex-col gap-1.5'>
-                    <label htmlFor="password" className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Password</label>
+                    <label
+                        htmlFor="password"
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                        Password
+                    </label>
                     <div className='relative group'>
                         <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg md:text-xl group-focus-within:text-pink-500 transition-colors" />
 
                         <input
                             type="password"
+                            name='password'
+                            value={formData.password}
+                            onChange={handleChange}
                             placeholder='Password'
                             className="w-full pl-10 md:pl-12 pr-4 py-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all"
                             required
@@ -88,12 +262,19 @@ function VendorPersonalInfo({ next, setFormData }) {
 
                 {/* confirm password */}
                 <div className='flex flex-col gap-1.5'>
-                    <label htmlFor="confirm password" className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Confirm Password</label>
+                    <label
+                        htmlFor="confirm password"
+                        className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                        Confirm Password
+                    </label>
                     <div className='relative group'>
                         <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg md:text-xl group-focus-within:text-pink-500 transition-colors" />
 
                         <input
                             type="password"
+                            name='confirmPassword'
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
                             placeholder='Confirm Password'
                             className="w-full pl-10 md:pl-12 pr-4 py-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all"
                             required
@@ -102,15 +283,52 @@ function VendorPersonalInfo({ next, setFormData }) {
                 </div>
             </div>
 
-            {/* button */}
-            <div className="flex justify-center md:justify-end mt-8 md:mt-12">
+            {/* btn */}
+            <div className="flex justify-end mt-10">
                 <button
-                    onClick={next}
-                    className="w-full md:w-auto bg-pink-500 text-white px-8 py-3.5 md:py-3 rounded-2xl md:rounded-xl font-bold shadow-lg shadow-pink-200 hover:bg-pink-600 hover:scale-[1.02] md:hover:scale-105 active:scale-95 transition-all cursor-pointer text-sm md:text-base"
+                    onClick={countinueToBusinessDetail}
+                    className="w-full md:w-auto text-sm md:text-base bg-pink-500 text-white hover:bg-pink-600 hover:scale-[1.02] md:hover:scale-105 active:scale-95 px-8 py-3 rounded-2xl md:rounded-xl font-bold shadow-lg shadow-pink-200 transition-all cursor-pointer "
                 >
                     Continue to Business Details
                 </button>
             </div>
+
+            {/* otp popup section */}
+            {showOtpModal && (
+                <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                    <div className="bg-white p-6 md:p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center transform transition-all scale-100">
+                        <h3 className="text-xl font-bold mb-2">Check your Inbox</h3>
+                        <p className="text-sm text-gray-500 mb-6">Enter OTP sent to {formData.email}</p>
+
+                        <input
+                            type="text"
+                            name="otp"
+                            maxLength="6"
+                            value={formData.otp}
+                            onChange={handleChange}
+                            disabled={isVerifying}
+                            placeholder="000000"
+                            className="w-full text-center text-2xl font-mono tracking-widest py-3 border-2 border-pink-100 rounded-2xl focus:border-pink-500 outline-none mb-6"
+                        />
+
+                        <button
+                            onClick={handleVerifyOTP}
+                            disabled={isVerifying || formData.otp.length < 6} // Button lock logic
+                            className="w-full py-3 bg-pink-500 text-white font-bold rounded-2xl hover:bg-pink-600 transition-all shadow-lg cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        >
+                            {isVerifying ? (
+                                <span className="flex items-center justify-center gap-2">
+                                    <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Verifying...
+                                </span>
+                            ) : "Confirm OTP"}
+                        </button>
+                    </div>
+                </div>
+            )}
         </section>
 
     )

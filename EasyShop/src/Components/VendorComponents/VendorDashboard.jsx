@@ -26,7 +26,7 @@ function VendorDashboard({ setCurrentPage }) {
         <AnalyticsSplit setCurrentPage={setCurrentPage} />
       </div>
 
-      <DashboardChatIcon />
+      <DashboardChatIcon setCurrentPage={setCurrentPage}/>
     </>
   )
 }

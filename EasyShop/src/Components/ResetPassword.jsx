@@ -3,13 +3,52 @@
 import React, { useState } from 'react'
 import { HiOutlineLockClosed } from "react-icons/hi2";
 import { HiOutlineCheckCircle } from "react-icons/hi2";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useResetPassword } from '../hook/useAuth';
+import toast from 'react-hot-toast';
 
 function ResetPassword() {
 
     const navigate = useNavigate();
+    const { id, token } = useParams();
+    const [searchParams] = useSearchParams();
+    const role = searchParams.get('role') || 'user';
 
     const [isSuccess, setIsSuccess] = useState(false);
+    const [formData, setFormData] = useState({
+        password: "",
+        confirmPassword: ""
+    });
+
+    const { mutate: resetpass, isPending: isResetting } = useResetPassword();
+
+    // input handler
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    // submit btn
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        if (!formData.password || !formData.confirmPassword) {
+            return toast.error("Please fill all fields");
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            return toast.error("Passwords do not match");
+        }
+
+        resetpass({ ...formData, id, token, role }, {
+            onSuccess: (res) => {
+                setIsSuccess(true);
+            },
+
+            onError: (err) => {
+                toast.error(err.response?.data?.message || "Link expired or invalid")
+            }
+        });
+    };
 
     return (
         <section className="min-h-[70vh] bg-gray-50 py-10 px-4 lg:px-6">
@@ -33,12 +72,19 @@ function ResetPassword() {
 
                         {/* password */}
                         <div className='flex flex-col gap-1.5'>
-                            <label htmlFor="password" className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">New Password</label>
+                            <label
+                                htmlFor="password"
+                                className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                                New Password
+                            </label>
                             <div className='relative group'>
                                 <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg md:text-xl group-focus-within:text-pink-500 transition-colors" />
 
                                 <input
                                     type="password"
+                                    name='password'
+                                    value={formData.password}
+                                    onChange={handleChange}
                                     placeholder='Password'
                                     className="w-full pl-10 md:pl-12 pr-4 py-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all"
                                     required
@@ -48,13 +94,20 @@ function ResetPassword() {
 
                         {/* confirm password */}
                         <div className='flex flex-col gap-1.5'>
-                            <label htmlFor="password" className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Confirm Password</label>
+                            <label
+                                htmlFor="confirmPassword"
+                                className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                                Confirm Password
+                            </label>
                             <div className='relative group'>
                                 <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg md:text-xl group-focus-within:text-pink-500 transition-colors" />
 
                                 <input
                                     type="password"
-                                    placeholder='Password'
+                                    name='confirmPassword'
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                    placeholder='Confirm Password'
                                     className="w-full pl-10 md:pl-12 pr-4 py-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all"
                                     required
                                 />
@@ -69,10 +122,12 @@ function ResetPassword() {
                         {/* submit */}
                         <div className='md:pt-4 '>
                             <button
-                                onClick={() => setIsSuccess(true)}
-                                className="w-full text-xs md:text-sm bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 md:py-4 rounded-2xl shadow-lg shadow-pink-100 transition-all active:scale-[0.98] cursor-pointer"
+                                onClick={handleSubmit}
+                                className={`w-full text-xs md:text-sm font-bold py-3 md:py-4 rounded-2xl shadow-lg shadow-pink-100 transition-all active:scale-[0.98] 
+                                    ${isResetting ? "text-gray-500 bg-gray-300 cursor-not-allowed" : "bg-pink-500 hover:bg-pink-600 text-white cursor-pointer"}
+                                    `}
                             >
-                                Reset Password
+                                {isResetting ? "Resetting..." : "Reset Password"}
                             </button>
                         </div>
                     </div>
@@ -80,43 +135,45 @@ function ResetPassword() {
             </div>
 
             {/* popup section */}
-            {isSuccess && (
-                <div className="fixed inset-0 z-999 flex items-center justify-center px-4 lg:px-6">
-                    <div
-                        className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
-                        onClick={() => setIsSuccess(false)}
-                    ></div>
+            <div className={`fixed inset-0 z-999 flex items-center justify-center px-4 lg:px-6 transition-all duration-500 
+                ${isSuccess ? "opacity-100 visible" : "opacity-0 invisible"}`}>
 
-                    {/* Modal Content */}
-                    <div className="relative max-w-md w-full bg-white shadow-sm rounded-4xl p-4 md:p-8 text-center space-y-6 transform transition-all animate-in fade-in zoom-in duration-300">
+                {/* Overlay */}
+                <div
+                    className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-500"
+                // onClick={() => setIsSuccess(false)}
+                ></div>
 
-                        {/* Check Icon */}
-                        <div className="w-22 h-22 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center text-6xl mx-auto mb-6 ">
-                            <HiOutlineCheckCircle />
-                        </div>
+                {/* Modal Content */}
+                <div className={`relative max-w-md w-full bg-white shadow-2xl rounded-[40px] p-4 md:p-8 text-center space-y-6 transform transition-all duration-500 
+                    ${isSuccess ? "translate-y-0 scale-100" : "-translate-y-20 scale-90"}`}>
 
-                        <div className="space-y-3">
-                            <h2 className="text-2xl md:text-3xl font-black text-gray-800 tracking-tight">
-                                All Set!
-                            </h2>
-                            <p className="text-gray-500 text-xs md:text-sm px-6 leading-relaxed">
-                                Your password has been successfully updated. <br />
-                                Now you can log in with your new credentials.
-                            </p>
-                        </div>
+                    {/* Check Icon */}
+                    <div className="w-20 h-20 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center text-5xl mx-auto mb-6">
+                        <HiOutlineCheckCircle />
+                    </div>
 
-                        {/* Login Button */}
-                        <div className="mt-5 md:mt-10">
-                            <button
-                                onClick={() => navigate('/login')}
-                                className="w-1/2 text-xs md:text-sm bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 md:py-4 rounded-2xl shadow-xl shadow-pink-50 transition-all active:scale-[0.98] cursor-pointer"
-                            >
-                                Proceed to Login
-                            </button>
-                        </div>
+                    <div className="space-y-3">
+                        <h2 className="text-2xl md:text-3xl font-black text-gray-800 tracking-tight">
+                            All Set!
+                        </h2>
+                        <p className="text-gray-500 text-xs md:text-sm px-6 leading-relaxed">
+                            Your password has been successfully updated. <br />
+                            Now you can log in with your new credentials.
+                        </p>
+                    </div>
+
+                    {/* Login Button */}
+                    <div className="mt-5 md:mt-10">
+                        <button
+                            onClick={() => navigate('/login')}
+                            className="w-1/2 text-xs md:text-sm bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 md:py-4 rounded-2xl shadow-xl shadow-pink-50 transition-all active:scale-[0.98] cursor-pointer"
+                        >
+                            Proceed to Login
+                        </button>
                     </div>
                 </div>
-            )}
+            </div>
 
         </section>
     )

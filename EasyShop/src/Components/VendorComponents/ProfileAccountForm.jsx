@@ -70,7 +70,7 @@ function ProfileAccountForm() {
         {/* Bank Document Upload */}
         {isEditing && (
           <div className="lg:col-span-2 p-5 bg-pink-50/30 border-2 border-dashed border-pink-100 rounded-3xl mt-4 animate-in fade-in zoom-in duration-300">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex flex-col lg:flex-row justify-between text-center lg:text-start gap-4">
               <div>
                 <p className="text-xs font-black text-slate-800 uppercase">Verification Document</p>
                 <p className="text-[10px] text-slate-500 mt-1 font-bold italic">Upload Cancelled Cheque or Passbook Front Page</p>
@@ -86,7 +86,7 @@ function ProfileAccountForm() {
 
       {/* Save Button */}
       {isEditing && (
-        <div className='mt-10 flex justify-end'>
+        <div className='mt-10 flex justify-center lg:justify-end'>
           <button
             onClick={handleSave}
             className='px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl text-xs transition-all active:scale-95 shadow-xl shadow-pink-100 uppercase tracking-widest cursor-pointer'>
@@ -100,7 +100,7 @@ function ProfileAccountForm() {
         <div className="p-2 bg-white rounded-full text-slate-400">
           <HiOutlineShieldCheck size={20} />
         </div>
-        <p className="text-[10px] md:text-xs text-slate-500 font-medium leading-relaxed">
+        <p className="text-[10px] lg:text-xs text-slate-500 font-medium leading-relaxed">
           Your banking data is stored in a PCI-DSS compliant vault. Read our <span className="text-pink-500 cursor-pointer hover:underline">Security Protocol</span>.
         </p>
       </div>

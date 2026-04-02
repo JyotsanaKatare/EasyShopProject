@@ -12,7 +12,7 @@ const sendEmail = async (to, subject, html) => {
         });
 
         const info = await transporter.sendMail({
-            from: `"Support Team" <${process.env.EMAIL_USER}>`,
+            from: `"EasyShop Support" <${process.env.EMAIL_USER}>`,
             to,
             subject,
             html

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 /* Swiper Pagination Dots Custom Styling */
 .swiper-pagination-bullet {
     background: #FF99CC !important; /* Dark Gray */

@@ -1,10 +1,6 @@
 
 import { Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import Footer from "./Components/Footer";
-import Header from "./Components/Header";
-import SearchBar from "./Components/SearchBar";
-import TopLine from "./Components/TopLine";
 import HomePage from "./Pages/HomePage";
 import ProductsPage from "./Pages/ProductsPage";
 import ProductDetail from "./Components/ProductDetail";
@@ -34,6 +30,7 @@ import VendorPage from "./Pages/VendorPage";
 import UserLayout from "./Layouts/UserLayout";
 import VendorLayout from "./Layouts/VendorLayout";
 import ProfileLayout from "./Components/VendorComponents/ProfileLayout";
+import UserProfileLayout from "./Components/UserProfileComponents/UserProfileLayout";
 
 function App() {
 
@@ -70,7 +67,7 @@ function App() {
           <Route path="/vendor_signup" element={<VendorSignupPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot_password" element={<ForgotPassword />} />
-          <Route path="/reset_password" element={<ResetPassword />} />
+          <Route path="/reset_password/:id/:token" element={<ResetPassword />} />
           <Route path="/user_signup" element={<UserSignUp />} />
           <Route path="/wishlist" element={<WishList />} />
           <Route path="/cart" element={<CartItem />} />
@@ -89,13 +86,15 @@ function App() {
           <Route path="/privacy_policy" element={<PolicyPrivacy />} />
           <Route path="/delivery_policy" element={<PolicyDelivery />} />
           <Route path="/exchange_policy" element={<PolicyExchange />} />
+
+          <Route path="/user_profile" element={<UserProfileLayout />} />
         </Route>
 
         {/* vendor side */}
         <Route element={<VendorLayout />}>
           <Route path="/vendor_dashboard" element={<VendorPage />} />
         </Route>
-
+        
         <Route path="/vendor_profile" element={<ProfileLayout />} />
         
       </Routes>
@@ -103,4 +102,4 @@ function App() {
   )
 }
 
-export default App
+export default App;

@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { HiOutlineShieldCheck } from "react-icons/hi";
 
-function ProfileSecurityForm() {
+function UserProfileSecurity() {
+
     const [formData, setformData] = useState({
         oldPassword: "",
         newPassword: "",
@@ -15,7 +16,7 @@ function ProfileSecurityForm() {
         setformData({ ...formData, [fieldId]: e.target.value });
     };
 
-    const handleSave = (fieldId) => {
+    const handleSave = () => {
         setIsEditing(false);
     };
 
@@ -62,7 +63,7 @@ function ProfileSecurityForm() {
 
                 <div className="mt-2 p-4 bg-slate-100 border border-slate-100 rounded-2xl flex items-center justify-between">
                     <span className="text-sm font-medium text-slate-500">
-                        sohan.work@gmail.com
+                        ritika@gmail.com
                     </span>
                     <span className="text-[9px] bg-pink-50 px-2 py-1 rounded-lg text-pink-500 font-bold uppercase">
                         Primary
@@ -90,17 +91,17 @@ function ProfileSecurityForm() {
                 </div>
             )}
 
-            {/* Trust Footer */}
-            <div className="mt-8 flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+            {/* bottom section */}
+            <div className="mt-12 flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
                 <div className="p-2 bg-white rounded-full text-slate-400">
                     <HiOutlineShieldCheck size={20} />
                 </div>
-                <p className="text-[10px] lg:text-xs text-slate-500 font-medium leading-relaxed">
-                    Your banking data is stored in a PCI-DSS compliant vault. Read our <span className="text-pink-500 cursor-pointer hover:underline">Security Protocol</span>.
+                <p className="text-[10px] lg:text-xs text-slate-500 font-medium">
+                    "We value your privacy as much as you do. See how we protect it in our <span className="text-pink-500 cursor-pointer hover:underline">Privacy Policy</span>."
                 </p>
             </div>
         </div>
     )
 }
 
-export default ProfileSecurityForm;
+export default UserProfileSecurity;

@@ -7,6 +7,7 @@ import authMiddleware from '../Middlewares/authMiddleware.js';
 const router = express.Router();
 
 const vendorUploads = upload.fields([
+    { name: 'profilePhoto', maxCount: 1 },
     { name: 'storeLogo', maxCount: 1 },
     { name: 'categoryLicenseUpload', maxCount: 1 },
     { name: 'panCardUpload', maxCount: 1 },
@@ -15,7 +16,7 @@ const vendorUploads = upload.fields([
 ]);
 
 //public
-router.post("/vendor-signup",vendorUploads, vendorSignUp);
+router.post("/vendor-signup", vendorUploads, vendorSignUp);
 router.post("/vendor-login", vendorLogin);
 router.post("/vendor-forgot-password", forgotPassword);
 router.post("/vendor-reset-password/:vendor_id/:token", resetPassword);
@@ -23,7 +24,7 @@ router.get("/vendor-count", countVendor);
 
 //protected
 router.get("/vendor-get/:vendor_id", authMiddleware(['vendor']), getVendor);
-router.put("/vendor-detail-update",authMiddleware(['vendor']), updateVendorDetail);
+router.put("/vendor-detail-update", authMiddleware(['vendor']), updateVendorDetail);
 router.post("/vendor-logout", authMiddleware(['vendor']), vendorLogout);
 
 export default router;

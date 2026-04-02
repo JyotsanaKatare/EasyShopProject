@@ -3,42 +3,42 @@ import React, { useState } from 'react';
 import { HiOutlineCamera } from "react-icons/hi2";
 import { HiOutlineShieldCheck } from "react-icons/hi";
 
-function ProfilePersonalForm() {
+function UserProfilePersonal() {
 
-    const [formData, setformData] = useState({
-        name: "Sohan Sharma",
-        email: "sohan@gmail.com",
-        phone: "9876543210",
+    const [formData, setFormdata] = useState({
+        name: "Ritika Jain",
+        email: "ritika@gmail.com",
+        number: "0987654321",
+        address: "345, ABC Building Nagar",
+        city: "Indore",
+        pincode: 676789,
+        state: "M.P."
     });
 
-    const [profileImage, setProfileImage] = useState("https://images.unsplash.com/photo-1481214110143-ed630356e1bb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHdvbWVufGVufDB8fDB8fHww");
     const [isEditIndex, setIsEditIndex] = useState({});
+    const [profileImage, setProfileImage] = useState("https://images.unsplash.com/photo-1631947430066-48c30d57b943?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Z2lybHxlbnwwfHwwfHx8MA%3D%3D");
 
-    // profile change
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setProfileImage(reader.result); // Image preview dikhane ke liye
-            }; 
+                setProfileImage(reader.result);
+            };
             reader.readAsDataURL(file);
         }
     };
 
-    //real time data state me update krna
     const handleInputChange = (e, fieldId) => {
-        setformData({ ...formData, [fieldId]: e.target.value });
+        setFormdata({ ...formData, [fieldId]: e.target.value })
     };
 
-    // Sirf us specific ID ko toggle karega
     const toggleEdit = (fieldId) => {
         setIsEditIndex(prev => ({
             ...prev, [fieldId]: !prev[fieldId]
         }));
     };
 
-    // after clicking save, naye data ko finalize karna
     const handleSave = (fieldId) => {
         toggleEdit(fieldId);
     };
@@ -69,10 +69,9 @@ function ProfilePersonalForm() {
                             type="text"
                             value={formData[fieldId]}
                             onChange={(e) => handleInputChange(e, fieldId)}
-                            placeholder="Sohan Sharma"
                             disabled={!isEditing}
                             className={`flex-1 p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border transition-all text-sm outline-none
-                           ${!isEditing
+                                ${!isEditing
                                     ? 'bg-slate-100 border-transparent text-slate-500 cursor-not-allowed'
                                     : 'bg-white border-slate-200 focus:ring-1 focus:ring-pink-500 text-slate-800 shadow-sm'
                                 }`}
@@ -89,15 +88,15 @@ function ProfilePersonalForm() {
                     </div>
                 </div>
             </>
-        );
+        )
     };
 
     return (
         <>
-            <div className='max-w-100 bg-white dark:bg-slate-900 space-y-6'>
+            <div className='w-full bg-white dark:bg-slate-900 space-y-6'>
 
                 {/* image fields */}
-                <div className="flex flex-col items-center md:items-start gap-6 mb-10 border-b border-slate-50 md:pb-8">
+                <div className="flex flex-col items-center md:items-start gap-6 mb-10 md:pb-2 border-b border-slate-50 ">
                     <div className="relative group">
                         {/* Profile Image Preview */}
                         <img
@@ -135,23 +134,28 @@ function ProfilePersonalForm() {
                 </div>
 
                 {/* input fields */}
-                {RenderField("Full Name", "name")}
-                {RenderField("Email Address", "email", "email")}
-                {RenderField("Phone Number", "phone")}
-            </div>
-
-            {/* bottom section */}
-            <div className="mt-12 flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                <div className="p-2 bg-white rounded-full text-slate-400">
-                    <HiOutlineShieldCheck size={20} />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
+                    {RenderField("Full Name", "name")}
+                    {RenderField("Email", "email", "email")}
+                    {RenderField("Phone Number", "number")}
+                    {RenderField("Address", "address")}
+                    {RenderField("City", "city")}
+                    {RenderField("Pin Code", "pincode")}
+                    {RenderField("State", "state")}
                 </div>
-                <p className="text-[10px] lg:text-xs text-slate-500 font-medium">
-                    Your personal information is encrypted. Read our <span className="text-pink-500 cursor-pointer hover:underline">Privacy Policy</span>.
-                </p>
+
+                {/* bottom section */}
+                <div className="mt-12 flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                    <div className="p-2 bg-white rounded-full text-slate-400">
+                        <HiOutlineShieldCheck size={20} />
+                    </div>
+                    <p className="text-[10px] lg:text-xs text-slate-500 font-medium">
+                        "We value your privacy as much as you do. See how we protect it in our <span className="text-pink-500 cursor-pointer hover:underline">Privacy Policy</span>."
+                    </p>
+                </div>
             </div>
         </>
-
     )
 }
 
-export default ProfilePersonalForm;
+export default UserProfilePersonal;

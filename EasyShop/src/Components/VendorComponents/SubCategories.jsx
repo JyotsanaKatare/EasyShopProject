@@ -4,23 +4,26 @@ import { TbEdit } from "react-icons/tb";
 import { LiaTrashSolid } from "react-icons/lia";
 
 const allSubCategories = [
-    {
+    {   
+        department: "Fashion", //level 1
         subCategoryName: "Cotton Kurti", // Level 3
         categoryName: "Women Wear",    // Level 2 (Aapki purani Category)
         productCount: 45,
         status: "Active",
         img: "https://images.unsplash.com/photo-1733395700970-75535f1334ff?w=500&auto=format&fit=crop&q=60"
     },
-    {
+    {   
+        department: "Accessories",
         subCategoryName: "Smart Watches",
         categoryName: "Watch",
         productCount: 20,
         status: "Active",
         img: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?q=80&w=872&auto=format&fit=crop"
     },
-    {
-        subCategoryName: "Bluetooth Earbuds",
+    {   
+        department: "Electronics",
         categoryName: "Gadgets",
+        subCategoryName: "Bluetooth Earbuds",
         productCount: 12,
         status: "Inactive",
         img: "https://images.unsplash.com/photo-1668649176554-3ad841a780d0?w=500&auto=format&fit=crop&q=60"
@@ -76,6 +79,7 @@ function SubCategories({setCurrentPage}) {
                         <tr>
                             <th className="px-6 py-4 whitespace-nowrap">Sub-Category</th>
                             <th className="px-6 py-4 whitespace-nowrap">Category</th>
+                            <th className="px-6 py-4 whitespace-nowrap">Department</th>
                             <th className="px-6 py-4 whitespace-nowrap">Items Count</th>
                             <th className="px-6 py-4 whitespace-nowrap">Status</th>
                             <th className="px-6 py-4 whitespace-nowrap text-center">Action</th>
@@ -97,6 +101,11 @@ function SubCategories({setCurrentPage}) {
                                 {/* Category Name (Mapped to categoryName) */}
                                 <td className="px-6 py-4 text-sm text-slate-500 italic">
                                     {item.categoryName || "---"}
+                                </td>
+
+                                {/* department */}
+                                <td className="px-6 py-4 text-sm text-slate-500 ">
+                                    {item.department || "---"}
                                 </td>
 
                                 {/* Product Count */}

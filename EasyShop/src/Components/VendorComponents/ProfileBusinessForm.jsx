@@ -205,7 +205,7 @@ function ProfileBusinessForm() {
         {/* for gst upload - conditionally */}
         {formData.gstNumber && (
           <div className="lg:col-span-2 p-5 bg-pink-50/50 border-2 border-dashed border-pink-100 rounded-3xl my-2">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex flex-col lg:flex-row justify-between text-center lg:text-start gap-4">
 
               <div>
                 <p className="text-xs font-black text-slate-800 uppercase tracking-tight">
@@ -228,11 +228,11 @@ function ProfileBusinessForm() {
       </div>
 
       {/* 3. Footer Trust Section */}
-      <div className="mt-12 flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+      <div className="mt-8 flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
         <div className="p-2 bg-white rounded-full text-slate-400">
           <HiOutlineShieldCheck size={20} />
         </div>
-        <p className="text-[10px] md:text-xs text-slate-500 font-medium">
+        <p className="text-[10px] lg:text-xs text-slate-500 font-medium">
           Your personal information is encrypted. Read our <span className="text-pink-500 cursor-pointer hover:underline">Privacy Policy</span>.
         </p>
       </div>

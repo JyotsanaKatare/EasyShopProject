@@ -4,21 +4,63 @@ import React, { useEffect, useState } from 'react'
 import { HiOutlineMail } from "react-icons/hi";
 import { HiOutlineLockClosed } from "react-icons/hi2";
 import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../store/useAuthStore';
+import { useLogin } from '../hook/useAuth';
+import toast from 'react-hot-toast';
 
 function Login() {
 
     const navigate = useNavigate();
+    const login = useAuthStore((state) => state.login);  // Zustand Action
 
     const [loginType, setLoginType] = useState('user');
+    const { mutate: loginUser, isPending: isLogging } = useLogin();
 
-    const handleLogin = () => {
-        if (loginType === 'user') {
-            navigate("/");
-        } else {
-            navigate("/vendor_dashboard")
-        }
+    const [formData, setFormData] = useState({
+        email: "",
+        password: ""
+    });
+
+    // input handler
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value })
     };
 
+    // login handler
+    const handleLogin = (e) => {
+        if (e) e.preventDefault();
+
+        if (!formData.email) {
+            return toast.error("Please enter email");
+        };
+
+        if (!formData.password) {
+            return toast.error("Please enter password");
+        };
+
+        loginUser({ ...formData, role: loginType }, {
+            onSuccess: (res) => {
+                toast.success(res.message || "Login successful!");
+
+                const userData = res.user || res.vendor;
+
+                if (userData && res.token) {
+
+                    // Zustand store mein user aur token save karein
+                    login(userData, res.token);
+
+                    // Role check karke navigate karein
+                    const targetPath = userData.role === 'vendor' ? "/vendor_dashboard" : "/";
+                    navigate(targetPath);
+                }
+            },
+
+            onError: (err) =>
+                toast.error(err.response?.data?.message || "Invalid Credentials")
+        });
+    };
+
+    // signup handler
     const handleAccount = () => {
         if (loginType === 'user') {
             navigate("/user_signup");
@@ -28,7 +70,7 @@ function Login() {
     };
 
     return (
-        <section className="min-h-[70vh] bg-gray-50 py-10 px-4 lg;px-6">
+        <section className="min-h-[70vh] bg-gray-50 py-10 px-4 lg:px-6">
 
             {/* tabs */}
             <div className="max-w-md mx-auto bg-white rounded-full md:rounded-3xl p-1.5 mb-8 shadow-sm border border-gray-50">
@@ -57,11 +99,18 @@ function Login() {
 
                     {/* Email Field */}
                     <div className='flex flex-col gap-1.5'>
-                        <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Email Address </label>
+                        <label
+                            htmlFor='email'
+                            className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                            Email Address
+                        </label>
                         <div className='relative group'>
                             <HiOutlineMail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg md:text-xl group-focus-within:text-pink-500 transition-colors" />
                             <input
                                 type="email"
+                                name='email'
+                                value={formData.email}
+                                onChange={handleChange}
                                 placeholder='Email'
                                 className="w-full pl-10 md:pl-12 pr-4 py-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all"
                                 required
@@ -72,7 +121,11 @@ function Login() {
                     {/* Password Field */}
                     <div className='flex flex-col gap-1.5'>
                         <div className="flex justify-between items-center px-1">
-                            <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">Password</label>
+                            <label
+                                htmlFor='password'
+                                className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                                Password
+                            </label>
 
                             {/* forgot button */}
                             <button
@@ -86,6 +139,9 @@ function Login() {
                             <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg md:text-xl group-focus-within:text-pink-500 transition-colors" />
                             <input
                                 type="password"
+                                name='password'
+                                value={formData.password}
+                                onChange={handleChange}
                                 placeholder='Password'
                                 className="w-full pl-10 md:pl-12 pr-4 py-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all"
                                 required
@@ -96,9 +152,14 @@ function Login() {
                     {/* Login Button */}
                     <button
                         onClick={handleLogin}
-                        className="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 md:py-4 rounded-2xl mt-4 shadow-lg shadow-pink-100 transition-all active:scale-[0.98] cursor-pointer"
+                        disabled={isLogging}
+                        className={`w-full  font-bold py-3 md:py-4 rounded-2xl mt-4 shadow-lg shadow-pink-100 transition-all active:scale-[0.98] cursor-pointer
+                            ${isLogging ? "text-gray-500 bg-gray-300 cursor-not-allowed" : "bg-pink-500 hover:bg-pink-600 text-white"}`}
                     >
-                        {loginType === 'user' ? 'Start Shopping' : 'Access Dashboard'}
+                        {isLogging ?
+                            (<span className="animate-pulse">Checking Credentials...</span>) :
+                            (loginType === 'user' ? 'Start Shopping' : 'Access Dashboard')
+                        }
                     </button>
 
                     {/* Signup Link */}

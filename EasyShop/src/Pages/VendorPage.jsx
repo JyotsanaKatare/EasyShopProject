@@ -20,6 +20,7 @@ import AddCoupon from '../Components/VendorComponents/AddCoupon';
 import HomeBannerCMS from '../Components/VendorComponents/HomeBannerCMS';
 import FooterCMS from '../Components/VendorComponents/FooterCMS';
 import ShopPolicyCMS from '../Components/VendorComponents/ShopPolicyCMS';
+import VendorChat from '../Components/VendorComponents/VendorChat';
 
 function VendorPage() {
     const [sideBarCollapsed, setSideBarCollapsed] = useState(false);
@@ -69,6 +70,9 @@ function VendorPage() {
 
                             {/* customer */}
                             {currentPage === "Customers" && <Customers />}
+
+                            {/* chat */}
+                            {/* {currentPage === "Messages" && <VendorChat  />} */}
 
                             {/* review ratung */}
                             {currentPage === "Review" && <ReviewRating />}

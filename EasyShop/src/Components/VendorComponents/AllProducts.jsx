@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { TbEdit } from "react-icons/tb";
 import { LiaTrashSolid } from "react-icons/lia";
+import { IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowUp } from "react-icons/io";
 import { HiOutlineExclamation, HiOutlineTrash, HiOutlineX } from 'react-icons/hi';
 
 const allProducts = [
@@ -37,26 +39,63 @@ const allProducts = [
     },
 ];
 
-const getStockStyle = (stock) => {
-    switch (stock) {
-        case 'In Stock': return 'bg-green-100 text-green-600';
-        case 'Low': return 'bg-amber-100 text-amber-600';
-        case 'Out': return 'bg-blue-100 text-blue-600';
-        default: return 'bg-slate-100 text-slate-600';
-    }
-};
+const stockOptions = [
+    { label: 'In Stock', style: 'bg-green-50 text-green-600 border-green-100' },
+    { label: 'Low', style: 'bg-amber-50 text-amber-600 border-amber-100' },
+    { label: 'Out', style: 'bg-red-50 text-red-600 border-red-100' }
+];
+
+const statusOptions = [
+    { label: 'Active', style: 'bg-green-50 text-green-600 border-green-100' },
+    { label: 'Inactive', style: 'bg-red-50 text-red-600 border-red-100' }
+];
 
 function AllProducts({ setCurrentPage }) {
+    
+    const [statusChange, setStatusChange] = useState(allProducts); //for table
 
-    const [isDeletedOpen, setIsDeletedOpen] = useState(false);
+    // edit popup
     const [isEditOpen, setIsEditOpen] = useState(false);
-    const [statusChange, setStatusChange] = useState(allProducts);
+    const [file, setFile] = useState(null);
+    const [galleryFiles, setGalleryFiles] = useState([]);
+    const [isStockOpen, setIsStockOpen] = useState(false);
+    const [selectedStock, setSelectedStock] = useState("Select Stock");
+    const [isStatusOpen, setIsStatusOpen] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState("Select Status");
+    
+    // delete popup
+    const [isDeletedOpen, setIsDeletedOpen] = useState(false);
 
     const toggleStatus = (index) => {
         const updatedProducts = [...statusChange];
         updatedProducts[index].status = updatedProducts[index].status === "Active" ? "Inactive" : "Active";
         setStatusChange(updatedProducts);
     };
+
+    // edit popup
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+    };
+
+    // multiple images
+    const handleGalleryChange = (e) => {
+        const files = Array.from(e.target.files);  //convert FileList to array
+        if (files.length > 5) {
+            alert("Max 5 files");
+            return;
+        }
+        setGalleryFiles(files);
+    };
+
+    const handleStock = (stock) => {
+        setSelectedStock(stock);
+        setIsStockOpen(false);
+    };
+
+    const handleStatus = (status) => {
+        setSelectedStatus(status);
+        setIsStatusOpen(false);
+    }
 
     return (
         <div className="bg-white dark:bg-slate-900 rounded-xl md:rounded-3xl border border-pink-50 dark:border-slate-800 shadow-sm overflow-hidden">
@@ -166,7 +205,7 @@ function AllProducts({ setCurrentPage }) {
                                 {/* Stock Status Badge */}
                                 <td className="px-6 py-4 text-center">
                                     <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide 
-                                        ${getStockStyle(product.stockStatus)}`}>
+                                        ${stockOptions.find(opt => opt.label === product.stockStatus)?.style || 'bg-slate-100 text-slate-500'}`}>
                                         {product.stockStatus}
                                     </span>
                                 </td>
@@ -201,6 +240,227 @@ function AllProducts({ setCurrentPage }) {
                         ))}
                     </tbody>
                 </table>
+            </div>
+
+            {/* popup section for edit */}
+            <div
+                className={`fixed inset-0 flex justify-center items-center bg-black/50 backdrop-blur-sm z-100 px-4 transition-all duration-500 
+                    ${isEditOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
+            >
+                <div
+                    onClick={() => setIsEditOpen(false)}
+                    className="absolute inset-0"
+                ></div>
+
+                {/* Content */}
+                <div className="relative transform max-h-[90vh] overflow-y-auto rounded-md bg-white dark:bg-slate-900 p-8 text-left shadow-2xl transition-all w-full max-w-md border border-pink-50 dark:border-slate-800">
+
+                    {/* cross icon */}
+                    <button
+                        onClick={() => setIsEditOpen(false)}
+                        className="absolute top-6 right-6 text-slate-400 hover:text-pink-500 transition-colors"
+                    >
+                        <HiOutlineX size={20} />
+                    </button>
+
+                    <div className="text-center">
+                        <h3 className="text-xl font-bold text-slate-800 dark:text-white">
+                            Edit Product Details
+                        </h3>
+                    </div>
+
+                    <div className='mt-5 space-y-4'>
+
+                        {/*product Image */}
+                        <div className='relative flex flex-col gap-1.5 md:gap-2'>
+                            <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                                Product Image
+                            </label>
+
+                            <div className="p-2.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800  dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]">
+                                <input
+                                    type="file"
+                                    id="image"
+                                    name="ProductImage"
+                                    accept=".jpg,.png"
+                                    onChange={handleFileChange}
+                                    className="absolute opacity-0 cursor-pointer"
+                                />
+
+                                <div className="flex gap-2 items-center">
+                                    <button className="border border-pink-100 rounded-sm px-2 text-pink-500 bg-pink-50/30">
+                                        Choose File
+                                    </button>
+                                    <span className={`text-gray-600`}>
+                                        {file ? file.name : "No file chosen"}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* product gallery Image */}
+                        <div className='relative flex flex-col gap-1.5 md:gap-2'>
+                            <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                                Product Gallery Image
+                            </label>
+
+                            <div className="p-2.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800  dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]">
+
+                                <input
+                                    type="file"
+                                    id="images"
+                                    name="prodImages"
+                                    accept=".jpg,.png,.jpeg"
+                                    multiple
+                                    className="absolute inset-0 opacity-0 cursor-pointer"
+                                    onChange={handleGalleryChange} />
+
+                                <div className="flex gap-2 items-center">
+                                    <button className="border border-pink-100 rounded-sm px-2 text-pink-500 bg-pink-50/30">
+                                        Choose File
+                                    </button>
+                                    <span className="text-gray-600 text-sm">
+                                        {galleryFiles?.length > 0
+                                            ? `${galleryFiles.length} files selected`
+                                            : "No files chosen"}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/*product name */}
+                        <div className='flex flex-col gap-1.5 md:gap-2'>
+                            <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                                Product Name
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="e.g. Watch"
+                                className="p-2.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]"
+                            />
+                        </div>
+
+                        {/* price */}
+                        <div className='flex flex-col gap-1.5 md:gap-2'>
+                            <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                                Price
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="e.g. 3000"
+                                className="p-2.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]"
+                            />
+                        </div>
+
+                        {/* qty */}
+                        <div className='flex flex-col gap-1.5 md:gap-2'>
+                            <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                                Quantity
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="e.g. 40"
+                                className="p-2.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]"
+                            />
+                        </div>
+
+                        {/* stock dropdown */}
+                        <div className='flex flex-col gap-1.5 md:gap-2'>
+                            <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                                Stock
+                            </label>
+
+                            <button
+                                onClick={() => setIsStockOpen(!isStockOpen)}
+                                className={`w-full bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl md:rounded-2xl flex justify-between items-center transition-all border cursor-pointer
+                                    ${isStockOpen ? 'border-pink-500 ring-2 ring-pink-50' : 'border-transparent'}`}
+                            >
+                                <span className={`${selectedStock ? 'text-slate-800 dark:text-white font-medium' : 'text-slate-400'} text-[11px] md:text-[14px] truncate mr-3`}>
+                                    {selectedStock || "Select Stock"}
+                                </span>
+
+                                <div className="shrink-0">
+                                    {isStockOpen ? <IoIosArrowUp className='text-pink-500' /> : <IoIosArrowDown className='text-slate-400' />}
+                                </div>
+                            </button>
+
+                            {isStockOpen && (
+                                <div className='w-full mt-2 bg-white dark:bg-slate-800 rounded-b-xl shadow-xl border border-pink-50 dark:border-slate-700 py-2 overflow-hidden animate-in fade-in zoom-in duration-200'>
+
+                                    <div className='max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700'>
+                                        {stockOptions.map((item, index) => (
+                                            <div
+                                                key={index}
+                                                onClick={() => handleStock(item.label)}
+                                                className='px-4 py-1.5 hover:bg-pink-50 dark:hover:bg-slate-700 cursor-pointer text-slate-700 dark:text-slate-300 hover:text-pink-600 font-medium transition-colors text-[11px] md:text-[13px] border-b border-slate-50 dark:border-slate-700 last:border-none'
+                                            >
+                                                {item.label}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* status */}
+                        <div className='flex flex-col gap-1.5 md:gap-2'>
+                            <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                                Status
+                            </label>
+
+                            <button
+                                onClick={() => setIsStatusOpen(!isStatusOpen)}
+                                className={`w-full bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl md:rounded-2xl flex justify-between items-center transition-all border cursor-pointer
+                                    ${isStatusOpen ? 'border-pink-500 ring-2 ring-pink-50' : 'border-transparent'}`}
+                            >
+                                <span className={`${selectedStatus ? 'text-slate-800 dark:text-white font-medium' : 'text-slate-400'} text-[11px] md:text-[14px] truncate mr-3`}>
+                                    {selectedStatus || "Select Stock"}
+                                </span>
+
+                                <div className="shrink-0">
+                                    {isStatusOpen ? <IoIosArrowUp className='text-pink-500' /> : <IoIosArrowDown className='text-slate-400' />}
+                                </div>
+                            </button>
+
+                            {isStatusOpen && (
+                                <div className='w-full mt-2 bg-white dark:bg-slate-800 rounded-b-xl shadow-xl border border-pink-50 dark:border-slate-700 py-2 overflow-hidden animate-in fade-in zoom-in duration-200'>
+
+                                    <div className='max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700'>
+                                        {statusOptions.map((item, index) => (
+                                            <div
+                                                key={index}
+                                                onClick={() => handleStatus(item.label)}
+                                                className='px-4 py-1.5 hover:bg-pink-50 dark:hover:bg-slate-700 cursor-pointer text-slate-700 dark:text-slate-300 hover:text-pink-600 font-medium transition-colors text-[11px] md:text-[13px] border-b border-slate-50 dark:border-slate-700 last:border-none'
+                                            >
+                                                {item.label}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setIsEditOpen(false)}
+                            className="inline-flex w-full justify-center rounded-2xl bg-white px-3 py-3.5 text-sm font-bold text-slate-600 border border-slate-100 hover:bg-slate-50 transition-all sm:w-1/2 active:scale-95 cursor-pointer"
+                        >
+                            No, Keep it
+                        </button>
+
+                        <button
+                            type="button"
+                            // onClick={onConfirm}
+                            className="inline-flex w-full justify-center rounded-2xl bg-linear-to-br from-pink-500 to-pink-600 px-3 py-3.5 text-sm font-bold text-white shadow-lg shadow-green-100 hover:from-pink-600 hover:to-pink-700 transition-all sm:w-1/2 items-center gap-2 active:scale-95 cursor-pointer"
+                        >
+                            Update
+                        </button>
+                    </div>
+                </div>
+
             </div>
 
             {/* popup section for delete */}
@@ -264,54 +524,6 @@ function AllProducts({ setCurrentPage }) {
 
             </div>
 
-            {/* popup section for edit */}
-            <div
-                className={`fixed inset-0 flex justify-center items-center bg-black/50 backdrop-blur-sm z-100 px-4 transition-all duration-500 
-                    ${isEditOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
-            >
-                <div
-                    onClick={() => setIsEditOpen(false)}
-                    className="absolute inset-0"
-                ></div>
-
-                {/* Content */}
-                <div className="relative transform overflow-hidden rounded-[2.5rem] bg-white dark:bg-slate-900 p-8 text-left shadow-2xl transition-all w-full max-w-md border border-pink-50 dark:border-slate-800">
-
-                    {/* cross icon */}
-                    <button
-                        onClick={() => setIsEditOpen(false)}
-                        className="absolute top-6 right-6 text-slate-400 hover:text-pink-500 transition-colors"
-                    >
-                        <HiOutlineX size={20} />
-                    </button>
-
-                    <div className="text-center">
-                        <h3 className="text-xl font-bold text-slate-800 dark:text-white">
-                            Edit Product Details
-                        </h3>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="mt-8 flex flex-col sm:flex-row gap-3">
-                        <button
-                            type="button"
-                            onClick={() => setIsEditOpen(false)}
-                            className="inline-flex w-full justify-center rounded-2xl bg-white px-3 py-3.5 text-sm font-bold text-slate-600 border border-slate-100 hover:bg-slate-50 transition-all sm:w-1/2 active:scale-95 cursor-pointer"
-                        >
-                            No, Keep it
-                        </button>
-
-                        <button
-                            type="button"
-                            // onClick={onConfirm}
-                            className="inline-flex w-full justify-center rounded-2xl bg-linear-to-br from-green-500 to-green-600 px-3 py-3.5 text-sm font-bold text-white shadow-lg shadow-green-100 hover:from-green-600 hover:to-green-700 transition-all sm:w-1/2 items-center gap-2 active:scale-95 cursor-pointer"
-                        >
-                            Update
-                        </button>
-                    </div>
-                </div>
-
-            </div>
         </div>
     )
 }

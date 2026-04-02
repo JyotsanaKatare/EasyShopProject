@@ -1,22 +1,30 @@
 
 import cloudinary from '../config/cloudinary.js';
 
-//delete files from cloudinary - when err occur
-export const deleteCloudinaryFiles = async (files) => {
-    if (!files) return;
+//delete file or files from cloudinary - when err occur
+export const deleteCloudinaryFiles = async (fileData) => {
+    try {
+        if (!fileData) return;
 
-    // Sabhi uploaded files ko ek flat array mein convert karna
-    const allFiles = Object.values(files).flat();
+        let publicIds = [];
 
-    for (const file of allFiles) {
-        try {
-            if (file.filename) {
-                await cloudinary.uploader.destroy(file.filename);
-                console.log(`Deleted from Cloudinary: ${file.filename}`);
-            }
-        } catch (error) {
-            console.error(`Error deleting file ${file.filename}:`, error);
+        // Case 1: Agar req.file (Single Upload) pass kiya gaya ho
+        if (fileData.filename) {
+            publicIds.push(fileData.filename);
+        } 
+        // Case 2: Agar req.files (Multiple Fields/Array) pass kiya gaya ho
+        else {
+            const allFiles = Object.values(fileData).flat();
+            publicIds = allFiles.map(f => f.filename).filter(id => id);
         }
+
+        // Sabhi IDs ko delete karein
+        for (const id of publicIds) {
+            await cloudinary.uploader.destroy(id);
+            console.log(`Cleanup Done: Deleted ${id} from Cloudinary`);
+        }
+    } catch (error) {
+        console.error("Cloudinary Cleanup Error:", error);
     }
 };
 

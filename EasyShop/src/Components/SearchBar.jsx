@@ -6,7 +6,7 @@ import { IoIosSearch, IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { FiUser } from "react-icons/fi";
 import { GoHeart } from "react-icons/go";
 import { PiShoppingCartSimple } from "react-icons/pi";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from './CartContext';
 import { allFaqs } from './Data';
 import { allProducts } from './Data';
@@ -56,7 +56,7 @@ function SearchBar() {
                         className="h-10 object-cover" />
                 </div>
 
-                {/* Icons */}
+                {/* wishlist, cart, acc Icons */}
                 <div className="flex items-center justify-end gap-6 order-2 w-1/2 md:w-auto md:order-3">
 
                     <div className="flex gap-4 text-2xl text-gray-600">
@@ -129,15 +129,21 @@ function SearchBar() {
 
                                         <div className="border-t border-gray-50 mt-1 pt-1">
 
+                                             <p
+                                                onClick={() => { navigate("/user_profile"); setIsAccountOpen(false); }}
+                                                className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50">
+                                                Profile
+                                            </p>
+
                                             <p
                                                 onClick={() => { navigate("/my_orders"); setIsAccountOpen(false); }}
-                                                className="px-5 py-2 text-[13px] text-gray-600 hover:bg-gray-50 cursor-pointer transition-colors">
+                                                className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50">
                                                 My Orders
                                             </p>
 
                                             <p
                                                 onClick={() => { navigate("/wishlist"); setIsAccountOpen(false); }}
-                                                className="px-5 py-2 text-[13px] text-gray-600 hover:bg-gray-50 cursor-pointer transition-colors">
+                                                className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50">
                                                 Wishlist
                                             </p>
                                         </div>
