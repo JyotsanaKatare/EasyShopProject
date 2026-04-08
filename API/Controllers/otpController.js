@@ -95,3 +95,57 @@ export const verifyOTP = async (req, res) => {
         });
     }
 };
+
+export const verifyUpdateEmailOTP = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+        const account_id = req.user.id; // Token se ID nikaali
+        const role = req.user.role;    // Token se Role nikaala ('user' ya 'vendor')
+
+        // 1. Role ke basis par sahi OTP aur sahi Model select karein
+        const storedOtpDetails = await OTP.findOne({ email, otp, role: role });
+
+        if (!storedOtpDetails) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid or expired OTP"
+            });
+        }
+
+        // 2. Dynamic Model Selection
+        const Model = role === 'vendor' ? Vendor : User;
+
+        // 3. Email update karein (Sahi collection mein)
+        const updatedAccount = await Model.findByIdAndUpdate(
+            account_id,
+            {
+                email: email,
+                isEmailVerified: true
+            },
+            { new: true }
+        );
+
+        if (!updatedAccount) {
+            return res.status(404).json({
+                success: false,
+                message: `${role} not found`
+            });
+        }
+
+        // 4. OTP delete karein taaki reuse na ho sake
+        await OTP.deleteOne({ _id: storedOtpDetails._id });
+
+        res.status(200).json({
+            success: true,
+            message: "Email updated and verified successfully!",
+            data: { email: updatedAccount.email }
+        });
+
+    } catch (error) {
+        console.error("Verification Error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Verification failed"
+        });
+    }
+};

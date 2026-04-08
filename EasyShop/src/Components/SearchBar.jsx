@@ -10,8 +10,11 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from './CartContext';
 import { allFaqs } from './Data';
 import { allProducts } from './Data';
+import useAuthStore from '../store/useAuthStore';
 
 function SearchBar() {
+
+    const { user } = useAuthStore();
 
     const { cartItems } = useCart();
     const navigate = useNavigate();
@@ -23,7 +26,7 @@ function SearchBar() {
     //quantity update
     const totalQuantity = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
 
-    // Filter products based on name or description
+    // search - Filter products based on name or description
     const searchProducts = allProducts.filter(p =>
         p.categoryName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.desc.toLowerCase().includes(searchTerm.toLowerCase())
@@ -101,52 +104,65 @@ function SearchBar() {
                                     {/* when we click outside then drop down will close */}
                                     <div
                                         onClick={() => setIsAccountOpen(false)}
-                                        className="fixed inset-0 z-10" >
+                                        className="fixed inset-0 z-40" >
                                     </div>
 
-                                    <div className="absolute right-0 mt-3 w-38 md:w-48 bg-white shadow-2xl rounded-xl border border-gray-100 md:py-2 z-20 animate-in fade-in slide-in-from-top-2">
+                                    <div className="absolute right-0 mt-3 w-38 md:w-48 bg-white shadow-2xl rounded-xl border border-gray-100 md:py-2 z-50 animate-in fade-in slide-in-from-top-2">
 
-                                        <div className="p-2 md:space-y-1">
+                                        {!user ? (
+                                            <div className="p-2 md:space-y-1">
 
-                                            <button
-                                                onClick={() => {
-                                                    navigate("/login");
-                                                    setIsAccountOpen(false);
-                                                }}
-                                                className="w-full text-left px-3 py-2 text-sm font-bold bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors cursor-pointer">
-                                                Login
-                                            </button>
+                                                <button
+                                                    onClick={() => {
+                                                        navigate("/login");
+                                                        setIsAccountOpen(false);
+                                                    }}
+                                                    className="w-full text-left px-3 py-2 text-sm font-bold bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors cursor-pointer">
+                                                    Login
+                                                </button>
 
-                                            <button
-                                                onClick={() => {
-                                                    navigate("/account_type");
-                                                    setIsAccountOpen(false);
-                                                }}
-                                                className="w-full text-left px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">
-                                                Create Account
-                                            </button>
-                                        </div>
+                                                <button
+                                                    onClick={() => {
+                                                        navigate("/account_type");
+                                                        setIsAccountOpen(false);
+                                                    }}
+                                                    className="w-full text-left px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">
+                                                    Create Account
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="border-t border-gray-50 mt-1 pt-1">
 
-                                        <div className="border-t border-gray-50 mt-1 pt-1">
+                                                <div className="px-5 py-2 border-b border-gray-50 mb-1">
+                                                    <p className="text-[11px] text-gray-400 uppercase tracking-wider">Account</p>
+                                                    <p className="text-sm font-bold text-gray-800 truncate">{user.name || "User"}</p>
+                                                </div>
 
-                                             <p
-                                                onClick={() => { navigate("/user_profile"); setIsAccountOpen(false); }}
-                                                className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50">
-                                                Profile
-                                            </p>
+                                                <p
+                                                    onClick={() => { navigate("/user_profile"); setIsAccountOpen(false); }}
+                                                    className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50">
+                                                    Profile
+                                                </p>
 
-                                            <p
-                                                onClick={() => { navigate("/my_orders"); setIsAccountOpen(false); }}
-                                                className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50">
-                                                My Orders
-                                            </p>
+                                                <p
+                                                    onClick={() => { navigate("/my_orders"); setIsAccountOpen(false); }}
+                                                    className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50">
+                                                    My Orders
+                                                </p>
 
-                                            <p
-                                                onClick={() => { navigate("/wishlist"); setIsAccountOpen(false); }}
-                                                className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50">
-                                                Wishlist
-                                            </p>
-                                        </div>
+                                                <p
+                                                    onClick={() => { navigate("/wishlist"); setIsAccountOpen(false); }}
+                                                    className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50">
+                                                    Wishlist
+                                                </p>
+
+                                                <p
+                                                    onClick={() =>  setIsAccountOpen(false)}
+                                                    className="px-5 py-2 text-[13px] text-red-600 cursor-pointer transition-colors hover:text-red-500 hover:bg-red-50">
+                                                    Logout
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                 </>
                             )}

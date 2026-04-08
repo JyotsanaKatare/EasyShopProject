@@ -1,5 +1,6 @@
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import API from '../api/axiosConfig';
 
 // send otp - user + vendor
@@ -22,6 +23,16 @@ export const useVerifyOtp = () => {
             // verifyData should be { email, otp, role }
             const res = await API.post('/otp/verify-otp', verifyData);
             return res.data
+        }
+    });
+};
+
+// update email verify otp - user + vendor
+export const useUpdatedEmailVerifyOtp =()=>{
+    return useMutation({
+        mutationFn: async(verifyUpdatedData) => {
+            const res = await API.post('/otp/updated-email-verify-otp', verifyUpdatedData);
+            return res.data;
         }
     });
 };
@@ -77,12 +88,43 @@ export const useResetPassword = () => {
     return useMutation({
         mutationFn: async ({ id, token, password, confirmPassword, role }) => {
 
-            const endpoint = role === 'vendor' 
-            ? `/vendor/vendor-reset-password/${id}/${token}`
-            : `/user/user-reset-password/${id}/${token}`;
+            const endpoint = role === 'vendor'
+                ? `/vendor/vendor-reset-password/${id}/${token}`
+                : `/user/user-reset-password/${id}/${token}`;
 
-            const res = await API.post(endpoint, {password, confirmPassword});
+            const res = await API.post(endpoint, { password, confirmPassword });
             return res.data;
         }
+    });
+};
+
+// get - user
+export const useGetUser = (user_id) => {
+    return useQuery({
+        queryKey: ["user", user_id],
+        queryFn: async () => {
+            const res = await API.get(`/user/user-get/${user_id}`);
+            return res.data;
+        },
+        enabled: !!user_id, // Jab tak user_id na ho, tab tak fetch na kare
+    });
+};
+
+// update - user
+export const useUpdateUser = () => {
+    
+    // Cache refresh karne ke liye
+    const queryClient = useQueryClient(); 
+
+    return useMutation({
+        mutationFn: async (updateData) => {
+            const res = await API.put(`/user/user-detail-update`, updateData);
+            return res.data
+        },
+        onSuccess: () => {
+            
+            // Update ke baad purana data refresh ho jaye
+            queryClient.invalidateQueries(["user"]);
+        },
     });
 };

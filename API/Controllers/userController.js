@@ -2,7 +2,8 @@
 import User from '../Models/userModelSchema.js';
 import OTP from '../Models/otpModel.js';
 import sendEmail from '../utils/sendEmail.js';
-import { deleteCloudinaryFiles } from '../utils/cloudinaryUtils.js';
+import { deleteCloudinaryFiles } from '../utils/cloudinaryUtils.js'; // err
+import { deleteOldFileFromCloudinary } from '../utils/cloudinaryUtils.js'; // update
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -288,7 +289,15 @@ export const getUser = async (req, res) => {
 export const updateUserDetail = async (req, res) => {
     try {
         const user_id = req.user.id;
-        const { name, email, contact, address, city, pincode, state, } = req.body;
+        const updates = {};
+
+        const fields = ['name', 'contact', 'address', 'city', 'pincode', 'state'];
+
+        fields.forEach(field => {
+            if (req.body[field] !== undefined) {
+                updates[field] = req.body[field];
+            }
+        });
 
         const user = await User.findById(user_id);
 
@@ -300,68 +309,69 @@ export const updateUserDetail = async (req, res) => {
             });
         }
 
-        // Email Unique Check
-        if (email && email !== user.email) {
-            const emailExists = await User.findOne({ email });
+        // --- EMAIL UPDATE LOGIC ---
+        let emailUpdatePending = false;
+        const newEmail = req.body.email;
+
+        if (newEmail && newEmail !== user.email) {
+            const emailExists = await User.findOne({ email: newEmail });
             if (emailExists) {
+                if (req.file) await deleteCloudinaryFiles(req.file);
                 return res.status(400).json({
                     success: false,
-                    message: "This email is already registered with another account"
+                    message: "Email already registered"
                 });
             }
+
+            // OTP bhejne ka process
+            const otp = Math.floor(100000 + Math.random() * 900000).toString();
+            await OTP.findOneAndUpdate(
+                { email: newEmail, role: 'user' },
+                { otp, role: 'user' },
+                { upsert: true, new: true }
+            );
+
+            await sendEmail(newEmail, "Verify Your New Email", `Your OTP is: ${otp}`);
+            emailUpdatePending = true;
         }
 
-        let profilePhotoPath = user.profilePhoto; // Default purani photo rahegi
-
+        // --- PHOTO UPDATE LOGIC ---
         if (req.file) {
 
-            // --- OLD PHOTO DELETE LOGIC ---
             if (user.profilePhoto) {
-
-                // 1. URL se Folder aur FileName nikalna
-                const urlParts = user.profilePhoto.split('/');
-
-                // Cloudinary URL structure: .../upload/v12345/Folder/Subfolder/filename.jpg
-                const fileNameWithExt = urlParts[urlParts.length - 1]; // e.g., "file-17118...jpg"
-                const publicIdWithoutExt = fileNameWithExt.split('.')[0]; // e.g., "file-17118..."
-
-                // Folder path (EasyShop/Users) extract karna
-                const subFolder = urlParts[urlParts.length - 2]; // "Users"
-                const rootFolder = urlParts[urlParts.length - 3]; // "EasyShop"
-
-                const fullPublicId = `${rootFolder}/${subFolder}/${publicIdWithoutExt}`;
-
-                // 2. Apne helper ko call karein
-                await deleteCloudinaryFiles({ filename: fullPublicId });
+                await deleteOldFileFromCloudinary(user.profilePhoto);
             }
-            profilePhotoPath = req.file.path; // Nayi photo ka URL assign karein
+            updates.profilePhoto = req.file.path; // Nayi photo ka URL assign karein
         }
 
+        // --- FINAL DATABASE UPDATE ---
         const updatedUser = await User.findByIdAndUpdate(
             user_id,
             {
-                $set: {
-                    name,
-                    email,
-                    contact,
-                    address,
-                    city,
-                    pincode,
-                    state,
-                    profilePhoto: profilePhotoPath
-                }
+                $set: updates
             },
             {
-                returnDocument: 'after',
+                new: true,
                 runValidators: true
             }
         ).select("-password");
+
+        if (emailUpdatePending) {
+            return res.status(200).json({
+                success: true,
+                isEmailUpdatePending: true,
+                newEmail: newEmail,
+                data: updatedUser, // User ko updated name/photo dikhao
+                message: "Basic details updated. Please verify OTP for new email."
+            });
+        }
 
         res.status(200).json({
             success: true,
             message: "Profile updated successfully",
             data: updatedUser
         });
+
     } catch (err) {
         if (req.file) await deleteCloudinaryFiles(req.file);
         return res.status(500).json({

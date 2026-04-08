@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 import { HiX } from "react-icons/hi";
 import { RiSendPlaneFill } from "react-icons/ri";
 
-const socket = io.connect("http://localhost:8000");
+// const socket = io.connect("http://localhost:8000");
 
 function UserChat({ isOpen, setIsOpen }) {
 

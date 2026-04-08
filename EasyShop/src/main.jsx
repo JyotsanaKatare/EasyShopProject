@@ -8,11 +8,13 @@ import { WishListProvider } from './Components/WishListContext.jsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient();
 
+const isProduction = import.meta.env.PROD;
+
 createRoot(document.getElementById('root')).render(
   <QueryClientProvider client={queryClient}>
   <WishListProvider>
     <CartProvider>
-      <BrowserRouter >
+      <BrowserRouter basename={isProduction ? "/EasyShop" : "/"}>
         <App />
       </BrowserRouter>
     </CartProvider>

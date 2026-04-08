@@ -5,9 +5,14 @@ import cors from 'cors';
 import http from 'http';  //for socket
 import { Server } from 'socket.io';
 import connectDb from './config/db.js';
+
+import otpRoutes from './Routes/otpRoutes.js';
 import vendorRoutes from './Routes/vendorRoutes.js';
 import userRoutes from './Routes/userRoutes.js';
-import otpRoutes from './Routes/otpRoutes.js';
+import categoryRoutes from './Routes/categoryRoutes.js';
+import subCategoryRoutes from './Routes/subCategoryRoutes.js';
+import productRoutes from './Routes/productRoutes.js';
+import adminRoutes from './Routes/adminRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -46,6 +51,10 @@ io.on("connection", (socket) => {
 app.use("/api/v1/otp", otpRoutes);
 app.use("/api/v1/vendor", vendorRoutes);
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/category", categoryRoutes);
+app.use("/api/v1/subCategory", subCategoryRoutes);
+app.use("/api/v1/product", productRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 app.get("/", (req, res) => {
     res.send("API is running successfully 🚀");

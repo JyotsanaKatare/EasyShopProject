@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 import { RiSendPlaneFill } from "react-icons/ri";
 
 // Connection ko component ke bahar rakhein taaki baar-baar reconnect na ho
-const socket = io.connect("http://localhost:8000");
+// const socket = io.connect("http://localhost:8000");
 
 function VendorChat() {
 

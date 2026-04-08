@@ -35,12 +35,12 @@ export const CartProvider = ({ children }) => {
             // Agar naya hai, toh quantity 1 ke saath add karo
             toast.success(`${product.name} added to cart!`, {
                 style: {
-                    border: '1px solid #fbcfe8', 
+                    border: '1px solid #fbcfe8',
                     padding: '16px',
-                    color: '#be185d', 
+                    color: '#be185d',
                 },
                 iconTheme: {
-                    primary: '#ec4899', 
+                    primary: '#ec4899',
                     secondary: '#FFFAEE',
                 },
             });
@@ -70,6 +70,11 @@ export const CartProvider = ({ children }) => {
         )
     };
 
+    const clearCart = () => {
+        setCartItems([]);
+        localStorage.removeItem("myCart");
+    };
+
     // Cart items se total quantity nikalne ke liye
     const cartCount = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
 
@@ -77,7 +82,7 @@ export const CartProvider = ({ children }) => {
     const cartTotal = cartItems.reduce((total, item) => total + (item.price * (item.quantity || 1)), 0);
 
     return (
-        <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, updateQuantity, cartCount, cartTotal }}>
+        <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, updateQuantity, cartCount, cartTotal, clearCart }}>
             {children}
         </CartContext.Provider>
     )

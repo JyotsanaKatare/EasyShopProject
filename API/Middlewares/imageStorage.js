@@ -12,6 +12,14 @@ const storage = new CloudinaryStorage({
         if (req.baseUrl.includes('vendor')) {
             folderName = 'EasyShop/Vendor_Docs';
         }
+
+        else if (req.baseUrl.includes('category')){
+            folderName = 'EasyShop/Category';
+        }
+
+        else if (req.baseUrl.includes('subCategory')){
+            folderName = 'EasyShop/SubCategory';
+        }
         
         else if (req.baseUrl.includes('product')) {
             folderName = 'EasyShop/Products';
@@ -19,6 +27,10 @@ const storage = new CloudinaryStorage({
 
         else if(req.baseUrl.includes('user')){
             folderName = 'EasyShop/Users'
+        }
+
+        else if(req.baseUrl.includes('admin')){
+            folderName = 'EasyShop/Admin'
         }
 
         return {

@@ -25,14 +25,14 @@ export const vendorSignUp = async (req, res) => {
         const gstDocumentUpload = req.files['gstDocumentUpload']?.[0]?.path || "";
         const bankDocumentUpload = req.files['bankDocumentUpload']?.[0]?.path;
 
-        console.log("PATHS:", {
-            profile: profilePhoto,
-            logo: storeLogo,
-            pan: panCardUpload,
-            license: categoryLicenseUpload,
-            gst: gstDocumentUpload,
-            bank: bankDocumentUpload
-        });
+        // console.log("PATHS:", {
+        //     profile: profilePhoto,
+        //     logo: storeLogo,
+        //     pan: panCardUpload,
+        //     license: categoryLicenseUpload,
+        //     gst: gstDocumentUpload,
+        //     bank: bankDocumentUpload
+        // });
 
         const {
             name, email, contact, password, storeName, businessEmail, businessContact, businessType,
