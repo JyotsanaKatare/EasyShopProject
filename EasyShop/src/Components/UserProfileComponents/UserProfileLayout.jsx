@@ -5,15 +5,21 @@ import { HiOutlineUser, HiOutlineLockClosed, HiOutlineChevronRight } from "react
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import { HiOutlineHeart } from "react-icons/hi";
 import { RiLogoutCircleRLine } from "react-icons/ri";
+import { MdOutlineStarOutline } from "react-icons/md";
 import UserProfilePersonal from './UserProfilePersonal';
 import UserProfileSecurity from './UserProfileSecurity';
 import UserProfileMyOrders from './UserProfileMyOrders';
 import UserProfileWishList from './UserProfileWishList';
 
+import useAuthStore from '../../store/useAuthStore';
+import { useUpdateUserProfile, useUserProfile } from '../../hook/useAuth';
+import UserProfileMyReviews from './UserProfileMyReviews';
+
 // Sidebar Menu Items
 const menuItems = [
     { id: 'Profile', label: 'Profile Settings', icon: <HiOutlineUser size={20} /> },
     { id: 'Orders', label: 'My Orders', icon: <HiOutlineShoppingBag size={20} /> },
+    { id: 'Reviews', label: 'My Reviews', icon: <MdOutlineStarOutline size={20} /> },
     { id: 'Wishlist', label: 'My Wishlist', icon: <HiOutlineHeart size={20} /> },
     { id: 'Security', label: 'Security Settings', icon: <HiOutlineLockClosed size={20} /> },
     { id: 'Logout', label: 'Logout', icon: <RiLogoutCircleRLine size={20} className='rotate-270' /> },
@@ -25,6 +31,18 @@ function UserProfileLayout() {
     const [activeTab, setActiveTab] = useState('Profile');
     const [isLogoutOpen, setIsLogoutOpen] = useState(false);
 
+    const { user } = useAuthStore();
+    const logout = useAuthStore((state) => state.logout);
+
+    const userId = user?._id || user?.id;
+
+    const { data: userData, isLoading, isError } = useUserProfile(userId);
+    const { mutate: updateProfile, isPending } = useUpdateUserProfile(userId);
+
+    const handleFormSubmit = (formData, callbacks) => {
+        updateProfile(formData, callbacks);
+    };
+
     const handleMenuClick = (id) => {
         if (id === 'Logout') {
             setIsLogoutOpen(true);
@@ -32,6 +50,8 @@ function UserProfileLayout() {
             setActiveTab(id);
         }
     };
+
+    if (isLoading) return <div>Loading...</div>;
 
     return (
         <div className='py-10 bg-slate-50/50 min-h-screen'>
@@ -88,16 +108,33 @@ function UserProfileLayout() {
                             <p className='text-[10px] md:text-[11px] text-slate-400 font-medium uppercase mt-1'>
                                 {activeTab === 'Orders' ? "Track and manage your recent purchases" :
                                     activeTab === 'Wishlist' ? "Your curated collection of favorites" :
-                                        "Update your account information and preferences below"}
+                                        activeTab === "Reviews" ? "Share your experience and manage your feedback" :
+                                            "Update your account information and preferences below"}
                             </p>
                         </div>
 
                         {/* Render Content Based on Active Tab */}
                         <div className='p-6 md:p-8'>
-                            {activeTab === 'Profile' && <UserProfilePersonal />}
+
+                            {activeTab === 'Profile' && (
+                                <UserProfilePersonal
+                                    userData={userData}
+                                    onSubmit={handleFormSubmit}
+                                    isPending={isPending}
+                                />
+                            )}
+
                             {activeTab === 'Orders' && <UserProfileMyOrders />}
+                            {activeTab === 'Reviews' && <UserProfileMyReviews />}
                             {activeTab === 'Wishlist' && <UserProfileWishList />}
-                            {activeTab === 'Security' && <UserProfileSecurity />}
+
+                            {activeTab === 'Security' && (
+                                <UserProfileSecurity
+                                    userData={userData}
+                                    isPending={isPending}
+                                />
+                            )}
+
                         </div>
                     </div>
                 </div>
@@ -128,9 +165,10 @@ function UserProfileLayout() {
                                 Stay Here
                             </button>
 
-                            {/* Confirm Logout Button */}
+                            {/* logout button */}
                             <button
                                 onClick={() => {
+                                    logout();
                                     navigate('/login');
                                 }}
                                 className="flex-1 py-4 bg-pink-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-pink-200 dark:shadow-none hover:bg-pink-600 transition-all active:scale-95 cursor-pointer">
@@ -140,7 +178,6 @@ function UserProfileLayout() {
                     </div>
                 </div>
             )}
-
         </div>
     )
 }

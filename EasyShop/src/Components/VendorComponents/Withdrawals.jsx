@@ -10,6 +10,11 @@ import { HiOutlinePlusCircle } from "react-icons/hi";
 import { HiOutlineDocumentDownload } from "react-icons/hi";
 import { HiOutlinePrinter } from "react-icons/hi";
 import { HiOutlineLibrary } from "react-icons/hi";
+import { HiOutlineRefresh } from "react-icons/hi";
+
+import WithdrawModal from './WithdrawModal';
+import { useGetVendor } from '../../hook/useVendor';
+import { useWithdrawList, useWithdrawStats } from '../../hook/useWithdraws';
 
 const withdrawalData = [
   {
@@ -32,30 +37,6 @@ const withdrawalData = [
   }
 ];
 
-const cards = [
-  {
-    label: "Available Balance",
-    value: "₹12,450",
-    icon: <HiOutlineCurrencyRupee />,
-    color: "text-blue-600",
-    bg: "bg-blue-50"
-  },
-  {
-    label: "Pending Settlement",
-    value: "₹3,200",
-    icon: <HiOutlineClock />, // Naya Icon (Processing feel ke liye)
-    color: "text-orange-600",
-    bg: "bg-orange-50"
-  },
-  {
-    label: "Total Withdrawn",
-    value: "₹34,350",
-    icon: <HiOutlineExternalLink />, // Naya Icon (Money out feel ke liye)
-    color: "text-emerald-600",
-    bg: "bg-emerald-50"
-  },
-];
-
 const statusMenu = [
   { id: 1, status: "Completed" },
   { id: 2, status: "Pending" },
@@ -64,9 +45,47 @@ const statusMenu = [
 
 function Withdrawals() {
 
+  const { data: vendorData } = useGetVendor();
+  const { data: stats, isLoading, isError } = useWithdrawStats();
+  const { data: withdrawList } = useWithdrawList();
+
   const [isStatusOpen, setIsStatusOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [isActionOpen, setIsActionOpen] = useState(false);
+
+  const cards = [
+    {
+      label: "Available Balance",
+      value: `₹${stats?.availableBalance?.toLocaleString() || '0'}`,
+      icon: <HiOutlineCurrencyRupee />,
+      color: "text-blue-600",
+      bg: "bg-blue-50"
+    },
+    {
+      label: "Pending Settlement",
+      value: `₹${stats?.pendingSettlement?.toLocaleString() || '0'}`,
+      icon: <HiOutlineClock />,
+      color: "text-orange-600",
+      bg: "bg-orange-50"
+    },
+    {
+      label: "Withdrawal In-Process", // Naya 4th Card
+      value: `₹${stats?.inProcess?.toLocaleString() || '0'}`,
+      icon: <HiOutlineRefresh />,
+      color: "text-indigo-600",
+      bg: "bg-indigo-50"
+    },
+    {
+      label: "Total Withdrawn",
+      value: `₹${stats?.totalWithdrawn?.toLocaleString() || '0'}`,
+      icon: <HiOutlineExternalLink />,
+      color: "text-emerald-600",
+      bg: "bg-emerald-50"
+    },
+  ];
+
+  if (isLoading) return <p>Loading details....</p>
+  if (isError) return <p>Error in fetching details....</p>
 
   const handlestatus = (status) => {
     setSelectedStatus(status);
@@ -84,7 +103,8 @@ function Withdrawals() {
             className={`bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:shadow-md transition-all truncate
             ${stat.label === "Available Balance" ? 'ring-1 ring-transparent hover:ring-blue-100 dark:hover:ring-blue-900 cursor-pointer' : ''}`}
           >
-            <div className={`w-11 h-11 md:w-12 md:h-12 shrink-0 rounded-xl ${stat.bg} ${stat.color} flex items-center justify-center text-lg md:text-2xl`}>
+            <div className={`w-11 h-11 md:w-12 md:h-12 shrink-0 rounded-xl 
+              ${stat.bg} ${stat.color} flex items-center justify-center text-lg md:text-2xl`}>
               {stat.icon}
             </div>
 
@@ -92,6 +112,7 @@ function Withdrawals() {
               <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-tight truncate">
                 {stat.label}
               </p>
+
               <h4 className="text-lg md:text-xl font-black text-slate-700 dark:text-white truncate">
                 {stat.value}
               </h4>
@@ -201,31 +222,47 @@ function Withdrawals() {
             </thead>
 
             <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
-              {withdrawalData.map((txn, idx) => (
-                <tr key={idx} className="hover:bg-pink-50/30 dark:hover:bg-slate-800/50 transition-colors group">
+              {withdrawList.map((txn, idx) => (
+                <tr
+                  key={idx}
+                  className="hover:bg-pink-50/30 dark:hover:bg-slate-800/50 transition-colors group">
 
                   {/* 1. Request ID & Date */}
                   <td className="px-6 py-4">
-                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{txn.id}</span>
-                    <p className="text-[10px] text-slate-400">{txn.date}</p>
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                      {txn.requestId}
+                    </span>
+                    <p className="text-[10px] text-slate-400">
+                      {new Date(txn.createdAt).toLocaleDateString('en-IN', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                      })}
+                    </p>
                   </td>
 
                   {/* 2. Amount - Isko bold aur clean rakha hai */}
                   <td className="px-6 py-4">
-                    <span className="text-sm font-black text-slate-800 dark:text-white">₹{txn.amount.toLocaleString()}</span>
+                    <span className="text-sm font-black text-slate-800 dark:text-white">
+                      ₹{txn.amount.toLocaleString()}
+                    </span>
                   </td>
 
                   {/* 3. Payout Method - Bank details dikhane ke liye */}
                   <td className="px-6 py-4">
-                    <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{txn.method}</span>
-                    <p className="text-[10px] text-pink-500 font-medium">{txn.account}</p>
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-300">
+                      {txn.method}
+                    </span>
+                    <p className="text-[10px] text-pink-500 font-medium">
+                      {txn.accountDetails?.bankName}
+                    </p>
                   </td>
 
                   {/* 4. Status Badge - Alag-alag states ke liye colors */}
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded-lg text-[10px] font-extrabold uppercase border 
-                    ${txn.status === 'Success' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                        txn.status === 'Pending' ? 'bg-orange-50 text-orange-600 border-orange-100' :
+                    ${txn.status === 'Approved' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                        txn.status === 'Processing' ? 'bg-orange-50 text-orange-600 border-orange-100' :
                           txn.status === 'Rejected' ? 'bg-red-50 text-red-600 border-red-100' :
                             'bg-blue-50 text-blue-600 border-blue-100' // For Processing
                       }`}>
@@ -235,7 +272,8 @@ function Withdrawals() {
 
                   {/* 5. UTR Number - Agar success hai toh number, warna N/A */}
                   <td className="px-6 py-4">
-                    <span className={`text-xs font-mono ${txn.utr !== 'N/A' ? 'text-slate-600 dark:text-slate-300' : 'text-slate-300'}`}>
+                    <span className={`text-xs font-mono 
+                      ${txn.utr !== 'N/A' ? 'text-slate-600 dark:text-slate-300' : 'text-slate-300'}`}>
                       {txn.utr}
                     </span>
                   </td>
@@ -253,68 +291,12 @@ function Withdrawals() {
         </div>
       </div>
 
-      {/* Request Payout Modal Concept */}
-      {isActionOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-pink-50 dark:border-slate-800">
-
-            <div
-              onClick={() => setIsActionOpen(false)}
-              className='fixed inset-0'>
-            </div>
-
-            {/* Modal Header */}
-            <div className="p-4 md:p-6 bg-pink-50 dark:bg-pink-500/10 border-b border-pink-100 dark:border-pink-500/20 text-center">
-              <h3 className="text-lg md:text-xl font-black text-slate-800 dark:text-white">Withdraw Funds</h3>
-              <p className="text-[11px] md:text-xs text-slate-500 mt-1 uppercase font-bold tracking-widest">Available: ₹12,450</p>
-            </div>
-
-            {/* Modal Body */}
-            <div className="p-4 md:p-8 space-y-6">
-              <div>
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Enter Amount</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl md:text-2xl font-black text-slate-300">₹</span>
-                  <input
-                    type="number"
-                    placeholder="0.00"
-                    className="w-full pl-10 pr-4 py-2 md:py-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 focus:border-pink-500 rounded-2xl text-xl md:text-2xl font-black outline-none transition-all"
-                  />
-                </div>
-                <p className="text-[10px] text-pink-500 mt-2 font-bold italic">* Minimum withdrawal: ₹500</p>
-              </div>
-
-              {/* Bank Info Summary */}
-              <div className="p-2 md:p-4 rounded-2xl bg-slate-50 border border-dashed border-slate-200 flex items-center gap-3">
-
-                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                  <HiOutlineLibrary className="text-pink-500" />
-                </div>
-
-                <div className="flex-1">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase">Transferring to</p>
-                  <p className="text-xs md:text-sm font-bold text-slate-700">HDFC Bank (....4321)</p>
-                </div>
-
-                <button className="text-xs font-black text-pink-600 hover:underline">Change</button>
-              </div>
-
-              {/* Confirm Button */}
-              <div className='flex flex-col gap-5'>
-                <button className="w-full py-2.5 md:py-4 bg-pink-500 hover:bg-pink-600 text-white rounded-2xl font-black text-sm shadow-lg shadow-pink-200 dark:shadow-none transition-all active:scale-95 cursor-pointer">
-                  Send Request
-                </button>
-
-                <button
-                  onClick={() => setIsActionOpen(false)}
-                  className="w-full text-slate-400 text-xs font-bold hover:text-slate-600 transition-colors">
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Request Payout Modal */}
+      <WithdrawModal
+        isOpen={isActionOpen}
+        onClose={() => setIsActionOpen(false)}
+        vendorData={vendorData}
+      />
 
     </div>
   )

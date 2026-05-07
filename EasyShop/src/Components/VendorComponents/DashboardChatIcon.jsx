@@ -1,8 +1,15 @@
 
 import React from 'react';
 import { HiOutlineChatAlt2 } from "react-icons/hi";
+import useAuthStore from '../../store/useAuthStore';
+import { useVendorUnreadCount } from '../../hook/useChat';
 
 function DashboardChatIcon({ setCurrentPage }) {
+
+    const { user } = useAuthStore();
+    const vendorId = user?._id || user?.id;
+    const { data: unreadCount } = useVendorUnreadCount(vendorId);
+
     return (
         <div>
             <button
@@ -10,12 +17,14 @@ function DashboardChatIcon({ setCurrentPage }) {
                 className="fixed bottom-8 right-8 w-14 h-14 bg-pink-500 hover:bg-pink-600 text-white rounded-full shadow-2xl shadow-pink-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer z-50 group">
 
                 {/* Notification Badge (Optional) */}
-                <span className="absolute -top-1 -right-1 flex h-6 w-6">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-6 w-6 bg-pink-600 text-[11px] border-2 border-white items-center justify-center font-bold">
-                        5
+                {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-6 w-6">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-6 w-6 bg-pink-600 text-[11px] border-2 border-white items-center justify-center font-bold">
+                            {unreadCount > 99 ? '99+' : unreadCount}
+                        </span>
                     </span>
-                </span>
+                )}
 
                 <HiOutlineChatAlt2 size={28} />
 

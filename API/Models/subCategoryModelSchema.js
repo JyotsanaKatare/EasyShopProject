@@ -39,6 +39,16 @@ const subCategorySchema = new mongoose.Schema(
             default: 0
         },
 
+        allowedAttributes: [
+            {
+                name: { type: String, required: true }, // e.g. "Processor", "RAM"
+                unit: { type: String, default: "" },    // e.g. "GB", "inch" (Optional)
+                isFilterable: { type: Boolean, default: true }, // Kya iska filter sidebar mein dikhana hai?
+                hasVariants: { type: Boolean, default: false }, // NEW - Color/Size selector dikhana hai?
+                type: { type: String, enum: ['text', 'color', 'size'], default: 'text' } // NEW - kis type ka variant hai
+            }
+        ],
+
         isActive: {
             type: Boolean,
             default: true,

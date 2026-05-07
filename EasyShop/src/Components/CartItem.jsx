@@ -1,26 +1,33 @@
 
-//updated
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
 import { FaMinus } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa";
 import { useCart } from './CartContext';
 import { HiOutlineHeart } from "react-icons/hi";
+import useAuthStore from '../store/useAuthStore';
+import toast from 'react-hot-toast';
 
 function CartItem() {
 
+    const { user } = useAuthStore();
     const navigate = useNavigate();
-    const { cartItems, removeFromCart, updateQuantity } = useCart();  //from context api
+
+    const { cartItems, removeFromCart, updateQuantity } = useCart();
 
     const subtotal = cartItems.reduce((acc, item) => acc + (item.price * (item.quantity || 1)), 0);
-    const discount = subtotal * 0.10;
     const quantity = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
-    const tax = (subtotal - discount) * 0.10; // Tax hamesha discounted price par lagta hai
-    const total = subtotal - discount + tax;
+    const total = subtotal;
 
     const handleCheckout = () => {
         if (cartItems.length === 0) {
             alert("cart empty");
+            return;
+        }
+
+        if (!user) {
+            toast.error("Please login to place order");
+            navigate('/login');
             return;
         }
 
@@ -29,8 +36,8 @@ function CartItem() {
                 items: cartItems,
                 total: subtotal // Hum Subtotal bhej rahe hain kyunki final page par tax calculation humne wahan likha hai
             }
-        })
-    }
+        });
+    };
 
     return (
         <section className="w-full min-h-[70vh] bg-white py-8 md:py-16 px-4 lg:px-6">
@@ -52,22 +59,34 @@ function CartItem() {
                             {cartItems.map((item, index) => (
                                 <div
                                     key={index}
-                                    onClick={() => navigate(`/product_detail/${item.id}`)}
+                                    onClick={() => navigate(`/product_detail/${item._id}/${item.prodName}`)}
                                     className="bg-white p-3 md:p-4 rounded-2xl shadow-sm border border-gray-100 flex items-start md:items-center gap-3 md:gap-4 transition-all hover:border-pink-100 cursor-pointer">
 
                                     <img
-                                        src={item.img}
+                                        src={item.prodImage || item.img}
                                         className="w-20 h-20 md:w-28 md:h-28 rounded-2xl object-cover bg-gray-50 shrink-0" />
 
                                     <div className="flex-1 min-w-0">
                                         <h3
                                             className="font-bold text-gray-800 text-sm md:text-base cursor-pointer truncate pr-2">
-                                            {item.name}
+                                            {item.prodName}
                                         </h3>
 
-                                        <p className="text-[11px] md:text-sm text-gray-400 mt-1 font-medium">
-                                            Size: {item.size} | Color: {item.color}
-                                        </p>
+                                        {/* Variant info */}
+                                        {(item?.selectedColor || item?.selectedSize) && (
+                                            <div className="flex flex-wrap gap-1 mt-1">
+                                                {item?.selectedColor && (
+                                                    <span className="text-[10px] font-bold px-2 py-0.5 bg-pink-50 border border-pink-100 text-pink-500 rounded-full">
+                                                        {item.selectedColor}
+                                                    </span>
+                                                )}
+                                                {item?.selectedSize && (
+                                                    <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-50 border border-gray-200 text-gray-500 rounded-full">
+                                                        Size: {item.selectedSize}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
 
                                         {/* price */}
                                         <div className="md:hidden mt-1">
@@ -83,7 +102,7 @@ function CartItem() {
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        updateQuantity(item.id, "dec");
+                                                        updateQuantity(item._id, "dec");
                                                     }}
                                                     className="p-1.5 text-pink-500 hover:bg-white rounded-lg transition-all cursor-pointer">
                                                     <FaMinus size={10} />
@@ -96,7 +115,7 @@ function CartItem() {
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        updateQuantity(item.id, "inc");
+                                                        updateQuantity(item._id, "inc");
                                                     }}
                                                     className="p-1.5 text-pink-500 hover:bg-white rounded-lg transition-all cursor-pointer">
                                                     <FaPlus size={10} />
@@ -107,7 +126,7 @@ function CartItem() {
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    removeFromCart(item.id);
+                                                    removeFromCart(item._id);
                                                 }}
                                                 className="text-[11px] font-black text-gray-300 hover:text-red-400 uppercase tracking-wider transition-colors cursor-pointer">
                                                 Remove
@@ -117,7 +136,9 @@ function CartItem() {
 
                                     {/* price */}
                                     <div className="hidden md:block text-right min-w-25">
-                                        <p className="text-xl font-black text-pink-500 tracking-tight">₹ {item.price * (item.quantity || 1)}</p>
+                                        <p className="text-xl font-black text-pink-500 tracking-tight">
+                                            ₹ {item.price * (item.quantity || 1)}
+                                        </p>
                                     </div>
                                 </div>
                             ))}
@@ -135,12 +156,9 @@ function CartItem() {
 
                                     <div className="flex justify-between">
                                         <span>Subtotal</span>
-                                        <span className="font-bold text-gray-800">₹ {subtotal}</span>
-                                    </div>
-
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-gray-500 font-medium">Discount</span>
-                                        <span className="text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-lg">-₹{discount}.00</span>
+                                        <span className="font-bold text-gray-800">
+                                            ₹ {subtotal}
+                                        </span>
                                     </div>
 
                                     <div className="flex justify-between">
@@ -155,10 +173,6 @@ function CartItem() {
                                         <span className="text-gray-900">{quantity}</span>
                                     </div>
 
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-gray-500 font-medium">Tax (10% GST)</span>
-                                        <span className="text-gray-900">₹ {tax.toFixed(2)}</span>
-                                    </div>
                                 </div>
 
                                 <div className="flex justify-between items-center py-6">
@@ -175,7 +189,6 @@ function CartItem() {
                             </div>
                         </div>
                     </div>
-
                 ) : (
                     /* Empty State with Icon */
                     <div className="flex flex-col items-center justify-center text-center py-20 px-4 min-h-100">
@@ -199,11 +212,9 @@ function CartItem() {
                         </button>
                     </div>
                 )}
-
-
             </div>
         </section>
     )
 }
 
-export default CartItem
+export default CartItem;

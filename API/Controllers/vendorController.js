@@ -1,19 +1,16 @@
 
 import Vendor from "../Models/vendorModelSchema.js";
 import OTP from '../Models/otpModel.js';
+import Product from '../Models/productModelSchema.js';
+import Order from '../Models/orderModelSchema.js';
+import Category from '../Models/categoryModelSchema.js';
+import User from '../Models/userModelSchema.js';
+
+import mongoose from 'mongoose';
 import sendEmail from "../utils/sendEmail.js";
-import { deleteCloudinaryFiles } from '../utils/cloudinaryUtils.js';
+import { deleteCloudinaryFiles, deleteOldFileFromCloudinary } from '../utils/cloudinaryUtils.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
-const licenseRequiredCategories = [
-    'Footwear & Shoes',
-    'Electronics & Gadgets',
-    'Beauty & Personal Care',
-    'Jewelry & Accessories',
-    'Handicrafts & Arts',
-    'Toys & Baby Products'
-];
 
 export const vendorSignUp = async (req, res) => {
     try {
@@ -25,31 +22,40 @@ export const vendorSignUp = async (req, res) => {
         const gstDocumentUpload = req.files['gstDocumentUpload']?.[0]?.path || "";
         const bankDocumentUpload = req.files['bankDocumentUpload']?.[0]?.path;
 
-        // console.log("PATHS:", {
-        //     profile: profilePhoto,
-        //     logo: storeLogo,
-        //     pan: panCardUpload,
-        //     license: categoryLicenseUpload,
-        //     gst: gstDocumentUpload,
-        //     bank: bankDocumentUpload
-        // });
-
         const {
-            name, email, contact, password, storeName, businessEmail, businessContact, businessType,
+            name, email, contact, password, storeName, aboutShop, businessEmail, businessContact, businessType,
             category, address, city, state, pincode, businessPAN,
             gstNumber, accHolder, bank, accNumber, ifsc
         } = req.body;
 
-        // Conditional License Check
-        const needsLicense = licenseRequiredCategories.includes(category);
+        const categoryData = await Category.findOne({ catName: category });
 
-        // Agar category ko license chahiye PAR image nahi aayi
-        if (needsLicense && !categoryLicenseUpload) {
-            await deleteCloudinaryFiles(req.files);
+        if (!categoryData) {
+            if (req.files) await deleteCloudinaryFiles(req.files);
+            return res.status(404).json({
+                success: false,
+                message: "Selected category not found"
+            });
+        }
+
+        // Agar DB mein is category ke liye license required hai par file nahi aayi
+        if (categoryData.requiresCertificate && !categoryLicenseUpload) {
+            if (req.files) await deleteCloudinaryFiles(req.files);
             return res.status(400).json({
                 success: false,
-                message: `Category License is mandatory for the ${category} category.`
+                message: `Category License is mandatory for ${category}. (${categoryData.certificateLabel})`
             });
+        }
+
+        if (!profilePhoto || !name || !email || !contact || !password || !storeLogo || !storeName || !aboutShop || !businessEmail || !businessContact || !businessType || !category || !address || !city || !state || !pincode || !businessPAN || !panCardUpload || !accHolder || !bank || !accNumber || !ifsc || !bankDocumentUpload) {
+
+            // ERROR: Fields missing hain, toh upload hui images delete karo
+            if (req.files) await deleteCloudinaryFiles(req.files);
+
+            return res.status(400).json({
+                success: false,
+                message: "Please fill all the mandatory fields"
+            })
         }
 
         // Conditiona GST Check 
@@ -61,25 +67,12 @@ export const vendorSignUp = async (req, res) => {
             });
         }
 
-        if (!profilePhoto || !name || !email || !contact || !password || !storeLogo || !storeName || !businessEmail || !businessContact || !businessType || !category || !address || !city || !state || !pincode || !businessPAN || !panCardUpload || !accHolder || !bank || !accNumber || !ifsc || !bankDocumentUpload) {
-
-            // ERROR: Fields missing hain, toh upload hui images delete karo
-            if (req.files) await deleteCloudinaryFiles(req.files);
-
-            return res.status(400).json({
-                success: false,
-                message: "Please fill all the mandatory fields"
-            })
-        }
-
         // const isEmailExist = await Vendor.findOne({ email });
         const isEmailExist = await Vendor.findOne({
             $or: [{ email: email }, { businessEmail: businessEmail }]
         });
 
         if (isEmailExist) {
-
-            // ERROR: Email exist karta hai, toh upload hui images delete karo
             if (req.files) await deleteCloudinaryFiles(req.files);
 
             return res.status(400).json({
@@ -99,6 +92,7 @@ export const vendorSignUp = async (req, res) => {
             password: hashedPassword,
             storeLogo,
             storeName,
+            aboutShop,
             businessEmail,
             businessContact,
             businessType,
@@ -183,13 +177,7 @@ export const vendorLogin = async (req, res) => {
             success: true,
             message: `Welcome back, ${vendor.name}`,
             token,
-            vendor: {
-                id: vendor._id,
-                name: vendor.name,
-                email: vendor.email,
-                role: vendor.role,
-                store: vendor.storeName
-            }
+            vendor: vendor
         });
     } catch (err) {
         console.error("Login Error:", err);
@@ -313,6 +301,68 @@ export const resetPassword = async (req, res) => {
     }
 };
 
+export const changePassword = async (req, res) => {
+    try {
+        const { oldPassword, newPassword, confirmPassword } = req.body;
+
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            });
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "New password and confirm password do not match"
+            });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: "New password must be at least 6 characters"
+            });
+        }
+
+        const vendor = await Vendor.findById(req.user.id);
+
+        if (!vendor) {
+            return res.status(404).json({
+                success: false,
+                message: "Vendor not found"
+            });
+        }
+
+        // verify old password is correct
+        const isMatch = await bcrypt.compare(oldPassword, vendor.password);
+        if (!isMatch) {
+            return res.status(400).json({
+                success: false,
+                message: "Current password is incorrect"
+            });
+        }
+
+        // hash and save new password
+        const salt = await bcrypt.genSalt(10);
+        vendor.password = await bcrypt.hash(newPassword, salt);
+        await vendor.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Password changed successfully"
+        });
+
+    } catch (err) {
+        console.log("Error :", err);
+        return res.status(500).json({
+            success: false,
+            message: "Server Error Occur"
+        });
+    }
+};
+
 export const countVendor = async (req, res) => {
     try {
         const count = await Vendor.countDocuments();
@@ -332,9 +382,11 @@ export const countVendor = async (req, res) => {
 
 export const getVendor = async (req, res) => {
     try {
-        const { vendor_id } = req.params;
+        const vendorId = (req.user.role === 'admin' && req.params.vendorId)
+            ? req.params.vendorId
+            : req.user.id;
 
-        const vendor = await Vendor.findById(vendor_id);
+        const vendor = await Vendor.findById(vendorId).select("-password");
 
         if (!vendor) {
             return res.status(404).json({
@@ -361,11 +413,19 @@ export const updateVendorDetail = async (req, res) => {
         const vendor_id = req.user.id;
         const currentVendor = await Vendor.findById(vendor_id);
 
+        if (!currentVendor) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Vendor not found" 
+            });
+        }
+
         let updateData = { ...req.body };   //name, contact etc.
 
         // --- Image Update & Delete Logic ---
         if (req.files) {
             const fileFields = [
+                'profilePhoto',
                 'storeLogo',
                 'categoryLicenseUpload',
                 'panCardUpload',
@@ -374,7 +434,7 @@ export const updateVendorDetail = async (req, res) => {
             ];
 
             for (const field of fileFields) {
-                if (req.files[field]) {
+                if (req.files[field] && req.files[field][0]) {
                     // 1. Purani image delete karo (agar database mein pehle se thi)
                     if (currentVendor[field]) {
                         await deleteOldFileFromCloudinary(currentVendor[field]);
@@ -388,7 +448,7 @@ export const updateVendorDetail = async (req, res) => {
         const updatedVendor = await Vendor.findByIdAndUpdate(
             vendor_id,
             { $set: updateData },
-            { returnDocument: 'after' }
+            { new: true, returnDocument: 'after' }
         ).select("-password");
 
         res.status(200).json({
@@ -399,14 +459,307 @@ export const updateVendorDetail = async (req, res) => {
 
     } catch (err) {
         // Error aane par naye upload huye files delete karein (jo cleanup hum pehle kar rahe the)
-        await deleteCloudinaryFiles(req.files);
-        res.status(500).json({ success: false, message: "Error" });
+        if (req.files) await deleteCloudinaryFiles(req.files);
+        console.log("Error :", err);
+        res.status(500).json({
+            success: false,
+            message: "Error"
+        });
     }
 };
 
 export const vendorLogout = async (req, res) => {
-    return res.status(200).json({
-        success: true,
-        message: "Logged out successfully"
-    });
+    try {
+        return res.status(200).json({
+            success: true,
+            message: "Logged out successfully"
+        });
+    } catch (err) {
+        console.log("Error :", err);
+        res.status(500).json({
+            success: false,
+            message: "Server Error Occur"
+        });
+    }
+};
+
+// dashboard stats
+export const vendorDashboardStats = async (req, res) => {
+    try {
+        // Convert string ID to MongoDB ObjectId
+        const vId = new mongoose.Types.ObjectId(req.user.id);
+
+        // 1. Get Product Stats based on YOUR schema field names
+        const productStats = await Product.aggregate([
+            {
+                $match: {
+                    vendorId: vId // Matches 'vendorId' in your schema
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalProducts: { $sum: 1 },
+                    // In your schema, status is 'Approved', 'Pending', etc.
+                    // and 'isActive' is a Boolean.
+                    activeProducts: {
+                        $sum: { $cond: [{ $eq: ["$status", "Approved"] }, 1, 0] }
+                    },
+                    avgRating: { $avg: "$averageRating" }
+                }
+            }
+        ]);
+
+        // 2. Get Total Revenue from Orders
+        const revenueStats = await Order.aggregate([
+            // 1. Split the array so we can check each item individually
+            { $unwind: "$items" },
+
+            // 2. Join with Products to see who owns which item
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "items.productId",
+                    foreignField: "_id",
+                    as: "itemDetails"
+                }
+            },
+            { $unwind: "$itemDetails" },
+
+            // 3. Filter by Vendor ID
+            {
+                $match: {
+                    "itemDetails.vendorId": vId,
+                    // To see ALL money (even pending), comment out the line below:
+                    "orderStatus": { $in: ["Delivered", "Shipped", "Processing"] }
+                }
+            },
+
+            // 4. Sum ONLY the items belonging to THIS vendor
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: {
+                        $sum: { $multiply: ["$items.price", "$items.quantity"] }
+                    },
+                    count: { $sum: 1 } // To see how many items were found
+                }
+            }
+        ]);
+
+        // 3. Format result for the frontend
+        const stats = {
+            totalRevenue: revenueStats[0]?.totalRevenue || 0,
+            totalProds: productStats[0]?.totalProducts || 0,
+            activeProds: productStats[0]?.activeProducts || 0,
+            avgRating: parseFloat(productStats[0]?.avgRating?.toFixed(1)) || 0
+        };
+
+        res.status(200).json({
+            success: true,
+            data: stats
+        });
+
+    } catch (err) {
+        console.error("Error : ", err);
+        res.status(500).json({
+            success: false,
+            message: "Server Error Occurred"
+        });
+    }
+};
+
+// vendor's customer
+export const getVendorCustomers = async (req, res) => {
+    try {
+        const vendorId = req.user.id;
+
+        // Step 1: Un saare orders ko dhundo jisme is vendor ka product hai
+        // Step 2: Un orders se unique userId nikal lo
+        const customers = await Order.aggregate([
+            { $unwind: "$items" },
+            {
+                $match: { "items.vendorId": new mongoose.Types.ObjectId(vendorId) }
+            },
+            {
+                $group: {
+                    _id: "$userId", // Unique Customers ke liye group kiya
+                    lastOrderDate: { $max: "$createdAt" },
+                    totalSpend: {
+                        $sum: { $multiply: ["$items.price", "$items.quantity"] }
+                    },
+                    totalOrders: { $sum: 1 }
+                }
+            },
+            {
+                $lookup: {
+                    from: "users", // User details fetch karne ke liye
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "userDetails"
+                }
+            },
+            { $unwind: "$userDetails" },
+            {
+                $project: {
+                    _id: 1,
+                    profilePhoto: "$userDetails.profilePhoto",
+                    name: "$userDetails.name",
+                    email: "$userDetails.email",
+                    state: "$userDetails.state",
+                    isActive: "$userDetails.isActive",
+                    lastOrderDate: 1,
+                    totalSpend: 1,
+                    totalOrders: 1
+                }
+            },
+            {
+                $sort: { lastOrderDate: -1 }
+            }
+        ]);
+
+        res.status(200).json({
+            success: true,
+            count: customers.length,
+            data: customers
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// vendor's customer stats
+export const getVendorCustomerStats = async (req, res) => {
+    try {
+        const vendorId = req.user.id;
+
+        const stats = await Order.aggregate([
+            { $unwind: "$items" },
+            { $match: { "items.vendorId": new mongoose.Types.ObjectId(vendorId) } },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "userDetails"
+                }
+            },
+            { $unwind: "$userDetails" },
+            {
+                $group: {
+                    _id: null,
+                    // Sabhi unique customers
+                    allUniqueCustomers: { $addToSet: "$userId" },
+                    // Sirf wahi customers jo active hain
+                    activeCustomers: {
+                        $addToSet: {
+                            $cond: [{ $eq: ["$userDetails.isActive", true] }, "$userId", null]
+                        }
+                    },
+                    totalRevenue: { $sum: { $multiply: ["$items.price", "$items.quantity"] } }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    totalCustomers: { $size: "$allUniqueCustomers" },
+                    // Null values hatakar sirf active users ka count
+                    activeNow: {
+                        $size: {
+                            $filter: {
+                                input: "$activeCustomers",
+                                as: "id",
+                                cond: { $ne: ["$$id", null] }
+                            }
+                        }
+                    },
+                    avgSpend: {
+                        $cond: [
+                            { $eq: [{ $size: "$allUniqueCustomers" }, 0] },
+                            0,
+                            { $divide: ["$totalRevenue", { $size: "$allUniqueCustomers" }] }
+                        ]
+                    }
+                }
+            }
+        ]);
+
+        const result = stats.length > 0 ? stats[0] : {
+            totalCustomers: 0,
+            activeNow: 0,
+            avgSpend: 0
+        };
+
+        res.status(200).json({
+            success: true,
+            message: "Here is stats data",
+            data: result
+        });
+
+    } catch (err) {
+        console.log("Error :", err);
+        res.status(500).json({
+            success: false,
+            message: "Server Error Occur"
+        });
+    }
+};
+
+// vendor's cutomer profile
+export const getCustomerDetailsForVendor = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const vendorId = req.user.id;
+
+        // 1. User ki basic details lein
+        const user = await User.findById(id)
+            .select("name email profilePhoto city isActive createdAt");
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Customer not found"
+            });
+        }
+
+        // 2. Is vendor ke liye us customer ki order history nikalein
+        const orders = await Order.find({
+            userId: id,
+            "items.vendorId": vendorId
+        }).sort({ createdAt: -1 });
+
+        // 3. Financial Metrics Calculation
+        const totalSpend = orders.reduce((acc, order) => {
+            // Sirf is vendor ke items ka total sum
+            const vendorItems = order.items.filter(item => item.vendorId.toString() === vendorId);
+            const orderSum = vendorItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            return acc + orderSum;
+        }, 0);
+
+        const avgOrderValue = orders.length > 0 ? (totalSpend / orders.length).toFixed(2) : 0;
+
+        res.status(200).json({
+            success: true,
+            message: "Here is customer profile",
+            data: {
+                profile: {
+                    ...user._doc,
+                    customerSince: user.createdAt,
+                },
+                metrics: {
+                    totalOrders: orders.length,
+                    totalSpend: totalSpend,
+                    avgOrderValue: avgOrderValue
+                },
+                orders: orders // Timeline ke liye
+            }
+        });
+
+    } catch (err) {
+        console.log("Error :", err);
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
 };

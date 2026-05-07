@@ -8,12 +8,27 @@ import ProfileBusinessForm from './ProfileBusinessForm';
 import ProfileAccountForm from './ProfileAccountForm';
 import ProfileSecurityForm from './ProfileSecurityForm';
 import { useNavigate } from 'react-router-dom';
+import { useUpdateVendorProfile, useVendorProfile } from '../../hook/useAuth';
+import useAuthStore from '../../store/useAuthStore';
 
 function ProfileLayout() {
 
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('Profile');
     const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+
+    const { user } = useAuthStore();
+    const vendorId = user?._id || user?.id; 
+
+    const { data: vendorData, isLoading, isError } = useVendorProfile(vendorId);
+    const { mutate: updateProfile, isPending } = useUpdateVendorProfile(vendorId);
+
+    // console.log("vendorData:", vendorData);
+    // console.log("vendorId:", vendorId);
+
+    const handleFormSubmit = (formData) => {
+        updateProfile(formData);
+    };
 
     // Sidebar Menu Items
     const menuItems = [
@@ -32,6 +47,8 @@ function ProfileLayout() {
             setActiveTab(id);
         }
     };
+
+    if (isLoading) return <div>Loading...</div>;
 
     return (
         <>
@@ -92,10 +109,34 @@ function ProfileLayout() {
 
                             {/* Render Content Based on Active Tab */}
                             <div className='p-6 md:p-8'>
-                                {activeTab === 'Profile' && <ProfilePersonalForm />}
-                                {activeTab === 'Business' && <ProfileBusinessForm />}
-                                {activeTab === 'Account' && <ProfileAccountForm />}
-                                {activeTab === 'Security' && <ProfileSecurityForm />}
+                                {activeTab === 'Profile' && (
+                                    <ProfilePersonalForm
+                                        vendorData={vendorData}
+                                        onSubmit={handleFormSubmit}
+                                        isPending={isPending}
+                                    />
+                                )}
+
+                                {activeTab === 'Business' && (
+                                    <ProfileBusinessForm
+                                        vendorData={vendorData}
+                                        onSubmit={handleFormSubmit}
+                                        isPending={isPending}
+                                    />
+                                )}
+
+                                {activeTab === 'Account' && (
+                                    <ProfileAccountForm
+                                        vendorData={vendorData}
+                                    />
+                                )}
+
+                                {activeTab === 'Security' && (
+                                    <ProfileSecurityForm
+                                        vendorData={vendorData}
+                                        isPending={isPending}
+                                    />
+                                )}
                             </div>
 
                         </div>

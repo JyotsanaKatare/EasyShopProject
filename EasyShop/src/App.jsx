@@ -31,6 +31,7 @@ import UserLayout from "./Layouts/UserLayout";
 import VendorLayout from "./Layouts/VendorLayout";
 import ProfileLayout from "./Components/VendorComponents/ProfileLayout";
 import UserProfileLayout from "./Components/UserProfileComponents/UserProfileLayout";
+import VendorShop from "./Components/VendorShop";
 
 function App() {
 
@@ -50,8 +51,6 @@ function App() {
         }}
       />
 
-      {/* <TopLine /> */}
-
       <Routes>
 
         {/* user side */}
@@ -62,7 +61,7 @@ function App() {
           <Route path="/contact_us" element={<ContactUs />} />
           <Route path="/all_products" element={<ProductsPage />} />
           <Route path="/all_products/:catId/:catName" element={<ProductsPage />} />
-          <Route path="/product_detail/:prodId/:catName/:prodName" element={<ProductDetail />} />
+          <Route path="/product_detail/:prodId/:prodName" element={<ProductDetail />} />
           <Route path="/account_type" element={<AccountType />} />
           <Route path="/vendor_signup" element={<VendorSignupPage />} />
           <Route path="/login" element={<Login />} />
@@ -73,9 +72,10 @@ function App() {
           <Route path="/cart" element={<CartItem />} />
           <Route path="/place_order" element={<PlaceOrderForm />} />
           <Route path="/my_orders" element={<MyOrders />} />
-          <Route path="/review_rating" element={<ReviewRating />} />
-          <Route path="/order_track" element={<OrderTracker />} />
-
+          <Route path="/order_track/:orderId" element={<OrderTracker />} />
+          <Route path="/review_rating/:orderId" element={<ReviewRating />} />
+          <Route path="/shop/:vendorId" element={<VendorShop/>} />
+          
           {/* redirect from cart */}
           <Route path="/product_detail/:prodId" element={<ProductDetail />} />
 

@@ -1,13 +1,35 @@
 
 import { useState, useRef } from 'react';
+import toast from 'react-hot-toast';
 import { Menu, Search, Sun, Bell, ChevronDown, User, LogOut, UserRoundCog } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useVendorLogout } from '../../hook/useAuth';
+import useAuthStore from '../../store/useAuthStore';
+import { useGetVendor } from '../../hook/useVendor';
 
 const VendorHeader = ({ onToggleSideBar }) => {
 
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
+
+    const { data: getVendor, isLoading, isError } = useGetVendor();
+    const { mutate: logoutVendor, isPending } = useVendorLogout();
+
+    const clearStore = useAuthStore((state) => state.logout); // Zustand wala logout
+
+    const handleLogout = () => {
+        logoutVendor(null, {
+            onSuccess: (res) => {
+                clearStore();
+                navigate('/login')
+                toast.success(res.message || "Logout successful!");
+            },
+            onError: (error) => {
+                clearStore();
+            }
+        });
+    };
 
     return (
         <div className='bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-pink-50 dark:border-slate-800 p-4 lg:px-8 sticky top-0 z-40'>
@@ -67,22 +89,33 @@ const VendorHeader = ({ onToggleSideBar }) => {
                             className='flex items-center space-x-3 p-1 pr-3 rounded-2xl border border-transparent hover:border-pink-100 hover:bg-pink-50/50 transition-all cursor-pointer'
                         >
 
-                            <div className='w-9 h-9 bg-linear-to-br from-pink-500 to-rose-400 rounded-xl flex justify-center items-center shadow-md shadow-pink-200'>
-                                <User className='w-5 h-5 text-white' />
+                           <div className='w-9 h-9 bg-linear-to-br from-pink-500 to-rose-400 rounded-xl flex justify-center items-center shadow-md shadow-pink-200'>
+                                {getVendor?.profilePhoto ? (
+                                    <img 
+                                    src={getVendor.profilePhoto} 
+                                    className="w-full h-full rounded-xl object-cover" />
+                                ) : (
+                                    <User className='w-5 h-5 text-white' />
+                                )}
                             </div>
 
                             <div className='hidden md:block text-left'>
-                                <h4 className='text-xs font-bold text-slate-800 dark:text-white leading-tight'>EasyShop</h4>
-                                <span className='text-[10px] font-semibold text-pink-500 bg-pink-50 px-1.5 py-0.5 rounded-md'>VERIFIED</span>
+                                <h4 className='text-xs font-bold text-slate-800 dark:text-white leading-tight'>
+                                    {getVendor?.name || "Loading..."}
+                                </h4>
+                                <span className='text-[10px] font-semibold text-pink-500 bg-pink-50 px-1.5 py-0.5 rounded-md'>
+                                    VERIFIED
+                                </span>
                             </div>
-                            <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
+                            <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 
+                                ${open ? 'rotate-180' : ''}`} />
                         </div>
 
                         {/* Enhanced Dropdown */}
                         {open && (
                             <div className="absolute right-0 mt-3 w-48 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-xl shadow-slate-200/50 z-50 py-2 overflow-hidden animate-in fade-in zoom-in duration-200">
                                 <button
-                                    onClick={() => {navigate("/vendor_profile"); setOpen(false);}}
+                                    onClick={() => { navigate("/vendor_profile"); setOpen(false); }}
                                     className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-slate-700/50 hover:text-pink-600 transition-colors cursor-pointer">
                                     <UserRoundCog className="w-4 h-4" />
                                     <span>Profile</span>
@@ -90,7 +123,9 @@ const VendorHeader = ({ onToggleSideBar }) => {
 
                                 <div className='h-px bg-slate-100 dark:bg-slate-700 mx-2 my-1'></div>
 
-                                <button className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors cursor-pointer">
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors cursor-pointer">
                                     <LogOut className="w-4 h-4" />
                                     <span className='font-semibold'>Logout</span>
                                 </button>

@@ -59,6 +59,7 @@ function VendorAccountInfo({ prev, formData, setFormData }) {
 
         storeLogo: null,
         storeName: "",
+        aboutShop: "",
         businessEmail: "",
         businessContact: "",
         businessType: "",
@@ -99,6 +100,7 @@ function VendorAccountInfo({ prev, formData, setFormData }) {
 
         // STEP 2: Business Info
         data.append("storeName", formData.storeName);
+        data.append("aboutShop", formData.aboutShop);
         data.append("businessEmail", formData.businessEmail);
         data.append("businessContact", formData.businessContact);
         data.append("businessType", formData.businessType);

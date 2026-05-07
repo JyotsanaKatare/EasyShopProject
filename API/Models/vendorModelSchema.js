@@ -2,7 +2,7 @@
 import mongoose from "mongoose";
 
 const vendorSchema = new mongoose.Schema({
-    
+
     // step-1
     profilePhoto: {
         type: String,
@@ -72,6 +72,16 @@ const vendorSchema = new mongoose.Schema({
         type: String,
     },
 
+    isVerified: {
+        type: Boolean,
+        default: false // Jab tak Admin certificate check karke approve na kare
+    },
+
+    aboutShop: {
+        type: String,
+        required: true
+    },
+
     address: {
         type: String,
         required: true,
@@ -109,7 +119,7 @@ const vendorSchema = new mongoose.Schema({
     gstDocumentUpload: {
         type: String,
     },
-    
+
     // step-3
     accHolder: {
         type: String,
@@ -141,11 +151,17 @@ const vendorSchema = new mongoose.Schema({
         default: 'vendor',
     },
 
+    availableBalance: {
+        type: Number,
+        default: 0
+    },
+
     isActive: {
         type: Boolean,
         required: true,
-        default: true,
+        default: false,
     },
+
 },
 
     { timestamps: true }

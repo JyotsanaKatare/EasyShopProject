@@ -2,51 +2,70 @@
 import React from 'react';
 import { HiOutlineCube, HiOutlineExclamation, HiOutlineXCircle, HiOutlineTrendingUp } from 'react-icons/hi';
 import CountUp from 'react-countup';
-
-const cardItems = [
-  {
-    id: 1,
-    title: "Total Inventory",
-    para: "Total stock on hand.",
-    icon: <HiOutlineCube />,
-    value: "4250",
-    growth: "Items",
-    color: "bg-blue-500" // Neutral color for total
-  },
-  {
-    id: 2,
-    title: "Low Stock Alert",
-    para: "Needs immediate restock.",
-    icon: <HiOutlineExclamation />,
-    value: "12",
-    growth: "Immediate Action",
-    color: "bg-amber-500" // Warning color (Orange/Yellow)
-  },
-  {
-    id: 3,
-    title: "Out of Stock",
-    para: "Currently zero units.",
-    icon: <HiOutlineXCircle />,
-    value: "05",
-    growth: "Restock Now",
-    color: "bg-red-500" // Critical error color
-  },
-  {
-    id: 4,
-    title: "Inventory Value",
-    para: "Total market worth.",
-    icon: <HiOutlineTrendingUp />,
-    value: "85400",
-    growth: "Net Worth",
-    color: "bg-pink-500" // Your brand theme color
-  },
-];
+import { useVendorStockStats } from '../../hook/uesProducts';
 
 function StockInventoryCards({ setCurrentPage }) {
+
+  const { data: stockStats, isLoading, isError } = useVendorStockStats();
+
+  // Default stats 
+  const stats = stockStats || {
+    totalInventory: 0,
+    lowStockAlert: 0,
+    outOfStock: 0,
+    inventoryValue: 0
+  };
+
+  const cardItems = [
+    {
+      id: 1,
+      title: "Total Inventory",
+      para: "Total stock on hand.",
+      icon: <HiOutlineCube />,
+      value: stats.totalInventory.toLocaleString(), // Number formatting (e.g. 4,250)
+      growth: "Items",
+      color: "bg-blue-600",
+      badgeColor: "bg-green-50 text-green-600"
+    },
+    {
+      id: 2,
+      title: "Low Stock Alert",
+      para: "Needs immediate restock.",
+      icon: <HiOutlineExclamation />,
+      value: stats.lowStockAlert,
+      growth: "Immediate Action",
+      color: "bg-amber-500",
+      badgeColor: "bg-orange-50 text-orange-600"
+    },
+    {
+      id: 3,
+      title: "Out of Stock",
+      para: "Currently zero units.",
+      icon: <HiOutlineXCircle />,
+      value: stats.outOfStock,
+      growth: "Restock Now",
+      color: "bg-red-500",
+      badgeColor: "bg-red-50 text-red-600"
+    },
+    {
+      id: 4,
+      title: "Inventory Value",
+      para: "Total market worth.",
+      icon: <HiOutlineTrendingUp />,
+      value: `₹${stats.inventoryValue.toLocaleString()}`,
+      growth: "Net Worth",
+      color: "bg-pink-500",
+      badgeColor: "bg-blue-50 text-blue-600"
+    },
+  ];
+
+  if (isLoading) return <div className='p-4 text-gray-400'>Fetching stats information....</div>
+  if (isError) return <div className="p-4 text-red-500">Failed to load inventory stats.</div>;
+
   return (
     <div>
       {/* Heading Section */}
-       <div className="md:bg-white/80 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between text-center md:text-start gap-4 mb-3 md:mb-8">
+      <div className="md:bg-white/80 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between text-center md:text-start gap-4 mb-3 md:mb-8">
 
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white tracking-tight">

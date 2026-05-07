@@ -1,9 +1,17 @@
 
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
+import useAuthStore from "../../store/useAuthStore";
+import { useVendorProfile } from "../../hook/useAuth";
 
 function ProfileHeader() {
+
     const navigate = useNavigate();
+    const { user } = useAuthStore();
+
+    const vendorId = user?._id || user?.id; //id get from store
+
+    const { data: vendorData, isLoading, isError } = useVendorProfile(vendorId);
 
     return (
         <nav className="bg-white/80 backdrop-blur-xl border-b border-pink-50 flex items-center justify-between p-3 md:p-4 lg:px-8 lg:py-5 sticky top-0 z-50">
@@ -15,7 +23,9 @@ function ProfileHeader() {
                     className="flex items-center gap-1.5 text-slate-500 hover:text-pink-500 font-bold transition-colors cursor-pointer group"
                 >
                     <HiOutlineArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-                    <span className="hidden sm:inline text-sm">Dashboard</span>
+                    <span className="hidden sm:inline text-sm">
+                        Dashboard
+                    </span>
                 </button>
 
                 <div className="h-5 w-px bg-slate-200 hidden xs:block"></div>
@@ -23,13 +33,14 @@ function ProfileHeader() {
                 {/* Brand Logo */}
                 <div className="flex items-center gap-2">
                     <img
-                        src="https://media.istockphoto.com/id/1404897722/photo/diamond-3d-icon-on-blue-circle-shape-3d-illustration.jpg?s=612x612&w=0&k=20&c=3Dx0WPF2udKJaFP9i6-Xz9Gnp1TV2UtKbphyY3XcFBY="
+                        src={vendorData.storeLogo}
                         alt="Logo"
                         className="w-10 h-6 md:w-15 md:h-12 object-cover"
                     />
                     {/* Mobile par "EasyShop" aur Desktop par "EasyShop Settings" */}
                     <span className="text-sm md:text-lg font-bold text-slate-800 tracking-tighter truncate max-w-25 md:max-w-none">
-                        EasyShop <span className="hidden md:inline">Settings</span>
+                        {/* EasyShop <span className="hidden md:inline">Settings</span> */}
+                        {vendorData.storeName}
                     </span>
                 </div>
             </div>
@@ -38,13 +49,13 @@ function ProfileHeader() {
 
                 {/* Vendor Mode Pill */}
                 <span className="hidden md:block text-[8px] md:text-[10px] font-black bg-white/50 border border-pink-100 text-pink-500 px-3 py-1 rounded-full uppercase whitespace-nowrap shadow-sm">
-                    Vendor Mode
+                    {vendorData.name}
                 </span>
 
                 {/* Vendor Image Wrapper */}
                 <div className="relative group">
                     <img
-                        src="https://images.unsplash.com/photo-1481214110143-ed630356e1bb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHdvbWVufGVufDB8fDB8fHww"
+                        src={vendorData.profilePhoto}
                         alt="Vendor Profile"
                         className="w-10 h-10 md:w-12 md:h-12 object-cover rounded-full border-2 border-white shadow-md group-hover:border-pink-200 transition-all"
                     />

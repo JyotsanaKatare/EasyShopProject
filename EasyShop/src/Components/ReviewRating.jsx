@@ -1,27 +1,67 @@
 
-//updated
 import React, { useState } from 'react';
-import NewProd3 from '../assets/Images/NewProd3.png';
 import { IoIosStar } from "react-icons/io";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import confetti from 'canvas-confetti';
+import { useNavigate, useParams } from 'react-router-dom';
+
+import { useOrderDetail } from '../hook/useOrders';
+import { useAddReview } from '../hook/useReview';
+import toast from 'react-hot-toast';
 
 function ReviewRating() {
+
+    const navigate = useNavigate();
+    const { orderId } = useParams();
+
+    const { data: orderDetail, isLoading, isError } = useOrderDetail(orderId);
+    const { mutate: addReview, isPending } = useAddReview();
 
     const [hoverIndex, setHoverIndex] = useState(0);
     const [clickIndex, setClickIndex] = useState(0);
     const [reviewPopup, setReviewPopup] = useState(false);
 
+    const [reviewText, setReviewText] = useState("");
+
     const handleSubmitReview = () => {
-        setReviewPopup(true);
-        confetti({
-            particleCount: 150,
-            spread: 70,
-            origin: { y: 0.6 },
-            zIndex: 999,
-            colors: ['#ec4899', '#f472b6', '#db2777']
+
+        const prod_id = orderDetail?.items[0]?.productId?._id;
+
+        if (!prod_id) {
+            toast.error("Product not found");
+            return;
+        }
+
+        if (clickIndex === 0) {
+            toast.error("Please select a rating");
+            return;
+        }
+
+        if (!reviewText.trim()) {
+            toast.error("Please enter a product review");
+            return;
+        }
+
+        addReview({
+            prod_id,
+            rating: clickIndex,
+            review: reviewText.trim(),
+        }, {
+            onSuccess: () => {
+                setReviewPopup(true);
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    zIndex: 999,
+                    colors: ['#ec4899', '#f472b6', '#db2777']
+                });
+            }
         });
     };
+
+    if (isLoading) return <div className="py-20 text-center text-slate-400">Loading order detail...</div>;
+    if (isError) return <div className="py-20 text-center text-red-400">Failed to load order detail</div>;
 
     return (
         <section className='w-full min-h-[70vh] md:pb-6 px-4 lg:px-6'>
@@ -40,27 +80,34 @@ function ReviewRating() {
                         </p>
                     </div>
 
-                    {/* Product Details Section */}
-                    <div className="flex items-center gap-4 bg-gray-50/50 p-2 md:p-3 rounded-xl md:rounded-3xl border border-dashed border-gray-200 w-full md:w-auto justify-center md:justify-end">
-                        <div className="text-right">
-                            <h2 className="text-[12px] md:text-[16px] text-pink-500 font-medium md:font-extrabold uppercase tracking-tight">
-                                Makeup Brush Set
-                            </h2>
-                            <p className="text-[12px] md:text-[14px] text-gray-500">
-                                Qty: 3 <span className="mx-1 text-gray-300">•</span>
-                                <span className="font-black text-gray-800">₹1,931</span>
-                            </p>
-                        </div>
+                    {/* Top - product detail section */}
+                    {orderDetail?.items?.map((item, index) => (
+                        <div
+                            key={index}
+                            className="flex items-center gap-4 bg-gray-50/50 p-2 md:p-3 rounded-xl md:rounded-3xl border border-dashed border-gray-200 w-full md:w-auto justify-center md:justify-end">
+                            <div className="text-right">
+                                <h2 className="text-[12px] text-pink-500 font-medium md:font-extrabold uppercase tracking-tight">
+                                    {item.productId?.prodName}
+                                </h2>
+                                <p className="text-[12px] md:text-[14px] text-gray-500">
+                                    Qty: {item.quantity} <span className="mx-1 text-gray-300">•</span>
+                                    <span className="font-black text-gray-800">
+                                        ₹{item.price}
+                                    </span>
+                                </p>
+                            </div>
 
-                        {/* Product Image */}
-                        <div className='w-20 h-20 rounded-2xl overflow-hidden border-2 border-white shadow-lg shadow-gray-100 shrink-0'>
-                            <img
-                                src={NewProd3}
-                                alt="Product"
-                                className="w-full h-full object-cover"
-                            />
+                            {/* Product Image */}
+                            <div className='w-20 h-20 rounded-2xl overflow-hidden border-2 border-white shadow-lg shadow-gray-100 shrink-0'>
+                                <img
+                                    src={item.productId?.prodImage}
+                                    alt={item.productId?.prodName}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
                         </div>
-                    </div>
+                    ))}
+
                 </div>
             </div>
 
@@ -111,7 +158,9 @@ function ReviewRating() {
 
                     {/* Rating Section */}
                     <div className="py-4 border-b border-gray-100">
-                        <h1 className="text-[16px] md:text-[20px] font-semibold text-gray-900 tracking-tight">Rate this Product</h1>
+                        <h1 className="text-[16px] md:text-[20px] font-semibold text-gray-900 tracking-tight">
+                            Rate this Product
+                        </h1>
 
                         <div className="py-4 text-[25px] md:text-[45px] flex flex-wrap items-center gap-1 md:gap-3  text-pink-500">
                             <div className="flex gap-1 md:gap-3">
@@ -139,7 +188,9 @@ function ReviewRating() {
                                         : clickIndex === 3 ? <span className="text-yellow-500">Good 🙂</span>
                                             : clickIndex === 4 ? <span className="text-green-500">Very Good 😊</span>
                                                 : clickIndex === 5 ? <span className="text-green-600">Excellent 😍</span>
-                                                    : <span className="text-gray-300">Select Rating</span>}
+                                                    : <span className="text-gray-300">
+                                                        Select Rating
+                                                    </span>}
                             </p>
                         </div>
                     </div>
@@ -153,6 +204,9 @@ function ReviewRating() {
 
                         <div className="mt-4">
                             <textarea
+                                name='review'
+                                value={reviewText}
+                                onChange={(e) => setReviewText(e.target.value)}
                                 placeholder="Description..."
                                 className="text-[13px] md:text-[15px] w-full h-36 md:h-45 p-3 md:p-5 bg-gray-50 border-2 border-gray-200 outline-none resize-none rounded-3xl focus:border focus:border-pink-500 focus:bg-white transition-all text-gray-700"
                             />
@@ -163,9 +217,10 @@ function ReviewRating() {
                     <div className="w-full mt-6 md:flex md:justify-end">
                         <button
                             onClick={handleSubmitReview}
+                            disabled={isPending}
                             className="w-full md:w-auto px-10 py-4 bg-pink-500 text-white rounded-2xl font-bold text-[16px] md:text-[18px] hover:bg-pink-600 shadow-lg shadow-pink-100 active:scale-95 transition-all duration-150 uppercase tracking-wider cursor-pointer"
                         >
-                            Submit Review
+                            {isPending ? "Submitting..." : "Submit Review"}
                         </button>
                     </div>
                 </div>
@@ -174,7 +229,7 @@ function ReviewRating() {
             {/* review submit popup */}
             {reviewPopup && (
                 <div
-                //when click outside pop-up close
+                    //when click outside pop-up close
                     id='popup-overlay'
                     onClick={(e) => {
                         if (e.target.id === "popup-overlay") setReviewPopup(false);
@@ -183,7 +238,6 @@ function ReviewRating() {
 
                     <div className={`bg-white p-6 md:p-10 rounded-4xl md:rounded-[3rem] shadow-2xl text-center w-full max-w-[90%] md:max-w-100 border border-gray-100 transition-all duration-500 transform scale-100 animate-in zoom-in-95`}>
 
-                        {/* Success Icon with Pink Gradient Ring */}
                         <div className="mb-4 md:mb-6 flex justify-center">
                             <div className="relative">
 
@@ -203,7 +257,10 @@ function ReviewRating() {
 
                         {/* Done/Close Button */}
                         <button
-                            onClick={() => setReviewPopup(false)}
+                            onClick={() => {
+                                setReviewPopup(false);
+                                navigate('/my_orders');
+                            }}
                             className="mt-6 md:mt-8 w-full py-3.5 md:py-4 bg-gray-900 text-white rounded-xl md:rounded-2xl font-bold text-sm md:text-base hover:bg-black transition-all active:scale-95 shadow-xl shadow-gray-200 cursor-pointer"
                         >
                             DONE

@@ -66,25 +66,6 @@ const userSchema = new mongoose.Schema(
             type: Boolean,
             default: true // Purane users verified hi maane jayenge
         },
-
-        cart: [
-            {
-                productId: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'Product'
-                },
-
-                quantity: {
-                    type: Number,
-                    default: 1
-                }
-            }
-        ],
-
-        wishlist: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Product'
-        }]
     },
 
     { timestamps: true }

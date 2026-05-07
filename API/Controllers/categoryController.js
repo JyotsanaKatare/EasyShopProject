@@ -3,12 +3,15 @@ import Category from '../Models/categoryModelSchema.js';
 import { deleteCloudinaryFiles } from '../utils/cloudinaryUtils.js'; // err
 import { deleteOldFileFromCloudinary } from '../utils/cloudinaryUtils.js'; // update + dlt
 
+// admin
 export const addCategory = async (req, res) => {
     try {
-        const { department, catName, slug, description } = req.body;
+        const { department, catName, description, requiresCertificate, certificateLabel } = req.body;
         const catImagePath = req.file ? req.file.path : "";
 
-        if (!department || !catName || !slug || !catImagePath || !description) {
+        const slug = catName.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+
+        if (!department || !catName || !catImagePath || !description) {
             if (req.file) await deleteCloudinaryFiles(req.file);
             return res.status(400).json({
                 success: false,
@@ -16,8 +19,16 @@ export const addCategory = async (req, res) => {
             });
         };
 
+        if (requiresCertificate === 'true' && !certificateLabel) {
+            if (req.file) await deleteCloudinaryFiles(req.file);
+            return res.status(400).json({
+                success: false,
+                message: "Certificate label is required when certificate is enabled"
+            });
+        }
+
         const alreadyExists = await Category.findOne({
-            $or: [{ catName: catName.trim() }, { slug: slug.toLowerCase().trim() }]
+            $or: [{ catName: catName.trim() }, { slug }]
         });
 
         if (alreadyExists) {
@@ -33,7 +44,9 @@ export const addCategory = async (req, res) => {
             catName,
             slug,
             description,
-            catImage: catImagePath
+            catImage: catImagePath,
+            requiresCertificate: requiresCertificate === 'true' || requiresCertificate === true,
+            certificateLabel: certificateLabel || ""
         });
 
         await newCategory.save();
@@ -44,6 +57,7 @@ export const addCategory = async (req, res) => {
         });
 
     } catch (err) {
+        console.log("Error :", err);
         if (req.file) await deleteCloudinaryFiles(req.file);
         return res.status(500).json({
             success: false,
@@ -54,7 +68,30 @@ export const addCategory = async (req, res) => {
 
 export const listCategory = async (req, res) => {
     try {
-        const list = await Category.find({}).sort({ createdAt: -1 });
+        const list = await Category.aggregate([
+            {
+                $lookup: {
+                    from: "products", // products collection ka naam
+                    localField: "_id",
+                    foreignField: "catId", // Product model mein category field ka naam
+                    as: "products"
+                }
+            },
+            {
+                $project: {
+                    catName: 1,
+                    catImage: 1,
+                    department: 1,
+                    description: 1,
+                    slug:1,
+                    isActive: 1,
+                    createdAt: 1,
+                    requiresCertificate: 1,
+                    certificateLabel: 1,
+                    productCount: { $size: "$products" }
+                }
+            },
+        ]).sort({ createdAt: -1 });
 
         if (!list || list.length === 0) {
             return res.status(404).json({
@@ -104,21 +141,13 @@ export const getCategory = async (req, res) => {
     };
 };
 
+// admin
 export const updateCategory = async (req, res) => {
     try {
         const { cat_id } = req.params;
-        const updates = {};
-
-        const fields = ["department", "catName", "slug", "description", "isActive"];
-
-        fields.forEach(field => {
-            if (req.body[field] !== undefined) {
-                updates[field] = req.body[field];
-            };
-        });
+        const { catName, department, description, isActive, requiresCertificate, certificateLabel } = req.body;
 
         const category = await Category.findById(cat_id);
-
         if (!category) {
             if (req.file) await deleteCloudinaryFiles(req.file);
             return res.status(404).json({
@@ -127,23 +156,71 @@ export const updateCategory = async (req, res) => {
             });
         }
 
+        const updates = {};
+
+        // 1. AUTO SLUG GENERATION & DUPLICATE CHECK
+        if (catName) {
+            updates.catName = catName.trim();
+            updates.slug = catName.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+
+            // Check if new name/slug conflicts with another category
+            const alreadyExists = await Category.findOne({
+                _id: { $ne: cat_id }, // Apni ID ko chhod kar baaki check karein
+                $or: [{ catName: updates.catName }, { slug: updates.slug }]
+            });
+
+            if (alreadyExists) {
+                if (req.file) await deleteCloudinaryFiles(req.file);
+                return res.status(400).json({
+                    success: false,
+                    message: "Category with this name or slug already exists"
+                });
+            }
+        }
+
+        // 2. OTHER FIELDS
+        if (department) updates.department = department;
+        if (description) updates.description = description;
+        // if (isActive !== undefined) updates.isActive = isActive;
+
+        if (isActive !== undefined) {
+            updates.isActive = isActive === 'true' || isActive === true;
+        }
+
+        // requiresCertificate handling
+        if (requiresCertificate !== undefined) {
+            updates.requiresCertificate = requiresCertificate === 'true' || requiresCertificate === true;
+        }
+
+        // Certificate Label logic
+        if (certificateLabel !== undefined) {
+            updates.certificateLabel = certificateLabel;
+        }
+
+        // Extra Validation: Agar update ke baad certificate true hai par label khali hai
+        const finalRequiresCert = updates.requiresCertificate !== undefined ? updates.requiresCertificate : category.requiresCertificate;
+        const finalLabel = updates.certificateLabel !== undefined ? updates.certificateLabel : category.certificateLabel;
+
+        if (finalRequiresCert && !finalLabel) {
+            if (req.file) await deleteCloudinaryFiles(req.file);
+            return res.status(400).json({
+                success: false,
+                message: "Certificate label is required when license is enabled"
+            });
+        }
+
+        // 3. IMAGE UPDATE LOGIC
         if (req.file) {
             if (category.catImage) {
                 await deleteOldFileFromCloudinary(category.catImage);
             }
-
             updates.catImage = req.file.path;
         }
 
         const updatedCategory = await Category.findByIdAndUpdate(
             cat_id,
-            {
-                $set: updates
-            },
-            {
-                new: true,
-                runValidators: true
-            }
+            { $set: updates },
+            { new: true, runValidators: true }
         );
 
         res.status(200).json({
@@ -154,14 +231,15 @@ export const updateCategory = async (req, res) => {
 
     } catch (err) {
         if (req.file) await deleteCloudinaryFiles(req.file);
-        // console.log(err);
+        console.error("Update Category Error:", err);
         return res.status(500).json({
             success: false,
-            message: "Server Error Occur"
+            message: "Server Error Occurred"
         });
-    };
+    }
 };
 
+// admin
 export const deleteCategory = async (req, res) => {
     try {
         const { cat_id } = req.params;
@@ -185,6 +263,7 @@ export const deleteCategory = async (req, res) => {
         });
 
     } catch (err) {
+        console.log("Error :", err);
         res.status(500).json({
             success: false,
             message: "Server Error Occur"
@@ -192,6 +271,7 @@ export const deleteCategory = async (req, res) => {
     };
 };
 
+// admin
 export const toggleCategoryStatus = async (req, res) => {
     try {
         const { cat_id } = req.params;
@@ -262,9 +342,9 @@ export const getCategoryTree = async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ 
-            success: false, 
-            message: "Server Error Occur" 
+        res.status(500).json({
+            success: false,
+            message: "Server Error Occur"
         });
     };
 };

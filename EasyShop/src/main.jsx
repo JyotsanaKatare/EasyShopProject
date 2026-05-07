@@ -12,12 +12,12 @@ const isProduction = import.meta.env.PROD;
 
 createRoot(document.getElementById('root')).render(
   <QueryClientProvider client={queryClient}>
-  <WishListProvider>
-    <CartProvider>
-      <BrowserRouter basename={isProduction ? "/EasyShop" : "/"}>
-        <App />
-      </BrowserRouter>
-    </CartProvider>
-  </WishListProvider>
-</QueryClientProvider>
+    <BrowserRouter basename={isProduction ? "/EasyShop" : "/"}>
+      <WishListProvider>
+        <CartProvider>
+          <App />
+        </CartProvider>
+      </WishListProvider>
+    </BrowserRouter>
+  </QueryClientProvider>
 )

@@ -16,7 +16,7 @@ function VendorDashboard({ setCurrentPage }) {
     setTimeout(() => setLoading(false), 2000);
   }, []);
 
-  if (loading) return <EasyShopLoader />;
+  // if (loading) return <EasyShopLoader />;
 
   return (
     <>
@@ -26,7 +26,7 @@ function VendorDashboard({ setCurrentPage }) {
         <AnalyticsSplit setCurrentPage={setCurrentPage} />
       </div>
 
-      <DashboardChatIcon setCurrentPage={setCurrentPage}/>
+      <DashboardChatIcon setCurrentPage={setCurrentPage} />
     </>
   )
 }

@@ -3,60 +3,79 @@ import React, { useState } from 'react';
 import { HiOutlineDownload, HiOutlineSearch, HiOutlineCurrencyRupee, HiOutlineReceiptTax, HiOutlineCreditCard } from 'react-icons/hi';
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
+import { HiOutlineClock } from "react-icons/hi";
+import { HiOutlineCash } from "react-icons/hi";
 
-const transactions = [
-    {
-        id: "TXN-98721",
-        orderId: "ORD-2026-A1", // Kis order ka paisa hai
-        date: "21 Mar, 2026",
-        amount: 2499,
-        platformFee: 250, // Dashboard/App ka commission (e.g., 10%)
-        vendorEarning: 2249, // Vendor ke haath mein kitna aaya (Amount - Fee)
-        type: "Credit", // Paisa aaya (ya Refund ke liye Debit)
-        status: "Completed", // Completed, Pending, ya Failed
-        paymentGateway: "Razorpay (UPI)"
-    },
-    {
-        id: "TXN-98725",
-        orderId: "ORD-2026-B4",
-        date: "20 Mar, 2026",
-        amount: 1200,
-        platformFee: 120,
-        vendorEarning: 1080,
-        type: "Credit",
-        status: "Pending", // Maan lo abhi bank mein nahi aaya
-        paymentGateway: "Cash on Delivery"
-    },
-    {
-        id: "TXN-98721",
-        orderId: "ORD-2026-A1", // Kis order ka paisa hai
-        date: "21 Mar, 2026",
-        amount: 2499,
-        platformFee: 250, // Dashboard/App ka commission (e.g., 10%)
-        vendorEarning: 2249, // Vendor ke haath mein kitna aaya (Amount - Fee)
-        type: "Credit", // Paisa aaya (ya Refund ke liye Debit)
-        status: "Completed", // Completed, Pending, ya Failed
-        paymentGateway: "Razorpay (UPI)"
-    },
-];
-
-const cards = [
-    { label: "Total Revenue", value: "₹50,000", icon: <HiOutlineCurrencyRupee />, color: "text-blue-600", bg: "bg-blue-50" },
-    { label: "Platform Fees", value: "₹5,000", icon: <HiOutlineReceiptTax />, color: "text-pink-600", bg: "bg-pink-50" },
-    { label: "Settled Amount", value: "₹45,000", icon: <HiOutlineCreditCard />, color: "text-emerald-600", bg: "bg-emerald-50" },
-];
+import { useDownloadTransactionInvoice, useVendorTransactionList, useVendorTransactionStats } from '../../hook/useTransactions';
 
 const statusMenu = [
     { id: 1, status: "Completed" },
-    { id: 2, status: "Pending" },
-    { id: 3, status: "Failed" }
+    { id: 2, status: "Cancelled" }
 ];
 
 function Transactions() {
 
+    const { data: res, isLoading } = useVendorTransactionStats();
+    const { data: transactionList, isError } = useVendorTransactionList();
+    const { mutate: downloadInvoice, isPending, variables } = useDownloadTransactionInvoice();
+
+    // Backend se summary nikaal rahe hain
+    const summary = res?.summary || { totalRevenue: 0, totalFees: 0, settledAmount: 0, pendingAmount: 0 };
+
     const [isStatusOpen, setIsStatusOpen] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState(null);
 
+    if (isLoading) return <p>Loading Analytics...</p>;
+    if (isError) return <p>Error In Loading Analytics...</p>;
+
+    // amt in format
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            minimumFractionDigits: 2
+        }).format(amount || 0);
+    };
+
+    const cards = [
+        {
+            label: "Total Revenue",
+            value: formatCurrency(summary?.totalRevenue),
+            icon: <HiOutlineCurrencyRupee />,
+            color: "text-blue-600",
+            bg: "bg-blue-50"
+        },
+        {
+            label: "Platform Fees (10%)",
+            value: formatCurrency(summary?.totalFees),
+            icon: <HiOutlineReceiptTax />,
+            color: "text-pink-600",
+            bg: "bg-pink-50"
+        },
+        {
+            label: "Wallet Credited",
+            value: formatCurrency(summary?.settledAmount),
+            icon: <HiOutlineCreditCard />,
+            color: "text-emerald-600",
+            bg: "bg-emerald-50"
+        },
+        {
+            label: "Pending Payout",
+            value: formatCurrency(summary?.pendingAmount),
+            icon: <HiOutlineClock />,
+            color: "text-amber-600",
+            bg: "bg-amber-50"
+        },
+        {
+            label: "COD Collected",
+            value: formatCurrency(summary?.codCollected),
+            icon: <HiOutlineCash />, // Cash icon use karein
+            color: "text-orange-600",
+            bg: "bg-orange-50"
+        },
+    ];
+    
+    // top filter
     const handlestatus = (status) => {
         setSelectedStatus(status);
         setIsStatusOpen(false);
@@ -73,7 +92,8 @@ function Transactions() {
                         className="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow truncate"
                     >
                         {/* Icon - Mobile pe thoda chota kiya hai */}
-                        <div className={`w-11 h-11 md:w-12 md:h-12 shrink-0 rounded-xl ${stat.bg} ${stat.color} flex items-center justify-center text-lg md:text-2xl`}>
+                        <div className={`w-11 h-11 md:w-12 md:h-12 shrink-0 rounded-xl 
+                            ${stat.bg} ${stat.color} flex items-center justify-center text-lg md:text-2xl`}>
                             {stat.icon}
                         </div>
 
@@ -163,41 +183,88 @@ function Transactions() {
                                 <th className="px-6 py-4 text-right">Invoice</th>
                             </tr>
                         </thead>
+
                         <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
-                            {transactions.map((txn, idx) => (
-                                <tr key={idx} className="hover:bg-pink-50/30 dark:hover:bg-slate-800/50 transition-colors group">
+                            {transactionList.map((txn, idx) => (
+                                <tr key={idx}
+                                    className="hover:bg-pink-50/30 dark:hover:bg-slate-800/50 transition-colors group">
+
+                                    {/* trans id */}
                                     <td className="px-6 py-4">
-                                        <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{txn.id}</span>
-                                        <p className="text-[10px] text-slate-400">{txn.date}</p>
+                                        <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                                            {txn.txnId}
+                                        </span>
+                                        <p className="text-[10px] text-slate-400">
+                                            {new Date(txn.createdAt).toLocaleDateString('en-IN', {
+                                                day: '2-digit',
+                                                month: 'short',
+                                                year: 'numeric'
+                                            })}
+                                        </p>
                                     </td>
+
+                                    {/* order id + pay method */}
                                     <td className="px-6 py-4">
-                                        <span className="text-xs font-bold text-pink-500">#ORD-{txn.orderId}</span>
-                                        <p className="text-[10px] text-slate-400 uppercase font-bold">{txn.method}</p>
+                                        <span className="text-xs font-bold text-pink-500">
+                                            {txn.orderDisplayId}
+                                        </span>
+                                        <p className="text-[10px] text-slate-400 uppercase font-bold">
+                                            {txn.paymentMethod}
+                                        </p>
                                     </td>
+
+                                    {/* amount */}
                                     <td className="px-6 py-4">
-                                        <span className="text-sm font-medium text-slate-400 line-through">₹{txn.amount}</span>
+                                        <span className="text-sm font-medium text-slate-400 line-through">
+                                            ₹{txn.totalAmount}
+                                        </span>
                                     </td>
+
+                                    {/* platform fee */}
                                     <td className="px-6 py-4 text-red-400 text-xs font-bold">
                                         - ₹{txn.platformFee}
                                     </td>
+
+                                    {/* earning */}
                                     <td className="px-6 py-4">
-                                        <span className="text-sm font-black text-slate-800 dark:text-white">₹{txn.vendorEarning}</span>
+                                        <span className="text-sm font-black text-slate-800 dark:text-white">
+                                            ₹{txn.netEarning}
+                                        </span>
                                     </td>
+                                    
+                                    {/* status */}
                                     <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded-lg text-[10px] font-extrabold uppercase ${txn.status === 'Completed' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-orange-50 text-orange-600 border border-orange-100'
+                                        <span className={`px-2 py-1 rounded-lg text-[10px] font-extrabold uppercase
+                                         ${txn.status === 'Completed'
+                                                ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                                                : 'bg-orange-50 text-orange-600 border border-orange-100'
                                             }`}>
                                             {txn.status}
                                         </span>
                                     </td>
+
+                                    {/* invoice download */}
                                     <td className="px-6 py-4 text-right">
-                                        <button className="p-2 hover:bg-white dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-pink-500 shadow-sm border border-transparent hover:border-slate-100 transition-all">
-                                            <HiOutlineDownload size={18} />
+                                        <button
+                                            onClick={() => downloadInvoice(txn._id)}
+                                            disabled={isPending && variables === txn._id}
+                                            className="p-2 hover:bg-white dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-pink-500 shadow-sm border border-transparent hover:border-slate-100 transition-all">
+
+                                            {isPending && variables === txn._id ? (
+                                                <span className="text-[10px] animate-pulse">Downloading...</span>
+                                            ) : (
+                                                <HiOutlineDownload size={18} />
+                                            )}
                                         </button>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+
+                    {transactionList?.length === 0 && (
+                        <div className="p-10 text-center text-slate-400">No transactions found.</div>
+                    )}
                 </div>
             </div>
         </div>

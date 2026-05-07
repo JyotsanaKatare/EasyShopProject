@@ -1,14 +1,18 @@
 
 import React, { useState } from "react";
 import Logo from '../../assets/Images/Logo.png';
+import { Link } from 'react-router-dom';
 import { MdOutlineDashboard } from "react-icons/md";
 import { AiOutlineProduct } from "react-icons/ai";
-import { PiShoppingCartSimple, PiHandCoins } from "react-icons/pi"; 
-import { TbUsers, TbSettings} from "react-icons/tb"; // Customers & Settings
+import { PiShoppingCartSimple, PiHandCoins } from "react-icons/pi";
+import { TbUsers, TbSettings } from "react-icons/tb"; // Customers & Settings
 import { TiStarOutline } from "react-icons/ti"; // Reviews/Ratings
-import { BiSolidCategory} from "react-icons/bi"; // Categories
-import { ChevronDown, BadgePercent, User} from 'lucide-react'; // Lucide icons for UI/Coupons
+import { BiSolidCategory } from "react-icons/bi"; // Categories
+import { ChevronDown, BadgePercent, User } from 'lucide-react'; // Lucide icons for UI/Coupons
 import { HiOutlineChatAlt2 } from "react-icons/hi";
+import { useGetVendor } from "../../hook/useVendor";
+import { useVendorUnreadCount } from "../../hook/useChat";
+import useAuthStore from "../../store/useAuthStore";
 
 const menuItems = [
     {
@@ -26,18 +30,6 @@ const menuItems = [
             { id: "All Products", label: "All Products" },
             { id: "Add Product", label: "Add New Product" },
             { id: "Inventory", label: "Stock Inventory" }
-        ],
-    },
-    {
-        id: "Manage Categories",
-        icon: <BiSolidCategory className='w-6 h-6' />,
-        label: "Manage Categories",
-        active: true,
-        submenu: [
-            { id: "Categories", label: "Categories" },
-            { id: "Add Category", label: "Add New Category" },
-            { id: "Sub Categories", label: "Sub Categories" },
-            { id: "Add Sub Category", label: "Add New Sub Category" },
         ],
     },
     {
@@ -77,26 +69,32 @@ const menuItems = [
         active: true,
         Badge: "New"
     },
-    {
-        id: "Promotions",
-        icon: <BadgePercent className='w-6 h-6' />,
-        label: "Discounts & Offers",
-        active: true,
-    },
-    {
-        id: "CMS",
-        icon: <TbSettings className='w-6 h-6' />,
-        label: "Shop Settings",
-        active: true,
-        submenu: [
-            { id: "Hero CMS", label: "Home Banners" },
-            { id: "Footer CMS", label: "Footer Info" },
-            { id: "Shop Policy", label: "Policies" }
-        ]
-    },
+    // {
+    //     id: "Promotions",
+    //     icon: <BadgePercent className='w-6 h-6' />,
+    //     label: "Discounts & Offers",
+    //     active: true,
+    // },
+    // {
+    //     id: "CMS",
+    //     icon: <TbSettings className='w-6 h-6' />,
+    //     label: "Shop Settings",
+    //     active: true,
+    //     submenu: [
+    //         { id: "Hero CMS", label: "Home Banners" },
+    //         { id: "Footer CMS", label: "Footer Info" },
+    //         { id: "Shop Policy", label: "Policies" }
+    //     ]
+    // },
 ];
 
 function VendorSidebar({ collapsed, onToggle, currentPage, onPageChange }) {
+
+    const { user } = useAuthStore();
+    const vendorId = user?._id || user?.id;
+
+    const { data: unreadCount } = useVendorUnreadCount(vendorId);
+    const { data: getVendor, isLoading, isError } = useGetVendor();
 
     const [expandedItems, setExpandedItems] = useState(new Set(['categories']));
 
@@ -116,14 +114,15 @@ function VendorSidebar({ collapsed, onToggle, currentPage, onPageChange }) {
         shadow-lg transition-all duration-300 ease-in-out bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 flex flex-col relative z-10`}>
 
             {/* Logo Section */}
-            <div className={`p-6 flex items-center ${collapsed ? "justify-center" : "justify-between"} border-b border-pink-50 dark:border-slate-800`}>
-                <div className='flex items-center gap-3'>
+            <div className={`p-6 flex items-center 
+                ${collapsed ? "justify-center" : "justify-between"} border-b border-pink-50 dark:border-slate-800`}>
+                <Link to="/" className='flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity'>
                     <img
                         src={Logo}
                         alt="EasyShop"
                         className={`${collapsed ? "w-10" : "w-25"} transition-all duration-300 object-contain`}
                     />
-                </div>
+                </Link>
             </div>
 
             {/* Navigation Menu */}
@@ -165,9 +164,13 @@ function VendorSidebar({ collapsed, onToggle, currentPage, onPageChange }) {
                                             <span className={`font-semibold tracking-wide text-sm`}>
                                                 {item.label}
                                             </span>
+
+                                            {/* badge */}
                                             {item.Badge && (
                                                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold bg-pink-100 text-pink-600 border border-pink-200`}>
-                                                    {item.Badge}
+                                                    {item.id === 'Messages'
+                                                        ? (unreadCount || 0)
+                                                        : item.Badge}
                                                 </span>
                                             )}
                                         </div>
@@ -206,8 +209,14 @@ function VendorSidebar({ collapsed, onToggle, currentPage, onPageChange }) {
             <div className='mb-2 px-4 border-t border-pink-50 dark:border-slate-800'>
                 <div className={`flex items-center ${collapsed ? "justify-center" : "space-x-3 p-3"} rounded-2xl bg-slate-50 dark:bg-slate-800/40 transition-all`}>
                     <div className="relative">
-                        <div className="w-10 h-10 rounded-xl bg-linear-to-tr from-pink-500 to-rose-400 flex justify-center items-center shadow-md shadow-pink-100 dark:shadow-none overflow-hidden text-white">
-                            <User className="w-6 h-6" />
+                        <div className='w-10 h-10 bg-linear-to-br from-pink-500 to-rose-400 rounded-xl flex justify-center items-center shadow-md shadow-pink-200'>
+                            {getVendor?.profilePhoto ? (
+                                <img
+                                    src={getVendor.profilePhoto}
+                                    className="w-full h-full rounded-xl object-cover" />
+                            ) : (
+                                <User className='w-5 h-5 text-white' />
+                            )}
                         </div>
                         <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-slate-900 rounded-full"></div>
                     </div>

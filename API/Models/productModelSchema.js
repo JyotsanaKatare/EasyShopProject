@@ -5,8 +5,8 @@ const productSchema = new mongoose.Schema(
     {
         vendorId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Vendor', 
-            required: true,
+            ref: 'Vendor',
+            required: function () { return this.role === 'Vendor'; }, // Sirf Vendor ke liye mandatory
             index: true
         },
 
@@ -35,22 +35,11 @@ const productSchema = new mongoose.Schema(
             required: true,
             lowercase: true,
             trim: true,
-            index: true
         },
 
         description: {
             type: String,
             required: true
-        },
-
-        prodImage: {
-            type: String,
-            required: true
-        },
-
-        prodImages: {
-            type: [String],
-            default: []
         },
 
         price: {
@@ -73,9 +62,57 @@ const productSchema = new mongoose.Schema(
             of: mongoose.Schema.Types.Mixed // Mixed matlab String, Number, ya Array kuch bhi aa sakta hai
         },
 
+        prodImage: {
+            type: String,
+            required: true
+        },
+
+        prodImages: {
+            type: [String],
+            default: []
+        },
+
+        addedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            refPath: 'role' // Ye dynamically user ya admin ko refer karega
+        },
+
+        role: {
+            type: String,
+            required: true,
+            enum: ['Admin', 'admin', 'vendor']
+        },
+
+        status: {
+            type: String,
+            enum: ['Pending', 'Approved', 'Rejected'],
+            default: 'Pending' // Admin ke products auto-approve honge, vendor ke check honge
+        },
+
         isNewArrival: {
             type: Boolean,
             default: false
+        },
+
+        isBestSeller: {
+            type: Boolean,
+            default: false
+        },
+
+        totalSold: {
+            type: Number,
+            default: 0
+        },
+
+        averageRating: {
+            type: Number,
+            default: 0
+        },
+
+        totalReviews: {
+            type: Number,
+            default: 0
         },
 
         isActive: {
@@ -88,7 +125,21 @@ const productSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-// Search performance ke liye compound index
-productSchema.index({ catId: 1, subCatId: 1, price: 1 });
+// Performance Optimization
+productSchema.index({ prodName: 'text', description: 'text' }); // Search bar ke liye text index
+productSchema.index({ slug: 1 });
+
+// After your existing indexes, before export
+productSchema.virtual('stockStatus').get(function () {
+    if (this.stock === 0) return 'Out of Stock';
+    if (this.stock <= 5) return 'Critical';
+    if (this.stock <= 20) return 'Low Stock';
+    if (this.stock <= 50) return 'Medium';
+    return 'High Stock';
+});
+
+// Required to include virtuals in JSON response
+productSchema.set('toJSON', { virtuals: true });
+productSchema.set('toObject', { virtuals: true });
 
 export default mongoose.model('Product', productSchema);

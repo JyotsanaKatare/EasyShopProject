@@ -5,14 +5,9 @@ import cors from 'cors';
 import http from 'http';  //for socket
 import { Server } from 'socket.io';
 import connectDb from './config/db.js';
-
-import otpRoutes from './Routes/otpRoutes.js';
-import vendorRoutes from './Routes/vendorRoutes.js';
-import userRoutes from './Routes/userRoutes.js';
-import categoryRoutes from './Routes/categoryRoutes.js';
-import subCategoryRoutes from './Routes/subCategoryRoutes.js';
-import productRoutes from './Routes/productRoutes.js';
-import adminRoutes from './Routes/adminRoutes.js';
+import rootRouter from './Routes/mainRoutes.js';
+import Message from './Models/messageModelSchema.js';
+import Conversation from './Models/conversationModelSchema.js';
 
 dotenv.config();
 const app = express();
@@ -34,27 +29,48 @@ const io = new Server(server, {
     }
 });
 
-// Socket Logic (Updated for private chat)
+// Socket Logic
 io.on("connection", (socket) => {
     // User ek specific room join karega (e.g. orderId ya userId)
-    socket.on("join_chat", (room) => {
-        socket.join(room);
-        console.log(`User ${socket.id} joined room: ${room}`);
+    socket.on("join_chat", (conversationId) => {
+        socket.join(conversationId);
+        console.log(`User joined room: ${conversationId}`);
     });
 
-    socket.on("send_message", (data) => {
-        // Sirf us room ke logo ko message jayega
-        io.to(data.room).emit("receive_message", data);
+    // Message bhejne ka logic
+    socket.on("send_message", async (data) => {
+        try {
+            const { conversationId, senderId, receiverId, text, senderModel, receiverModel } = data;
+
+            // 1. Database mein message save karein (Dynamic ref use karke)
+            const newMessage = await Message.create({
+                conversationId,
+                senderId,
+                senderModel,
+                receiverId,
+                receiverModel,
+                text
+            });
+
+            // 2. Conversation ka lastMessage aur unreadCount update karein
+            await Conversation.findByIdAndUpdate(conversationId, {
+                lastMessage: {
+                    text,
+                    senderId,
+                    senderModel
+                },
+                $inc: { [`unreadCount.${receiverId}`]: 1 } // Receiver ka count badhao
+            });
+
+            // 3. Room mein message emit karein taaki real-time dikhe
+            io.to(conversationId).emit("receive_message", newMessage);
+        } catch (err) {
+            console.error("Socket error:", err);
+        }
     });
 });
 
-app.use("/api/v1/otp", otpRoutes);
-app.use("/api/v1/vendor", vendorRoutes);
-app.use("/api/v1/user", userRoutes);
-app.use("/api/v1/category", categoryRoutes);
-app.use("/api/v1/subCategory", subCategoryRoutes);
-app.use("/api/v1/product", productRoutes);
-app.use("/api/v1/admin", adminRoutes);
+app.use('/api/v1', rootRouter);
 
 app.get("/", (req, res) => {
     res.send("API is running successfully 🚀");

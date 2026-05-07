@@ -1,5 +1,4 @@
 
-//updated
 import React, { useState } from 'react'
 import NewProd3 from '../assets/Images/NewProd3.png';
 import { IoIosSearch } from "react-icons/io";
@@ -9,9 +8,12 @@ import { FiFilter } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
 
+import { useUserOrderHistory } from '../hook/useOrders';
+
 function MyOrders() {
 
     const navigate = useNavigate();
+    const { data: orders = [], isLoading, isError } = useUserOrderHistory();
 
     const [isTimeOpen, setIsTimeOpen] = useState(false);
     const [selectedTime, setSelectedTime] = useState([]);
@@ -21,14 +23,46 @@ function MyOrders() {
 
     const [showMobileFilters, setShowMobileFilters] = useState(false);
 
+    // ====== left section - filter ======
     const time = ["Last 30 days", "2025", "2024", "Older",];
+
     const status = [
         "Delivered",
         "Shipped",
         "Pending",
         "Cancelled",
-        "Progress"
+        "Processing"
     ];
+
+    const filteredOrders = orders.filter(order => {
+
+        // status filter
+        if (selectedStatus.length > 0 && !selectedStatus.includes(order.orderStatus)) {
+            return false;
+        }
+
+        // time filter
+        if (selectedTime.length > 0) {
+            const orderDate = new Date(order.createdAt);
+            const now = new Date();
+
+            const matchesTime = selectedTime.some(t => {
+                if (t === 'Last 30 days') {
+                    const thirtyDaysAgo = new Date();
+                    thirtyDaysAgo.setDate(now.getDate() - 30);
+                    return orderDate >= thirtyDaysAgo;
+                }
+                if (t === '2025') return orderDate.getFullYear() === 2025;
+                if (t === '2024') return orderDate.getFullYear() === 2024;
+                if (t === 'Older') return orderDate.getFullYear() < 2024;
+                return true;
+            });
+
+            if (!matchesTime) return false;
+        }
+
+        return true;
+    });
 
     // Generic handler function (can be reused for all dropdowns)
     const handleCheckboxChange = (item, selected, setSelected) => {
@@ -47,6 +81,18 @@ function MyOrders() {
         setIsTimeOpen(false);
         setIsStatusOpen(false);
     }
+
+    // ===== right section =====
+    const statusStyles = {
+        Delivered: 'bg-green-50 text-green-600',
+        Pending: 'bg-amber-50 text-amber-600',
+        Cancelled: 'bg-red-50 text-red-600',
+        Processing: 'bg-blue-50 text-blue-600',
+        Shipped: 'bg-purple-50 text-purple-600',
+    };
+
+    if (isLoading) return <div className="py-20 text-center text-slate-400">Loading orders...</div>;
+    if (isError) return <div className="py-20 text-center text-red-400">Failed to load orders</div>;
 
     return (
         <section className='w-full min-h-[70vh] py-8 md:py-16 px-4 lg:px-6'>
@@ -68,7 +114,9 @@ function MyOrders() {
                 >
                     <div className="flex items-center gap-2">
                         <FiFilter className="text-pink-500" />
-                        <span className="font-bold text-gray-800 uppercase text-sm tracking-wide">Filters & Sorting</span>
+                        <span className="font-bold text-gray-800 uppercase text-sm tracking-wide">
+                            Filters & Sorting
+                        </span>
                     </div>
                     <IoIosArrowDown className="text-gray-400" />
                 </button>
@@ -78,7 +126,7 @@ function MyOrders() {
                     fixed inset-0 z-100 bg-white p-6 overflow-y-auto transition-transform duration-300
                     ${showMobileFilters ? 'translate-x-0' : 'translate-x-full'}
     
-                        lg:relative lg:inset-auto lg:translate-x-0 lg:z-0 lg:w-[25%] lg:p-4 lg:block lg:h-fit lg:sticky lg:top-20 lg:rounded-2xl lg:border lg:border-gray-100 lg:shadow-sm
+                         lg:inset-auto lg:translate-x-0 lg:z-0 lg:w-[25%] lg:p-4 lg:block lg:h-fit lg:sticky lg:top-20 lg:rounded-2xl lg:border lg:border-gray-100 lg:shadow-sm
                         ${showMobileFilters ? 'block' : 'hidden lg:block'}
 `                   }>
 
@@ -237,59 +285,86 @@ function MyOrders() {
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-3xl p-5 mb-6 border-2 border-gray-100 shadow-sm hover:shadow-md transition-all">
+                    {filteredOrders.length > 0 ? (
+                        filteredOrders.map((order, index) => (
+                            <div
+                                key={order._id}
+                                className="bg-white rounded-3xl p-6 mb-4 border-2 border-gray-100 shadow-sm hover:shadow-md transition-all"
+                            >
+                                {/* Top Section: ID and Status */}
+                                <div className="flex justify-between items-start pb-4 mb-6 border-b border-gray-50">
+                                    <div>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                                            Order ID
+                                        </p>
+                                        <h3 className="text-sm font-black text-pink-500">
+                                            #{order._id.slice(-6).toUpperCase()}
+                                        </h3>
+                                    </div>
 
-                        {/* Order ID & Status */}
-                        <div className="flex justify-between items-start pb-4 mb-4 border-b border-gray-100 ">
-                            <div>
-                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Order ID</p>
-                                <h3 className="text-sm font-black text-pink-500">#ORD-992834</h3>
-                            </div>
+                                    <div className="text-right">
+                                        <span className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${statusStyles[order.orderStatus] || 'bg-slate-100 text-slate-500'}`}>
+                                            {order.orderStatus}
+                                        </span>
+                                    </div>
+                                </div>
 
-                            <div className="text-right">
-                                <span className="px-3 py-1 rounded-full bg-green-50 text-green-600 text-[10px] font-bold uppercase tracking-wider">
-                                    Delivered
-                                </span>
+                                {/* Content Section: Image and Info */}
+                                <div className="flex flex-col sm:flex-row gap-6 items-center">
+                                    {/* Product Image */}
+                                    <div className="w-24 h-24 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 shrink-0">
+                                        <img
+                                            src={order.items[0]?.productId?.prodImage}
+                                            alt={order.items[0]?.productId?.prodName}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+
+                                    {/* Product Info */}
+                                    <div className="flex-1 text-center sm:text-left">
+                                        <h4 className="font-bold text-gray-900 text-base">
+                                            {order.items[0]?.productId?.prodName}
+                                        </h4>
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            Qty: {order.items[0]?.quantity} •
+                                            <span className="font-bold text-gray-800 ml-1">
+                                                ₹{order.items[0]?.price}
+                                            </span>
+                                        </p>
+                                    </div>
+
+                                    {/* Buttons */}
+                                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                        <button
+                                            onClick={() => navigate(`/order_track/${order._id}`)}
+                                            className="flex-1 sm:w-32 py-2.5 bg-gray-900 text-white rounded-xl text-[11px] font-bold uppercase hover:bg-gray-800 transition-colors cursor-pointer"
+                                        >
+                                            Details
+                                        </button>
+
+                                        <button
+                                            onClick={() => navigate(`/review_rating/${order._id}`)}
+                                            className="flex-1 sm:w-32 py-2.5 bg-pink-500 text-white rounded-xl text-[11px] font-bold uppercase shadow-lg shadow-pink-100 hover:bg-pink-600 transition-colors cursor-pointer"
+                                        >
+                                            Write a Review
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
+                        ))
+                    ) : (
+                        <div className="py-20 text-center text-gray-400">
+                            <p className="font-bold uppercase text-sm tracking-widest">No orders found</p>
+                            <button
+                                onClick={clearAll}
+                                className="mt-4 text-pink-500 font-bold text-xs uppercase hover:underline">
+                                Clear filters
+                            </button>
                         </div>
-
-                        {/* Content Section */}
-                        <div className="flex flex-col sm:flex-row gap-6 items-center">
-
-                            {/* Product Image */}
-                            <div className="w-20 h-20 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 shrink-0">
-                                <img
-                                    src={NewProd3}
-                                    alt="Product"
-                                    className="w-full h-full object-cover" />
-                            </div>
-
-                            {/* Product Info */}
-                            <div className="flex-1">
-                                <h4 className="font-bold text-gray-900 text-base">Makeup Brush Set</h4>
-                                <p className="text-xs text-gray-500 mt-1">Qty: 3 • <span className="font-bold text-gray-800">₹1931</span></p>
-                            </div>
-
-                            {/* buttons */}
-                            <div className='flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 sm:mt-0'>
-
-                                <button
-                                    onClick={() => navigate("/order_track")}
-                                    className="flex-1 sm:w-32 py-2.5 bg-gray-900 text-white rounded-xl text-[11px] font-bold uppercase cursor-pointer">
-                                    Details
-                                </button>
-
-                                <button
-                                    onClick={() => navigate("/review_rating")}
-                                    className="flex-1 sm:w-32 py-2.5 bg-pink-500 text-white rounded-xl text-[11px] font-bold uppercase shadow-lg shadow-pink-100 cursor-pointer">
-                                    Write a Review
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    )}
                 </div>
             </div>
-        </section>
+        </section >
     )
 }
 

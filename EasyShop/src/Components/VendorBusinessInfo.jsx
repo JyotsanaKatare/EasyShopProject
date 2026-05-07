@@ -1,5 +1,4 @@
 
-//updated
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 import { IoIosArrowDown } from "react-icons/io";
@@ -14,31 +13,13 @@ const businessMenu = [
     { id: 6, businessName: "Wholesaler / Distributor" }
 ];
 
-const categoryMenu = [
-    { id: 1, categoryName: "Clothing & Apparel" },
-    { id: 2, categoryName: "Footwear & Shoes" },
-    { id: 3, categoryName: "Electronics & Gadgets" },
-    { id: 4, categoryName: "Beauty & Personal Care" },
-    { id: 5, categoryName: "Home & Kitchen Decor" },
-    { id: 6, categoryName: "Furniture & Living" },
-    { id: 7, categoryName: "Jewelry & Accessories" },
-    { id: 8, categoryName: "Handicrafts & Arts" },
-    { id: 9, categoryName: "Toys & Baby Products" }
-];
+function VendorBusinessInfo({ prev, next, formData, setFormData, categories, isCatLoading }) {
 
-const licenseLabels = {
-    "Footwear & Shoes": "BIS Certification",
-    "Electronics & Gadgets": "BIS/WPC License",
-    "Beauty & Personal Care": "CDSCO License",
-    "Jewelry & Accessories": "BIS Hallmarking License",
-    "Handicrafts & Arts": "Artisan Card",
-    "Toys & Baby Products": "BIS Certification (ISI Mark)"
-};
-
-function VendorBusinessInfo({ prev, next, formData, setFormData }) {
+    // console.log("BI PROPS:", { categories, isCatLoading });
 
     const [isBusinessOpen, setIsBusinessOpen] = useState(false);
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+    const [selectedCat, setSelectedCat] = useState(null);
 
     // input handler
     const handleChange = (e) => {
@@ -58,8 +39,13 @@ function VendorBusinessInfo({ prev, next, formData, setFormData }) {
         setIsBusinessOpen(false);
     };
 
-    const handleCategory = (categoryName) => {
-        setFormData(prev => ({ ...prev, category: categoryName }));
+    const handleCategory = (cat) => {
+        setFormData(prev => ({
+            ...prev,
+            category: cat.catName,
+            categoryLicenseUpload: null  // reset if user switches category
+        }));
+        setSelectedCat(cat);  // store full cat object in local state
         setIsCategoryOpen(false);
     };
 
@@ -68,7 +54,7 @@ function VendorBusinessInfo({ prev, next, formData, setFormData }) {
 
         // 1. Basic Required Fields
         const requiredFields = [
-            'storeName', 'businessEmail', 'businessContact',
+            'storeName', 'aboutShop', 'businessEmail', 'businessContact',
             'businessType', 'category', 'address',
             'city', 'pincode', 'state', 'businessPAN'
         ];
@@ -85,8 +71,8 @@ function VendorBusinessInfo({ prev, next, formData, setFormData }) {
         }
 
         // 3. Conditional License Check (Only if the category requires one)
-        if (licenseLabels[formData.category] && !formData.categoryLicenseUpload) {
-            return toast.error(`Please upload ${licenseLabels[formData.category]}`);
+        if (selectedCat?.requiresCertificate && !formData.categoryLicenseUpload) {
+            return toast.error(`Please upload ${selectedCat.certificateLabel}`);
         }
 
         // 4. PAN Card File Check
@@ -171,6 +157,21 @@ function VendorBusinessInfo({ prev, next, formData, setFormData }) {
                         onChange={handleChange}
                         placeholder="e.g. Trendify Fashion"
                         className="w-full p-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all" />
+                </div>
+
+                {/* About Shop */}
+                <div className='flex flex-col gap-1.5 md:col-span-2'>
+                    <label className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
+                        About Shop / Description
+                    </label>
+                    <textarea
+                        name='aboutShop'
+                        value={formData.aboutShop || ""}
+                        onChange={handleChange}
+                        rows="3"
+                        placeholder="Tell customers about your shop, what you sell, and your brand story..."
+                        className="w-full p-3 text-sm md:text-base placeholder:text-gray-400 bg-gray-50 border border-gray-200 rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white outline-none transition-all resize-none" />
+                    <span className='text-[10px] text-gray-400 ml-1'>This will be displayed on your public shop profile.</span>
                 </div>
 
                 {/* business email */}
@@ -285,29 +286,31 @@ function VendorBusinessInfo({ prev, next, formData, setFormData }) {
                             ${isCategoryOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
                     >
                         <div className='bg-white my-2 rounded-2xl'>
-                            {categoryMenu.map((item, index) => (
-                                <div
-                                    key={index}
-                                    onClick={() => handleCategory(item.categoryName)}
-                                    className='hover:text-pink-600 flex justify-start items-center py-2 px-2 hover:bg-pink-100'
-                                >
-                                    <p>{item.categoryName}</p>
-                                </div>
-                            ))}
+                            {isCatLoading ? (
+                                <div className="p-3 text-sm text-gray-400">Loading categories...</div>
+                            ) : (
+                                categories?.filter(cat => cat.isActive).map((cat, index) => (
+                                    <div
+                                        key={index}
+                                        onClick={() => handleCategory(cat)}  // pass full cat object
+                                        className='hover:text-pink-600 flex justify-start items-center py-2 px-2 hover:bg-pink-100'
+                                    >
+                                        <p>{cat.catName}</p>
+                                    </div>
+                                ))
+                            )}
                         </div>
-
                     </div>
-
                 </div>
 
                 {/* license upload*/}
-                {formData.category && licenseLabels[formData.category] && (
+                {selectedCat?.requiresCertificate && (
                     <div className='relative flex flex-col gap-1.5'>
                         <label
                             htmlFor='categoryLicenseUpload'
                             className="text-xs md:text-sm font-semibold text-gray-600 ml-1 tracking-wide">
-                            {licenseLabels[formData.category]
-                            }</label>
+                            {selectedCat.certificateLabel}
+                        </label>
 
                         <div className="relative">
                             {/* Input ko 'peer' banaya aur z-index diya taaki click pakde */}

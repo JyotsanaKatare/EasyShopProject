@@ -1,7 +1,7 @@
 
-//updated 
 import React, { useState } from 'react';
 import Logo from '../assets/Images/Logo.png';
+import { Link } from 'react-router-dom';
 import { IoIosSearch, IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { FiUser } from "react-icons/fi";
 import { GoHeart } from "react-icons/go";
@@ -10,7 +10,10 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from './CartContext';
 import { allFaqs } from './Data';
 import { allProducts } from './Data';
+import toast from 'react-hot-toast';
+
 import useAuthStore from '../store/useAuthStore';
+import { useUserLogout, useVendorLogout } from '../hook/useAuth';
 
 function SearchBar() {
 
@@ -22,6 +25,28 @@ function SearchBar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isAccountOpen, setIsAccountOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+
+    const { mutate: logoutUser, isUserPending } = useUserLogout();
+    const { mutate: logoutVendor, isVendorPending } = useVendorLogout();
+
+    const clearStore = useAuthStore((state) => state.logout); // Zustand wala logout
+
+    const handleLogout = () => {
+
+        const logoutMutation = user?.role === 'vendor' ? logoutVendor : logoutUser;
+
+        logoutMutation(null, {
+            onSuccess: (res) => {
+                clearStore();
+                navigate('/login');
+                toast.success(res.message || "Logout successful!");
+            },
+            onError: (error) => {
+                clearStore();
+                navigate('/login')
+            }
+        });
+    };
 
     //quantity update
     const totalQuantity = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
@@ -52,12 +77,14 @@ function SearchBar() {
             <div className="max-w-6xl mx-auto flex flex-wrap md:flex-nowrap items-center py-4">
 
                 {/* Logo Section */}
-                <div className="flex items-center order-1 w-1/2 md:w-auto">
-                    <img
-                        src={Logo}
-                        alt="Logo"
-                        className="h-10 object-cover" />
-                </div>
+                <Link to="/" className='flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity'>
+                    <div className="flex items-center order-1 w-1/2 md:w-auto hover:scale-95 active:scale-95 transition-all duration-500">
+                        <img
+                            src={Logo}
+                            alt="Logo"
+                            className="h-10 object-cover" />
+                    </div>
+                </Link>
 
                 {/* wishlist, cart, acc Icons */}
                 <div className="flex items-center justify-end gap-6 order-2 w-1/2 md:w-auto md:order-3">
@@ -132,34 +159,53 @@ function SearchBar() {
                                             </div>
                                         ) : (
                                             <div className="border-t border-gray-50 mt-1 pt-1">
-
+                                                {/* Common Header: Name Section */}
                                                 <div className="px-5 py-2 border-b border-gray-50 mb-1">
                                                     <p className="text-[11px] text-gray-400 uppercase tracking-wider">Account</p>
                                                     <p className="text-sm font-bold text-gray-800 truncate">{user.name || "User"}</p>
                                                 </div>
 
-                                                <p
-                                                    onClick={() => { navigate("/user_profile"); setIsAccountOpen(false); }}
-                                                    className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50">
-                                                    Profile
-                                                </p>
+                                                {/* 1. VENDOR MENUS */}
+                                                {user.role === 'vendor' ? (
+                                                    <>
+                                                        <p
+                                                            onClick={() => {
+                                                                navigate("/vendor_profile");
+                                                                setIsAccountOpen(false);
+                                                            }}
+                                                            className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50 font-medium">
+                                                            Profile
+                                                        </p>
+                                                    </>
+                                                ) : (
+                                                    /* 2. REGULAR USER MENUS */
+                                                    <>
+                                                        <p
+                                                            onClick={() => { navigate("/user_profile"); setIsAccountOpen(false); }}
+                                                            className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50">
+                                                            Profile
+                                                        </p>
+                                                        <p
+                                                            onClick={() => { navigate("/my_orders"); setIsAccountOpen(false); }}
+                                                            className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50">
+                                                            My Orders
+                                                        </p>
+                                                        <p
+                                                            onClick={() => { navigate("/wishlist"); setIsAccountOpen(false); }}
+                                                            className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50">
+                                                            Wishlist
+                                                        </p>
+                                                    </>
+                                                )}
 
+                                                {/* Common Footer: Logout */}
                                                 <p
-                                                    onClick={() => { navigate("/my_orders"); setIsAccountOpen(false); }}
-                                                    className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50">
-                                                    My Orders
-                                                </p>
-
-                                                <p
-                                                    onClick={() => { navigate("/wishlist"); setIsAccountOpen(false); }}
-                                                    className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50">
-                                                    Wishlist
-                                                </p>
-
-                                                <p
-                                                    onClick={() =>  setIsAccountOpen(false)}
-                                                    className="px-5 py-2 text-[13px] text-red-600 cursor-pointer transition-colors hover:text-red-500 hover:bg-red-50">
-                                                    Logout
+                                                    onClick={() => {
+                                                        handleLogout();
+                                                        setIsAccountOpen(false);
+                                                    }}
+                                                    className="px-5 py-2 text-[13px] text-red-600 cursor-pointer transition-colors hover:text-red-500 hover:bg-red-50 border-t border-gray-50 mt-1">
+                                                    {(isVendorPending || isUserPending) ? "Logging out..." : "Logout"}
                                                 </p>
                                             </div>
                                         )}

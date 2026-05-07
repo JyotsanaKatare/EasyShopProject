@@ -232,6 +232,69 @@ export const resetPassword = async (req, res) => {
     }
 };
 
+export const changePassword = async (req, res) => {
+    try {
+        const { oldPassword, newPassword, confirmPassword } = req.body;
+
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            });
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "New password and confirm password do not match"
+            });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: "New password must be at least 6 characters"
+            });
+        }
+
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        // verify old password is correct
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({
+                success: false,
+                message: "Current password is incorrect"
+            });
+        }
+
+        // hash and save new password
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(newPassword, salt);
+
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Password changed successfully"
+        });
+
+    } catch (err) {
+        console.log("Error :", err);
+        return res.status(500).json({
+            success: false,
+            message: "Server Error Occur"
+        });
+    }
+};
+
 export const countUser = async (req, res) => {
     try {
         const count = await User.countDocuments();
@@ -251,11 +314,9 @@ export const countUser = async (req, res) => {
 
 export const getUser = async (req, res) => {
     try {
-        const { user_id } = req.params; // URL se aayi ID (e.g., User B)
-        const loggedInUser = req.user;   // Token se aayi ID (e.g., User A)
+        const { user_id } = req.params; 
+        const loggedInUser = req.user;  
 
-        // 1. Security Check: Kya logged-in user apni hi info maang raha hai?
-        // (Admin ko allowed rakhein taaki wo sab dekh sake)
         if (loggedInUser.id !== user_id && loggedInUser.role !== 'admin') {
             return res.status(403).json({
                 success: false,
@@ -263,7 +324,7 @@ export const getUser = async (req, res) => {
             });
         }
 
-        const user = await User.findById(user_id).select("-password"); // password excluded
+        const user = await User.findById(user_id).select("-password"); 
 
         if (!user) {
             return res.status(404).json({
@@ -382,8 +443,16 @@ export const updateUserDetail = async (req, res) => {
 };
 
 export const userLogout = async (req, res) => {
-    return res.status(200).json({
-        success: true,
-        message: "Logged out successfully"
-    });
+    try {
+        return res.status(200).json({
+            success: true,
+            message: "Logged out successfully"
+        });
+    } catch (err) {
+        console.log("Error :", err);
+        res.status(500).json({
+            success: false,
+            message: "Server Error Occur"
+        });
+    }
 };

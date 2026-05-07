@@ -1,27 +1,41 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HiOutlineCamera } from "react-icons/hi2";
 import { HiOutlineShieldCheck } from "react-icons/hi";
 
-function ProfilePersonalForm() {
+function ProfilePersonalForm({ vendorData, onSubmit, isPending }) {
 
     const [formData, setformData] = useState({
-        name: "Sohan Sharma",
-        email: "sohan@gmail.com",
-        phone: "9876543210",
+        name: vendorData?.name || "",
+        email: vendorData?.email || "",
+        phone: vendorData?.contact || "",
     });
 
-    const [profileImage, setProfileImage] = useState("https://images.unsplash.com/photo-1481214110143-ed630356e1bb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHdvbWVufGVufDB8fDB8fHww");
+    const [profileFile, setProfileFile] = useState(null); // ✅ store actual file for upload
     const [isEditIndex, setIsEditIndex] = useState({});
+
+    const [profileImage, setProfileImage] = useState(vendorData?.profilePhoto || null);
+
+    useEffect(() => {
+        if (vendorData) {
+            setformData({
+                name: vendorData.name || "",
+                email: vendorData.email || "",
+                phone: vendorData.contact || "",
+            });
+            setProfileImage(vendorData.profilePhoto || null);
+        }
+    }, [vendorData]);
 
     // profile change
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            setProfileFile(file); // ✅ actual file for FormData
             const reader = new FileReader();
             reader.onloadend = () => {
-                setProfileImage(reader.result); // Image preview dikhane ke liye
-            }; 
+                setProfileImage(reader.result); // preview only
+            };
             reader.readAsDataURL(file);
         }
     };
@@ -41,6 +55,16 @@ function ProfilePersonalForm() {
     // after clicking save, naye data ko finalize karna
     const handleSave = (fieldId) => {
         toggleEdit(fieldId);
+
+        const fd = new FormData();
+        fd.append("name", formData.name);
+        fd.append("email", formData.email);
+        fd.append("contact", formData.phone); // ✅ schema field name is "contact"
+        if (profileFile) {
+            fd.append("profilePhoto", profileFile); // ✅ actual file
+        }
+
+        onSubmit(fd); // ✅ fires mutation in Layout
     };
 
     // Reusable Component for Each Field
@@ -81,8 +105,9 @@ function ProfilePersonalForm() {
                         {isEditing && (
                             <button
                                 onClick={() => handleSave(fieldId)}
+                                disabled={isPending}
                                 className='px-6 py-2.5 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-sm transition-all active:scale-95 shadow-lg shadow-pink-100'>
-                                Save
+                                {isPending ? "Saving..." : "Save"}
                             </button>
                         )}
 
@@ -100,16 +125,22 @@ function ProfilePersonalForm() {
                 <div className="flex flex-col items-center md:items-start gap-6 mb-10 border-b border-slate-50 md:pb-8">
                     <div className="relative group">
                         {/* Profile Image Preview */}
-                        <img
-                            src={profileImage}
-                            alt="Profile"
-                            className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-white shadow-xl group-hover:opacity-90 transition-all"
-                        />
+                        {profileImage ? (
+                            <img
+                                src={profileImage}
+                                alt="Profile"
+                                className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-white shadow-xl group-hover:opacity-90 transition-all"
+                            />
+                        ) : (
+                            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-slate-200 flex items-center justify-center border-4 border-white shadow-xl">
+                                <HiOutlineCamera size={28} className="text-slate-400" />
+                            </div>
+                        )}
 
                         {/* Hidden File Input */}
                         <input
                             type="file"
-                            id="profilePic"
+                            id="profilePhoto"
                             hidden
                             accept="image/*"
                             onChange={handleFileChange}
@@ -117,7 +148,7 @@ function ProfilePersonalForm() {
 
                         {/* Upload Button (Camera Icon) */}
                         <label
-                            htmlFor="profilePic"
+                            htmlFor="profilePhoto"
                             className="absolute bottom-1 right-1 bg-pink-500 p-2.5 rounded-full text-white cursor-pointer shadow-lg hover:bg-pink-600 hover:scale-110 transition-all border-2 border-white"
                         >
                             <HiOutlineCamera size={18} />
@@ -131,6 +162,21 @@ function ProfilePersonalForm() {
                         <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">
                             JPG, GIF or PNG. Max size of 2MB
                         </p>
+
+                        {/* ✅ Show save button only when new photo is selected */}
+        {profileFile && (
+            <button
+                onClick={() => {
+                    const fd = new FormData();
+                    fd.append("profilePhoto", profileFile);
+                    onSubmit(fd);
+                    setProfileFile(null); // reset after submit
+                }}
+                disabled={isPending}
+                className="mt-3 px-5 py-2 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-xs transition-all active:scale-95 shadow-lg shadow-pink-100 disabled:opacity-50">
+                {isPending ? "Saving..." : "Save Photo"}
+            </button>
+        )}
                     </div>
                 </div>
 

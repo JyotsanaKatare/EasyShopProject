@@ -6,8 +6,10 @@ import { deleteCloudinaryFiles, deleteOldFileFromCloudinary } from '../utils/clo
 export const addSubCategory = async (req, res) => {
     try {
         const { cat_id } = req.params;
-        const { subCatName, slug, description } = req.body;
+        const { subCatName, description, allowedAttributes } = req.body;
         const subCatImagePath = req.file ? req.file.path : "";
+
+        const slug = subCatName.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
 
         if (!subCatName || !slug || !description || !subCatImagePath) {
             if (req.file) await deleteCloudinaryFiles(req.file);
@@ -23,7 +25,7 @@ export const addSubCategory = async (req, res) => {
             if (req.file) await deleteCloudinaryFiles(req.file);
             return res.status(404).json({
                 success: false,
-                message: "Parent Category not found"
+                message: "Category not found"
             });
         }
 
@@ -32,7 +34,7 @@ export const addSubCategory = async (req, res) => {
             catId: cat_id,
             $or: [
                 { subCatName: subCatName.trim() },
-                { slug: slug.toLowerCase().trim() }
+                { slug }
             ]
         });
 
@@ -44,12 +46,30 @@ export const addSubCategory = async (req, res) => {
             });
         };
 
+        // 2. Parse allowedAttributes if it's coming as a string (happens with FormData)
+        let parsedAttributes = [];
+        if (allowedAttributes) {
+            try {
+                parsedAttributes = typeof allowedAttributes === 'string'
+                    ? JSON.parse(allowedAttributes)
+                    : allowedAttributes;
+            } catch (error) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid format for allowedAttributes"
+                });
+            }
+        }
+
+        console.log("Parsed Attributes:", parsedAttributes);
+
         const newSubCategory = new SubCategory({
             catId: cat_id,
             subCatName,
             slug,
             description,
-            subCatImage: subCatImagePath
+            subCatImage: subCatImagePath,
+            allowedAttributes: parsedAttributes // Yahan save ho raha hai
         });
 
         await newSubCategory.save();
@@ -71,7 +91,43 @@ export const addSubCategory = async (req, res) => {
 
 export const listSubCategory = async (req, res) => {
     try {
-        const list = await SubCategory.find({}).sort({ createdAt: -1 }).populate('catId', 'catName');
+        const list = await SubCategory.aggregate([
+            {
+                // 1. Products ke saath link karo count nikalne ke liye
+                $lookup: {
+                    from: "products",
+                    localField: "_id",
+                    foreignField: "subCatId", // Product model mein jo field hai
+                    as: "products"
+                }
+            },
+            {
+                // 2. Category details lane ke liye (kyunki sub-category kisi category se judi hai)
+                $lookup: {
+                    from: "categories",
+                    localField: "catId",
+                    foreignField: "_id",
+                    as: "categoryDetails"
+                }
+            },
+            { $unwind: "$categoryDetails" }, // Array ko object mein badlo
+            {
+                $project: {
+                    subCatName: 1,
+                    subCatImage: 1,
+                    allowedAttributes: 1,
+                    description: 1,
+                    slug: 1,
+                    isActive: 1,
+                    createdAt: 1,
+                    // Ye wahi kaam kar raha hai jo populate karta:
+                    catId: "$categoryDetails._id", // Agar aapko ID bhi chahiye
+                    catName: "$categoryDetails.catName",
+                    department: "$categoryDetails.department",
+                    productCount: { $size: "$products" }
+                }
+            },
+        ]).sort({ createdAt: -1 });
 
         if (!list || list.length === 0) {
             return res.status(404).json({
@@ -99,7 +155,7 @@ export const listSubCatByCategory = async (req, res) => {
     try {
         const { cat_id } = req.params;
 
-        const list = await SubCategory.find({ catId: cat_id }).populate('catId', 'catName');
+        const list = await SubCategory.find({ catId: cat_id }).populate('catId', 'catName slug');
 
         if (!list || list.length === 0) {
             return res.status(404).json({
@@ -114,6 +170,7 @@ export const listSubCatByCategory = async (req, res) => {
             count: list.length,
             data: list
         });
+        
     } catch (err) {
         return res.status(500).json({
             success: false,
@@ -152,43 +209,80 @@ export const getSubCategory = async (req, res) => {
 export const updateSubCategory = async (req, res) => {
     try {
         const { subCat_id } = req.params;
-        const updates = {};
-
-        const fields = ["subCatName", "slug", "description", "isActive"];
-
-        fields.forEach(field => {
-            if (req.body[field] !== undefined) {
-                updates[field] = req.body[field];
-            };
-        });
+        const { subCatName, description, isActive, allowedAttributes } = req.body;
 
         const subCategory = await SubCategory.findById(subCat_id);
-
         if (!subCategory) {
             if (req.file) await deleteCloudinaryFiles(req.file);
             return res.status(404).json({
                 success: false,
                 message: "Sub Category not found"
             });
-        };
+        }
 
+        const updates = {};
+
+        // 1. AUTO SLUG GENERATION LOGIC
+        if (subCatName) {
+            updates.subCatName = subCatName.trim();
+            updates.slug = subCatName.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+
+            // 2. DUPLICATE CHECK (exclude yourself kisi aur ka slug match na ho)
+            const alreadyExists = await SubCategory.findOne({
+                catId: subCategory.catId, // Same category ke andar check karein
+                _id: { $ne: subCat_id },   // Khud ki ID ko exclude karein
+                $or: [{ subCatName: updates.subCatName }, { slug: updates.slug }]
+            });
+
+            if (alreadyExists) {
+                if (req.file) await deleteCloudinaryFiles(req.file);
+                return res.status(400).json({
+                    success: false,
+                    message: "Another sub-category with this name/slug already exists"
+                });
+            }
+        }
+
+        // 3. ALLOWED ATTRIBUTES UPDATE
+        if (allowedAttributes) {
+            try {
+                let parsedData;
+
+                if (typeof allowedAttributes === 'string') {
+                    // Agar string "[object Object]" aa rahi hai toh ye handle karega
+                    if (allowedAttributes.includes("[object Object]")) {
+                        throw new Error("Received garbled object string");
+                    }
+                    parsedData = JSON.parse(allowedAttributes);
+                } else {
+                    parsedData = allowedAttributes;
+                }
+
+                updates.allowedAttributes = parsedData;
+            } catch (error) {
+                console.error("Parse Error:", error);
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid format for allowedAttributes. Please send a valid JSON string."
+                });
+            }
+        }
+
+        if (description !== undefined) updates.description = description;
+        if (isActive !== undefined) updates.isActive = isActive;
+
+        // 4. IMAGE HANDLING
         if (req.file) {
             if (subCategory.subCatImage) {
                 await deleteOldFileFromCloudinary(subCategory.subCatImage);
             }
-
             updates.subCatImage = req.file.path;
         }
 
         const updatedSubCategory = await SubCategory.findByIdAndUpdate(
             subCat_id,
-            {
-                $set: updates
-            },
-            {
-                new: true,
-                runValidators: true
-            }
+            { $set: updates },
+            { returnDocument: 'after', runValidators: true }
         );
 
         res.status(200).json({
@@ -308,3 +402,35 @@ export const searchCategoryAndSubCategory = async (req, res) => {
         });
     }
 };
+
+// export const updateSubCategoryAttributes = async (req, res) => {
+//     try {
+//         const { subCat_id } = req.params;
+//         const { allowedAttributes } = req.body;
+
+//         const updatedSubCat = await SubCategory.findByIdAndUpdate(
+//             subCatId,
+//             { $set: { allowedAttributes } },
+//             { new: true }
+//         );
+
+//         if (!updatedSubCat) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: "SubCategory not found"
+//             });
+//         }
+
+//         res.status(200).json({
+//             success: true,
+//             message: "Attributes updated successfully",
+//             data: updatedSubCat
+//         });
+
+//     } catch (err) {
+//         res.status(500).json({
+//             success: false,
+//             message: err.message
+//         });
+//     }
+// };

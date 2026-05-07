@@ -6,10 +6,6 @@ import Header from '../Components/VendorComponents/Header';
 import AllProducts from '../Components/VendorComponents/AllProducts';
 import AddNewProduct from '../Components/VendorComponents/AddNewProduct';
 import VendorStockInventoryPage from './VendorStockInventoryPage';
-import Categories from '../Components/VendorComponents/Categories';
-import SubCategories from '../Components/VendorComponents/SubCategories';
-import AddCategory from '../Components/VendorComponents/AddCategory';
-import AddSubCategory from '../Components/VendorComponents/AddSubCategory';
 import Orders from '../Components/VendorComponents/Orders';
 import Transactions from '../Components/VendorComponents/Transactions';
 import Withdrawals from '../Components/VendorComponents/Withdrawals';
@@ -55,12 +51,6 @@ function VendorPage() {
                             {currentPage === "Add Product" && <AddNewProduct setCurrentPage={setCurrentPage}/>}
                             {currentPage === "Inventory" && <VendorStockInventoryPage setCurrentPage={setCurrentPage}/>}
 
-                            {/* manage categories */}
-                            {currentPage === "Categories" && <Categories setCurrentPage={setCurrentPage}/>}
-                            {currentPage === "Add Category" && <AddCategory setCurrentPage={setCurrentPage}/>}
-                            {currentPage === "Sub Categories" && <SubCategories setCurrentPage={setCurrentPage}/>}
-                            {currentPage === "Add Sub Category" && <AddSubCategory setCurrentPage={setCurrentPage}/>}
-
                             {/* orders */}
                             {currentPage === "Orders" && <Orders />}
 
@@ -72,7 +62,7 @@ function VendorPage() {
                             {currentPage === "Customers" && <Customers />}
 
                             {/* chat */}
-                            {/* {currentPage === "Messages" && <VendorChat  />} */}
+                            {currentPage === "Messages" && <VendorChat  />}
 
                             {/* review ratung */}
                             {currentPage === "Review" && <ReviewRating />}
@@ -90,8 +80,6 @@ function VendorPage() {
                     </main>
                 </div>
             </div>
-
-
         </div>
     )
 }

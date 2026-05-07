@@ -1,27 +1,43 @@
 
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { HiOutlineShieldCheck } from "react-icons/hi";
 
-function ProfileAccountForm() {
+function ProfileAccountForm({ vendorData }) {
 
   const [formData, setformData] = useState({
-    accHolderName: "Sohan Sharma",
-    bankName: "State Bank of India",
-    accNumber: "349812345678",
-    ifsc: "SBIN0001234",
+    accHolderName: "",
+    bankName: "",
+    accNumber: "",
+    ifsc: "",
   });
 
-  // Poore form ke liye ek hi switch
   const [isEditing, setIsEditing] = useState(false);
+  const [bankFile, setBankFile] = useState(null);
 
-  //real time data state me update krna
-  const handleInputChange = (e, fieldId) => {
-    setformData({ ...formData, [fieldId]: e.target.value });
-  };
+  // Prefill when vendorData arrives
+  useEffect(() => {
+    if (vendorData) {
+      setformData({
+        accHolderName: vendorData.accHolder || "",
+        bankName: vendorData.bank || "",
+        accNumber: vendorData.accNumber || "",
+        ifsc: vendorData.ifsc || "",
+      });
+    }
+  }, [vendorData]);
 
-  // after clicking save, naye data ko finalize karna
-  const handleSave = (fieldId) => {
+  const handleSave = () => {
     setIsEditing(false);
+
+    const fd = new FormData();
+    fd.append("accHolder", formData.accHolderName);
+    fd.append("bank", formData.bankName);
+    fd.append("accNumber", formData.accNumber);
+    fd.append("ifsc", formData.ifsc);
+    if (bankFile) fd.append("bankDocumentUpload", bankFile);
+
+    onSubmit(fd);
   };
 
   const RenderField = (label, fieldId) => {
@@ -49,16 +65,7 @@ function ProfileAccountForm() {
 
   return (
     <div className='w-full bg-white dark:bg-slate-900'>
-      
-      {/* edit buttn */}
-      <div className='flex justify-end mb-8'>
-        <button
-          onClick={() => setIsEditing(!isEditing)}
-          className={`text-pink-500 hover:text-pink-600 font-medium text-[13px] md:text-[16px] cursor-pointer`}>
-          {!isEditing ? "Edit" : "Cancel"}
-        </button>
-      </div>
-      
+
       {/* input fields */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
 
@@ -72,12 +79,26 @@ function ProfileAccountForm() {
           <div className="lg:col-span-2 p-5 bg-pink-50/30 border-2 border-dashed border-pink-100 rounded-3xl mt-4 animate-in fade-in zoom-in duration-300">
             <div className="flex flex-col lg:flex-row justify-between text-center lg:text-start gap-4">
               <div>
-                <p className="text-xs font-black text-slate-800 uppercase">Verification Document</p>
-                <p className="text-[10px] text-slate-500 mt-1 font-bold italic">Upload Cancelled Cheque or Passbook Front Page</p>
+                <p className="text-xs font-black text-slate-800 uppercase">
+                  Verification Document
+                </p>
+                <p className="text-[10px] text-slate-500 mt-1 font-bold italic">
+                  {/* ✅ show existing doc from DB */}
+                  {vendorData?.bankDocumentUpload
+                    ? `Current: ${vendorData.bankDocumentUpload.split('/').pop()}`
+                    : "Upload Cancelled Cheque or Passbook Front Page"}
+                </p>
               </div>
+
               <label className="cursor-pointer bg-white px-6 py-2 rounded-xl border border-pink-200 text-pink-500 font-bold text-xs hover:bg-pink-100 transition-all uppercase">
                 Select File
-                <input type="file" hidden accept="image/*,.pdf" />
+                {/* ✅ capture bank doc file */}
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*,.pdf"
+                  onChange={(e) => setBankFile(e.target.files[0])}
+                />
               </label>
             </div>
           </div>
@@ -89,8 +110,9 @@ function ProfileAccountForm() {
         <div className='mt-10 flex justify-center lg:justify-end'>
           <button
             onClick={handleSave}
+            disabled={isPending}
             className='px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl text-xs transition-all active:scale-95 shadow-xl shadow-pink-100 uppercase tracking-widest cursor-pointer'>
-           Save Changes
+            {isPending ? "Saving..." : "Save Changes"}
           </button>
         </div>
       )}
@@ -101,7 +123,7 @@ function ProfileAccountForm() {
           <HiOutlineShieldCheck size={20} />
         </div>
         <p className="text-[10px] lg:text-xs text-slate-500 font-medium leading-relaxed">
-          Your banking data is stored in a PCI-DSS compliant vault. Read our <span className="text-pink-500 cursor-pointer hover:underline">Security Protocol</span>.
+          Contact admin to update legal info. Read our <span className="text-pink-500 cursor-pointer hover:underline">Security Protocol</span>.
         </p>
       </div>
     </div>

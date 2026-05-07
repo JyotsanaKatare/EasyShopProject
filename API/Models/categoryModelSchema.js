@@ -34,6 +34,16 @@ const categorySchema = new mongoose.Schema(
             required: true
         },
 
+        requiresCertificate: {
+            type: Boolean,
+            default: false 
+        },
+
+        certificateLabel: {
+            type: String,
+            default: "" 
+        },
+
         isActive: {
             type: Boolean,
             required: true,

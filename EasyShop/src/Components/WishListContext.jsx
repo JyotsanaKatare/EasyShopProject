@@ -1,60 +1,111 @@
 
 import toast from 'react-hot-toast';
+import useAuthStore from '../store/useAuthStore';
+import { useNavigate } from 'react-router-dom';
 import { createContext, useContext, useEffect, useState } from "react";
+
+import { useGetWishList, useToggleWishList } from '../hook/useWishList';
 
 const wishListContext = createContext();
 
 export const WishListProvider = ({ children }) => {
 
-    // localStorage se data lena
-    const [wishListItems, setWishListItems] = useState(() => {
+    const navigate = useNavigate();
+    const { user } = useAuthStore();
 
-        const savedWishList = localStorage.getItem("myWishList");
-        return savedWishList ? JSON.parse(savedWishList) : [];
-    });
+    const { data: serverWishList = [] } = useGetWishList();
+    const { mutate: toggleWishList } = useToggleWishList();
 
-    // localStorage me data insert
+    const [wishListItems, setWishListItems] = useState([]);
+
+    // always sync from server
     useEffect(() => {
-        localStorage.setItem("myWishList", JSON.stringify(wishListItems));
-    }, [wishListItems]);
+        if (!serverWishList || serverWishList.length === 0) return;
 
-    // add
+        setWishListItems(prev => {
+            const prevStr = JSON.stringify(prev);
+            const newStr = JSON.stringify(serverWishList);
+            if (prevStr === newStr) return prev;
+            return serverWishList;
+        });
+    }, [serverWishList]);
+
     const addToWishList = (product) => {
-        const prodId = product.id || product._id;
+        if (!user) {
+            toast.error("Please login to add items to wishlist");
+            navigate('/login');
+            return;
+        }
 
+        const prodId = product._id || product.id;
+
+        toggleWishList({
+            productId: prodId,
+            selectedColor: product.selectedColor || null,
+            selectedSize: product.selectedSize || null,
+            prodImage: product.prodImage || null
+        });
+
+        // optimistic update — same shape as DB
         setWishListItems((prev) => {
-            const isExist = prev.find((item) => (item.id || item._id) === prodId);
+            const isExist = prev.some(
+                item => item.productId?._id?.toString() === prodId?.toString()
+            );
 
             if (isExist) {
                 toast.success("Removed from wishlist");
-                return prev.filter((item) => (item.id || item._id) !== prodId);
+                return prev.filter(
+                    item => item.productId?._id?.toString() !== prodId?.toString()
+                );
             } else {
-                toast.success(`${product.name} added to wishlist!`, {
-                    style: {
-                        border: '1px solid #fbcfe8', // Halka pink border
-                        padding: '16px',
-                        color: '#be185d', // Dark pink text
-                    },
-                    iconTheme: {
-                        primary: '#ec4899', // Pink icon
-                        secondary: '#FFFAEE',
-                    },
+                toast.success("Product added to wishlist!", {
+                    style: { border: '1px solid #fbcfe8', padding: '16px', color: '#be185d' },
+                    iconTheme: { primary: '#ec4899', secondary: '#FFFAEE' },
                 });
-                return [...prev, { ...product, id: prodId }];
+                // match DB structure
+                return [...prev, {
+                    productId: {
+                        _id: prodId,
+                        prodName: product.prodName || product.name,
+                        prodImage: product.prodImage || product.img,
+                        price: product.price,
+                        slug: product.slug
+                    },
+                    selectedColor: product.selectedColor || null,
+                    selectedSize: product.selectedSize || null,
+                    prodImage: product.prodImage || product.img, // selected color image
+                }];
             }
         });
     };
 
+    const isInWishList = (productId) => {
+        return wishListItems.some(
+            item => item.productId?._id?.toString() === productId?.toString()
+        );
+    };
 
-    const removeFromWishList = (id) => {
-        setWishListItems((prev) => prev.filter(item => item.id !== id));
+    const removeFromWishList = (productId) => {
+        if (!user) return;
+
+        toast.success("Removed from wishl");
+        toggleWishList(productId);
+
+        setWishListItems(prev =>
+            prev.filter(item => item.productId?._id?.toString() !== productId?.toString())
+        );
     };
 
     return (
-        <wishListContext.Provider value={{ wishListItems, addToWishList, removeFromWishList }}>
+        <wishListContext.Provider value={{
+            wishListItems,
+            addToWishList,
+            removeFromWishList,
+            isInWishList
+        }}>
             {children}
         </wishListContext.Provider>
-    )
-}
+    );
+};
 
-export const useWishList = () => useContext(wishListContext); 
+export const useWishList = () => useContext(wishListContext);

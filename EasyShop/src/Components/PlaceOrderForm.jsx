@@ -1,5 +1,4 @@
 
-//updated
 import React, { useState } from 'react'
 import { IoLockClosed } from "react-icons/io5";
 import { FaCheckCircle } from "react-icons/fa";
@@ -10,37 +9,126 @@ import UpiImg from '../assets/Images/UpiImg.png';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from './CartContext';
 import confetti from 'canvas-confetti';
+import { usePlaceCartOrder, usePlaceDirectOrder } from '../hook/useOrders';
+import toast from 'react-hot-toast';
 
 function PlaceOrderForm() {
 
     const location = useLocation();
     const navigate = useNavigate();
-    const { cartItems } = useCart();
+    const { cartItems, clearCart } = useCart();
 
-    const [paymentMethod, setPaymentMethod] = useState("cod");
+    const [paymentMethod, setPaymentMethod] = useState("COD");
     const [isopenCod, setIsOpenCod] = useState(false);
     const [isopenOnline, setIsOpenOnline] = useState(false);
+
+    const isDirectBuy = location.state?.isDirectBuy;
+    const directProdId = location.state?.items?.[0]?.id;
+    const directQty = location.state?.items?.[0]?.quantity;
+
+    const [shippingAddress, setShippingAddress] = useState({
+        name: "",
+        contact: "",
+        pincode: "",
+        address: "",
+        city: "",
+        state: ""
+    });
+
+    const { mutate: placeCartOrder, isPending: isCartPending } = usePlaceCartOrder();
+    const { mutate: placeDirectOrder, isPending: isDirectPending } = usePlaceDirectOrder();
+
+    const isPending = isCartPending || isDirectPending;
 
     const displayItems = location.state?.items || cartItems;  // Agar 'Buy Now' se aaya hai toh wo data lo, warna Cart wala
     const subtotal = displayItems.reduce((acc, item) => acc + (item.price * (item.quantity || 1)), 0);
     const totalQuantity = displayItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
-    const discount = subtotal * 0.10;
-    const tax = (subtotal - discount) * 0.10; // Tax hamesha discounted price par lagta hai
-    const finalTotal = subtotal - discount + tax;
+    const finalTotal = subtotal;
 
+    // handle i/p
+    const handleInputChange = (e) => {
+        setShippingAddress(prev => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }));
+    };
+
+    // order place
     const handlePlaceOrder = () => {
-        if (paymentMethod === "cod") {
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#ec4899', '#f472b6', '#db2777'] // Aapke pink theme ke colors
-            });
-            setIsOpenCod(true);
-        } else {
-            setIsOpenOnline(true);
+        const { name, contact, pincode, address, city, state } = shippingAddress;
+
+        if (!name || !contact || !pincode || !address || !city || !state) {
+            toast.error("Please fill all shipping address fields");
+            return;
         }
-    }
+
+        if (contact.length < 10 || contact.length > 10) {
+            toast.error("Please enter valid phone number");
+            return;
+        }
+
+        if (pincode.length !== 6) {
+            toast.error("Please enter valid 6-digit pincode");
+            return;
+        }
+
+        if (isDirectBuy) {
+            placeDirectOrder({
+                prod_id: directProdId,
+                quantity: directQty,
+                shippingAddress,
+                paymentMethod: paymentMethod === "COD" ? "COD" : "Online"
+            }, {
+                onSuccess: () => {
+                    setShippingAddress({
+                        name: "", contact: "", pincode: "",
+                        address: "", city: "", state: ""
+                    });
+                    if (paymentMethod === "COD") {
+                        confetti({
+                            particleCount: 150,
+                            spread: 70,
+                            origin: { y: 0.6 },
+                            colors: ['#ec4899', '#f472b6', '#db2777']
+                        });
+                        setIsOpenCod(true);
+                    } else {
+                        setIsOpenOnline(true);
+                    }
+                }
+            });
+        } else {
+            placeCartOrder({
+                shippingAddress,
+                paymentMethod: paymentMethod === "COD" ? "COD" : "Online"
+            }, {
+                onSuccess: (res) => {
+                    clearCart();
+
+                    setShippingAddress({
+                        name: "",
+                        contact: "",
+                        pincode: "",
+                        address: "",
+                        city: "",
+                        state: ""
+                    });
+
+                    if (paymentMethod === "COD") {
+                        confetti({
+                            particleCount: 150,
+                            spread: 70,
+                            origin: { y: 0.6 },
+                            colors: ['#ec4899', '#f472b6', '#db2777']
+                        });
+                        setIsOpenCod(true);
+                    } else {
+                        setIsOpenOnline(true);
+                    }
+                },
+            });
+        }
+    };
 
     return (
         <section className="w-full min-h-[70vh] pb-5 pt-2 px-4 lg:px-6">
@@ -57,11 +145,15 @@ function PlaceOrderForm() {
                         </h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
                             {/* Full Name */}
                             <div className="md:col-span-2">
                                 <label className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Full Name</label>
                                 <input
                                     type="text"
+                                    name="name"
+                                    value={shippingAddress.name}
+                                    onChange={handleInputChange}
                                     placeholder='e.g. Rahul Sharma'
                                     className='w-full mt-1 text-sm md:text-base border border-gray-300 py-3 px-4 rounded-2xl outline-none focus:border-pink-500 focus:ring-4 focus:ring-pink-50 transition-all bg-gray-50/50'
                                 />
@@ -72,6 +164,9 @@ function PlaceOrderForm() {
                                 <label className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Phone Number</label>
                                 <input
                                     type="text"
+                                    name="contact"
+                                    value={shippingAddress.contact}
+                                    onChange={handleInputChange}
                                     placeholder='+91 XXXXX XXXXX'
                                     className='w-full mt-1 text-sm md:text-base border border-gray-300 py-3 px-4 rounded-2xl outline-none focus:border-pink-500 focus:ring-4 focus:ring-pink-50 transition-all bg-gray-50/50'
                                 />
@@ -82,6 +177,9 @@ function PlaceOrderForm() {
                                 <label className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Pincode</label>
                                 <input
                                     type="text"
+                                    name="pincode"
+                                    value={shippingAddress.pincode}
+                                    onChange={handleInputChange}
                                     placeholder='6-digit code'
                                     className='w-full mt-1 text-sm md:text-base border border-gray-300 py-3 px-4 rounded-2xl outline-none focus:border-pink-500 focus:ring-4 focus:ring-pink-50 transition-all bg-gray-50/50'
                                 />
@@ -92,7 +190,10 @@ function PlaceOrderForm() {
                                 <label className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Address (House No, Building, Street)</label>
                                 <input
                                     type="text"
-                                    placeholder='Flat 102, Green Apartments...'
+                                    name="address"
+                                    value={shippingAddress.address}
+                                    onChange={handleInputChange}
+                                    placeholder='e.g. Flat 102, Green Apartments...'
                                     className='w-full mt-1 text-sm md:text-base border border-gray-300 py-3 px-4 rounded-2xl outline-none focus:border-pink-500 focus:ring-4 focus:ring-pink-50 transition-all bg-gray-50/50'
                                 />
                             </div>
@@ -102,7 +203,23 @@ function PlaceOrderForm() {
                                 <label className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">City / District</label>
                                 <input
                                     type="text"
-                                    placeholder='Mumbai'
+                                    name="city"
+                                    value={shippingAddress.city}
+                                    onChange={handleInputChange}
+                                    placeholder='e.g. Mumbai'
+                                    className='w-full mt-1 text-sm md:text-base border border-gray-300 py-3 px-4 rounded-2xl outline-none focus:border-pink-500 focus:ring-4 focus:ring-pink-50 transition-all bg-gray-50/50'
+                                />
+                            </div>
+
+                            {/* state */}
+                            <div className="md:col-span-2">
+                                <label className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">State</label>
+                                <input
+                                    type="text"
+                                    name="state"
+                                    value={shippingAddress.state}
+                                    onChange={handleInputChange}
+                                    placeholder='e.g. Maharastra'
                                     className='w-full mt-1 text-sm md:text-base border border-gray-300 py-3 px-4 rounded-2xl outline-none focus:border-pink-500 focus:ring-4 focus:ring-pink-50 transition-all bg-gray-50/50'
                                 />
                             </div>
@@ -121,13 +238,13 @@ function PlaceOrderForm() {
 
                             {/* COD Option */}
                             <div
-                                onClick={() => setPaymentMethod("cod")}
+                                onClick={() => setPaymentMethod("COD")}
                                 className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-3 
-                                    ${paymentMethod === 'cod' ? 'border-pink-500 bg-pink-50' : 'border-gray-100 bg-gray-50'}`}
+                                    ${paymentMethod === 'COD' ? 'border-pink-500 bg-pink-50' : 'border-gray-100 bg-gray-50'}`}
                             >
                                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0
-                                    ${paymentMethod === 'cod' ? 'border-pink-500' : 'border-gray-300'}`}>
-                                    {paymentMethod === 'cod' && <div className="w-2.5 h-2.5 bg-pink-500 rounded-full"></div>}
+                                    ${paymentMethod === 'COD' ? 'border-pink-500' : 'border-gray-300'}`}>
+                                    {paymentMethod === 'COD' && <div className="w-2.5 h-2.5 bg-pink-500 rounded-full"></div>}
                                 </div>
                                 <div>
                                     <p className="text-sm md:text-base font-bold text-gray-900">Cash on Delivery</p>
@@ -137,13 +254,13 @@ function PlaceOrderForm() {
 
                             {/* Online Option */}
                             <div
-                                onClick={() => setPaymentMethod("online")}
+                                onClick={() => setPaymentMethod("Online")}
                                 className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-3 
-                                    ${paymentMethod === 'online' ? 'border-pink-500 bg-pink-50' : 'border-gray-100 bg-gray-50'}`}
+                                    ${paymentMethod === 'Online' ? 'border-pink-500 bg-pink-50' : 'border-gray-100 bg-gray-50'}`}
                             >
                                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0
-                                    ${paymentMethod === 'online' ? 'border-pink-500' : 'border-gray-300'}`}>
-                                    {paymentMethod === 'online' && <div className="w-2.5 h-2.5 bg-pink-500 rounded-full"></div>}
+                                    ${paymentMethod === 'Online' ? 'border-pink-500' : 'border-gray-300'}`}>
+                                    {paymentMethod === 'Online' && <div className="w-2.5 h-2.5 bg-pink-500 rounded-full"></div>}
                                 </div>
                                 <div>
                                     <p className="text-sm md:text-base font-bold text-gray-900">Online Payment</p>
@@ -157,8 +274,10 @@ function PlaceOrderForm() {
                     <div className='lg:hidden'>
                         <button
                             onClick={handlePlaceOrder}
-                            className="w-full md:max-w-xl md:mx-auto text-sm md:text-base bg-pink-500 hover:bg-pink-600 text-white font-bold py-4 rounded-3xl mt-8 flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg shadow-pink-200 cursor-pointer">
-                            <span>Confirm & Place Order</span>
+                            disabled={isPending}
+                            className={`w-full text-sm md:text-base bg-pink-500 hover:bg-pink-600 text-white font-bold py-4 rounded-3xl mt-8 flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg shadow-pink-200
+                            ${isPending ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+                            {isPending ? "Placing Order..." : "Confirm & Place Order"}
                         </button>
 
                         {/* Security Note */}
@@ -182,17 +301,17 @@ function PlaceOrderForm() {
                         <div className="max-h-52 md:max-h-60 overflow-y-auto mb-6 pr-2 custom-scrollbar space-y-4">
                             {displayItems && displayItems.map((item) => (
                                 <div
-                                    key={item.id}
+                                    key={item._id}
                                     className="flex items-center gap-4 bg-gray-50/50 p-3 rounded-2xl border border-gray-100">
                                     <div className="w-16 h-16 bg-white rounded-xl overflow-hidden shrink-0 border border-gray-100">
                                         <img
-                                            src={item.img}
-                                            alt={item.name}
+                                            src={item.prodImage || item.img}
+                                            alt={item.prodName || item.name}
                                             className="w-full h-full object-cover" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <h4 className="text-[13px] font-bold text-gray-800 truncate mb-1">
-                                            {item.name}
+                                            {item.prodName || item.name}
                                         </h4>
                                         <span className="text-[10px] font-bold bg-pink-100 px-2 py-1 rounded-lg text-pink-600 uppercase tracking-wider">
                                             Qty: {item.quantity || 1}
@@ -211,14 +330,11 @@ function PlaceOrderForm() {
                                 <span className="text-gray-900">₹{subtotal.toFixed(2)}</span>
                             </div>
 
-                            <div className="flex justify-between items-center text-xs md:text-sm">
-                                <span className="text-gray-500 font-medium">Discount</span>
-                                <span className="text-green-600 font-bold">-₹{discount}.00</span>
-                            </div>
-
-                            <div className="flex justify-between items-center text-xs md:text-sm">
-                                <span className="text-gray-500 font-medium">Tax (10% GST)</span>
-                                <span className="text-gray-900">₹{tax.toFixed(2)}</span>
+                            <div className="flex justify-between">
+                                <span>Shipping</span>
+                                <span className="text-green-500 font-bold text-sm underline cursor-help">
+                                    FREE
+                                </span>
                             </div>
 
                             <div className="border-t border-dashed border-gray-200 my-6 pt-6">
@@ -229,13 +345,8 @@ function PlaceOrderForm() {
                                             Grand Total
                                         </p>
                                         <p className="text-2xl md:text-4xl font-black text-gray-900 mt-1">
-                                            ₹{Math.round(finalTotal)}
+                                            ₹{finalTotal.toFixed(2)}
                                         </p>
-                                    </div>
-
-                                    <div className="bg-green-50 border border-green-100 py-1.5 px-3 rounded-xl text-center min-w-17.5">
-                                        <p className="text-green-600 text-[9px] font-black uppercase">Saved</p>
-                                        <p className="text-green-600 font-bold text-xs md:text-sm">₹{discount}</p>
                                     </div>
 
                                 </div>
@@ -260,8 +371,10 @@ function PlaceOrderForm() {
                         <div className='hidden lg:block'>
                             <button
                                 onClick={handlePlaceOrder}
-                                className="w-full text-sm md:text-base bg-pink-500 hover:bg-pink-600 text-white font-bold py-4 rounded-3xl mt-8 flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg shadow-pink-200 cursor-pointer">
-                                <span>Confirm & Place Order</span>
+                                disabled={isPending}
+                                className={`w-full text-sm md:text-base bg-pink-500 hover:bg-pink-600 text-white font-bold py-4 rounded-3xl mt-8 flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg shadow-pink-200
+                                  ${isPending ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+                                {isPending ? "Placing Order..." : "Confirm & Place Order"}
                             </button>
 
                             {/* Security Note */}
@@ -339,7 +452,7 @@ function PlaceOrderForm() {
                             </div>
 
                             <button className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 md:py-4 rounded-2xl font-bold mt-6 shadow-lg shadow-pink-200 cursor-pointer">
-                                Pay ₹{Math.round(finalTotal)}
+                                Pay ₹{finalTotal}
                             </button>
                         </div>
                     </div>

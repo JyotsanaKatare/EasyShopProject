@@ -1,11 +1,15 @@
 
-//updated
 import { useEffect, useState } from "react";
 import VendorAccountInfo from "../Components/VendorAccountInfo";
 import VendorBusinessInfo from "../Components/VendorBusinessInfo";
 import VendorPersonalInfo from "../Components/VendorPersonalInfo";
+import { useCatList } from "../hook/useVendor";
 
 function VendorSignupPage() {
+
+    const { data: categories = [], isLoading: isCatLoading, isError, error } = useCatList();
+
+    // console.log("QUERY STATE:", { categories, isCatLoading, isError, error });
 
     const [step, setStep] = useState(1);
     const [isEmailVerified, setIsEmailVerified] = useState(false);
@@ -48,7 +52,7 @@ function VendorSignupPage() {
     // Jab step 1 se 2 ya 2 se 3 hoga, scroll top par jayega
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, [step]); 
+    }, [step]);
 
     const nextStep = () => setStep((prev) => prev + 1);
     const prevStep = () => setStep((prev) => prev - 1);
@@ -116,7 +120,9 @@ function VendorSignupPage() {
                             next={nextStep}
                             prev={prevStep}
                             formData={formData}
-                            setFormData={setFormData} />
+                            setFormData={setFormData}
+                            categories={categories}
+                            isCatLoading={isCatLoading} />
                     }
 
                     {step === 3 &&

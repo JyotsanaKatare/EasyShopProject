@@ -1,17 +1,20 @@
 
-//updated
 import React, { useEffect, useState } from 'react'
 import { HiOutlineMail } from "react-icons/hi";
 import { HiOutlineLockClosed } from "react-icons/hi2";
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+
 import useAuthStore from '../store/useAuthStore';
 import { useLogin } from '../hook/useAuth';
-import toast from 'react-hot-toast';
+import { useCart } from './CartContext';
 
 function Login() {
 
     const navigate = useNavigate();
     const login = useAuthStore((state) => state.login);  // Zustand Action
+
+    const { mergeGuestCartToDB } = useCart();
 
     const [loginType, setLoginType] = useState('user');
     const { mutate: loginUser, isPending: isLogging } = useLogin();
@@ -39,7 +42,7 @@ function Login() {
         };
 
         loginUser({ ...formData, role: loginType }, {
-            onSuccess: (res) => {
+            onSuccess: async (res) => {
                 toast.success(res.message || "Login successful!");
 
                 const userData = res.user || res.vendor;
@@ -49,7 +52,11 @@ function Login() {
                     // Zustand store mein user aur token save karein
                     login(userData, res.token);
 
-                    // Role check karke navigate karein
+                    if (userData.role === 'user') {
+                        await mergeGuestCartToDB();
+                    }
+
+                    // role check 
                     const targetPath = userData.role === 'vendor' ? "/vendor_dashboard" : "/";
                     navigate(targetPath);
                 }
