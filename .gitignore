@@ -6,12 +6,14 @@ API/.env
 # frontend
 EasyShop/node_modules/
 EasyShop/dist/
-EasyShop/.env/
-EasyShop/.env.production/
+EasyShop/.env
+EasyShop/.env.production
 
 # frontend
 Admin/node_modules/
 Admin/dist/
+Admin/.env
+Admin/.env.production
 
 # common
 npm-debug.log*

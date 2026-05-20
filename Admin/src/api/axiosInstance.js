@@ -3,10 +3,10 @@ import axios from 'axios';
 import useAdminAuthStore from '../store/useAdminAuthStore';
 
 const API = axios.create({
-    baseURL: 'http://localhost:8000/api/v1',
+    baseURL: import.meta.env.VITE_API_URL,
 });
 
-// Request Interceptor: manuall header likhne ki need nhi
+// Request Interceptor
 API.interceptors.request.use((config) => {
     const token = useAdminAuthStore.getState().token;
     if (token) {
