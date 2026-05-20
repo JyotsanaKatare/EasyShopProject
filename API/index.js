@@ -12,7 +12,15 @@ import Conversation from './Models/conversationModelSchema.js';
 dotenv.config();
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: [
+        "https://codezens.com",
+        "http://localhost:5173",
+        "http://localhost:5174"
+    ],
+    credentials: true
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -24,7 +32,11 @@ const server = http.createServer(app);
 // Socket.io Initialize karein
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: [
+            "https://codezens.com",
+            "http://localhost:5173",
+            "http://localhost:5174"
+        ],
         methods: ["GET", "POST"]
     }
 });
