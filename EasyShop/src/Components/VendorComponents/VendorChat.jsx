@@ -51,7 +51,7 @@ function VendorChat() {
 
   // 2. connect socket on mount
   useEffect(() => {
-    socketRef.current = io("http://localhost:8000");
+    socketRef.current = io(import.meta.env.VITE_SOCKET_URL);
 
     socketRef.current.on("receive_message", (newMsg) => {
 

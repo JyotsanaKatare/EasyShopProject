@@ -23,9 +23,6 @@ function ProfileLayout() {
     const { data: vendorData, isLoading, isError } = useVendorProfile(vendorId);
     const { mutate: updateProfile, isPending } = useUpdateVendorProfile(vendorId);
 
-    // console.log("vendorData:", vendorData);
-    // console.log("vendorId:", vendorId);
-
     const handleFormSubmit = (formData) => {
         updateProfile(formData);
     };

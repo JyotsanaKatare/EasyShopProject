@@ -26,7 +26,7 @@ function UserChat({ isOpen, setIsOpen, vendorId }) {
 
         console.log("initChat running...");
 
-        socketRef.current = io("http://localhost:8000");
+        socketRef.current = io(import.meta.env.VITE_SOCKET_URL);
 
         const initChat = async () => {
             try {

@@ -3,10 +3,10 @@ import axios from 'axios';
 import useAuthStore from '../store/useAuthStore';
 
 const API = axios.create({
-    baseURL: 'http://localhost:8000/api/v1', // Aapka backend URL
+    baseURL: import.meta.env.VITE_API_URL,
 });
 
-// Request Interceptor: Har request bhejne se pehle ye check karega
+// Request Interceptor: check each req before sending
 API.interceptors.request.use((config) => {
     const token = useAuthStore.getState().token;
     if (token) {
@@ -21,9 +21,8 @@ API.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response && error.response.status === 401) {
-            // Token expire ho gaya ya invalid hai
-            useAuthStore.getState().logout(); // Zustand se logout function call karein
-            window.location.href = '/login'; // User ko login par bhej dein
+            useAuthStore.getState().logout(); 
+            window.location.href = '/login'; 
         }
         return Promise.reject(error);
     }

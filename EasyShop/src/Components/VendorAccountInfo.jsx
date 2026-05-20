@@ -1,5 +1,4 @@
 
-//updated
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { RxCross2 } from "react-icons/rx";
@@ -22,7 +21,6 @@ function VendorAccountInfo({ prev, formData, setFormData }) {
 
     const { mutate: signupVendor, isPending: isRegistering } = useVendorSignup();
 
-    // Zustand store se login function uthayein
     const login = useAuthStore((state) => state.login);
 
     // input handler

@@ -11,7 +11,7 @@ function ProfilePersonalForm({ vendorData, onSubmit, isPending }) {
         phone: vendorData?.contact || "",
     });
 
-    const [profileFile, setProfileFile] = useState(null); // ✅ store actual file for upload
+    const [profileFile, setProfileFile] = useState(null);
     const [isEditIndex, setIsEditIndex] = useState({});
 
     const [profileImage, setProfileImage] = useState(vendorData?.profilePhoto || null);
@@ -31,10 +31,10 @@ function ProfilePersonalForm({ vendorData, onSubmit, isPending }) {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setProfileFile(file); // ✅ actual file for FormData
+            setProfileFile(file);
             const reader = new FileReader();
             reader.onloadend = () => {
-                setProfileImage(reader.result); // preview only
+                setProfileImage(reader.result);
             };
             reader.readAsDataURL(file);
         }
@@ -59,17 +59,17 @@ function ProfilePersonalForm({ vendorData, onSubmit, isPending }) {
         const fd = new FormData();
         fd.append("name", formData.name);
         fd.append("email", formData.email);
-        fd.append("contact", formData.phone); // ✅ schema field name is "contact"
+        fd.append("contact", formData.phone);
         if (profileFile) {
-            fd.append("profilePhoto", profileFile); // ✅ actual file
+            fd.append("profilePhoto", profileFile);
         }
 
-        onSubmit(fd); // ✅ fires mutation in Layout
+        onSubmit(fd);
     };
 
     // Reusable Component for Each Field
     const RenderField = (label, fieldId, type = "text") => {
-        const isEditing = isEditIndex[fieldId]; // Check if THIS specific field is being edited
+        const isEditing = isEditIndex[fieldId];
 
         return (
             <>
@@ -163,20 +163,19 @@ function ProfilePersonalForm({ vendorData, onSubmit, isPending }) {
                             JPG, GIF or PNG. Max size of 2MB
                         </p>
 
-                        {/* ✅ Show save button only when new photo is selected */}
-        {profileFile && (
-            <button
-                onClick={() => {
-                    const fd = new FormData();
-                    fd.append("profilePhoto", profileFile);
-                    onSubmit(fd);
-                    setProfileFile(null); // reset after submit
-                }}
-                disabled={isPending}
-                className="mt-3 px-5 py-2 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-xs transition-all active:scale-95 shadow-lg shadow-pink-100 disabled:opacity-50">
-                {isPending ? "Saving..." : "Save Photo"}
-            </button>
-        )}
+                        {profileFile && (
+                            <button
+                                onClick={() => {
+                                    const fd = new FormData();
+                                    fd.append("profilePhoto", profileFile);
+                                    onSubmit(fd);
+                                    setProfileFile(null); 
+                                }}
+                                disabled={isPending}
+                                className="mt-3 px-5 py-2 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-xs transition-all active:scale-95 shadow-lg shadow-pink-100 disabled:opacity-50">
+                                {isPending ? "Saving..." : "Save Photo"}
+                            </button>
+                        )}
                     </div>
                 </div>
 

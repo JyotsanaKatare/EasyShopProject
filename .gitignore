@@ -6,6 +6,8 @@ API/.env
 # frontend
 EasyShop/node_modules/
 EasyShop/dist/
+EasyShop/.env/
+EasyShop/.env.production/
 
 # frontend
 Admin/node_modules/
