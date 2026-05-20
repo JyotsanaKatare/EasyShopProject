@@ -138,7 +138,7 @@ export const useStockAlert = () => {
 };
 
 
-// ======== =USER SIDE ==========
+// ========= USER SIDE =========
 
 // prod list - new arrival
 export const useNewArrivalProducts = () => {
