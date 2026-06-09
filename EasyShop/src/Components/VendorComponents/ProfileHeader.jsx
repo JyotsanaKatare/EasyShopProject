@@ -3,66 +3,87 @@ import { HiOutlineArrowLeft } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/useAuthStore";
 import { useVendorProfile } from "../../hook/useAuth";
+import VendorLangSwitcher from "./VendorLangSwitcher";
+import EasyShopLoader from '../EasyShopLoader';
+import { useTranslation } from "react-i18next";
 
 function ProfileHeader() {
 
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { user } = useAuthStore();
-
-    const vendorId = user?._id || user?.id; //id get from store
-
+    const vendorId = user?._id || user?.id;
     const { data: vendorData, isLoading, isError } = useVendorProfile(vendorId);
 
-    return (
-        <nav className="bg-white/80 backdrop-blur-xl border-b border-pink-50 flex items-center justify-between p-3 md:p-4 lg:px-8 lg:py-5 sticky top-0 z-50">
-            <div className="flex items-center gap-2 md:gap-6">
+    if (isLoading) return <EasyShopLoader />
 
-                {/* Back Button */}
+    return (
+        <nav className="max-w-6xl mx-auto bg-white/70 backdrop-blur-2xl border-b border-pink-100/50 flex items-center justify-between px-4 sm:px-5 lg:px-6 py-3 lg:py-4 sticky top-0 z-50">
+
+            {/* Left: Navigation & Branding */}
+            <div className="flex items-center gap-4 md:gap-6">
                 <button
                     onClick={() => navigate('/vendor_dashboard')}
-                    className="flex items-center gap-1.5 text-slate-500 hover:text-pink-500 font-bold transition-colors cursor-pointer group"
+                    className="flex items-center gap-2 text-slate-500 hover:text-pink-600 font-semibold transition-all group"
                 >
-                    <HiOutlineArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+                    <div className="p-1.5 rounded-full bg-slate-100 group-hover:bg-pink-100 transition-colors">
+                        <HiOutlineArrowLeft
+                            size={16}
+                            className="group-hover:-translate-x-0.5 transition-transform" />
+                    </div>
                     <span className="hidden sm:inline text-sm">
-                        Dashboard
+                        {t('vendorProfile.backToDashboard')}
                     </span>
                 </button>
 
-                <div className="h-5 w-px bg-slate-200 hidden xs:block"></div>
+                <div className="h-6 w-px bg-slate-200 hidden sm:block"></div>
 
-                {/* Brand Logo */}
-                <div className="flex items-center gap-2">
-                    <img
-                        src={vendorData.storeLogo}
-                        alt="Logo"
-                        className="w-10 h-6 md:w-15 md:h-12 object-cover"
-                    />
-                    {/* Mobile par "EasyShop" aur Desktop par "EasyShop Settings" */}
-                    <span className="text-sm md:text-lg font-bold text-slate-800 tracking-tighter truncate max-w-25 md:max-w-none">
-                        {/* EasyShop <span className="hidden md:inline">Settings</span> */}
-                        {vendorData.storeName}
-                    </span>
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 shadow-sm flex items-center justify-center">
+                        <img
+                            src={vendorData.storeLogo}
+                            alt="Logo"
+                            className="w-full h-full object-contain p-1" />
+                    </div>
+
+                    <div className="hidden md:flex flex-col">
+                        <span className="text-sm font-bold text-slate-800 leading-tight">
+                            {vendorData?.storeName || "Store Name"}
+                        </span>
+
+                        <span className="pt-0.5 text-[10px] text-pink-500 font-bold uppercase tracking-wider">
+                            {t('vendorProfile.storeOwner')}
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            <div className="flex items-center gap-3"> {/* Gap add kiya aur items-center */}
+            {/* Right: Actions & Profile */}
+            <div className="flex items-center gap-3 md:gap-5">
+                <VendorLangSwitcher />
 
-                {/* Vendor Mode Pill */}
-                <span className="hidden md:block text-[8px] md:text-[10px] font-black bg-white/50 border border-pink-100 text-pink-500 px-3 py-1 rounded-full uppercase whitespace-nowrap shadow-sm">
-                    {vendorData.name}
-                </span>
+                <div className="flex items-center gap-3 pl-3 border-l border-slate-100">
+                    <div className="hidden md:flex flex-col items-end">
+                        <span className="text-xs font-bold text-slate-700">
+                            {vendorData.name}
+                        </span>
 
-                {/* Vendor Image Wrapper */}
-                <div className="relative group">
-                    <img
-                        src={vendorData.profilePhoto}
-                        alt="Vendor Profile"
-                        className="w-10 h-10 md:w-12 md:h-12 object-cover rounded-full border-2 border-white shadow-md group-hover:border-pink-200 transition-all"
-                    />
-                    {/* Online Status Dot (Optional) */}
-                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                        <span className="text-[10px] text-slate-400 font-medium">
+                            {t('vendorProfile.vendorRole')}
+                        </span>
+                    </div>
+
+                    <div className="relative group cursor-pointer">
+                        <div className="w-10 h-10 rounded-full ring-2 ring-transparent group-hover:ring-pink-200 transition-all p-0.5">
+                            <img
+                                src={vendorData.profilePhoto}
+                                alt="Profile"
+                                className="w-full h-full object-cover rounded-full shadow-sm"
+                            />
+                        </div>
+                        <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full ring-1 ring-slate-100"></span>
+                    </div>
                 </div>
-
             </div>
         </nav>
     );

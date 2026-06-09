@@ -30,7 +30,7 @@ function OrderTracker() {
     if (isError) return <div className="py-20 text-center text-red-400">{t('orderTracker.failedLoad')}</div>;
 
     return (
-        <div className="min-h-[70vh] bg-white py-8 md:py-16 px-4 lg:px-6">
+        <div className="min-h-[70vh] bg-white py-8 md:py-16 px-4 sm:px-5 lg:px-6">
             <div className="max-w-6xl mx-auto">
 
                 {/* heading */}
@@ -64,7 +64,7 @@ function OrderTracker() {
                     </div>
                 </div>
 
-                {/* progress bar */}
+                {/* =========== Progress Bar ============== */}
                 <OrderProgressBar orderStatus={orderDetail?.orderStatus} />
 
                 {/* Parent section */}
@@ -82,31 +82,32 @@ function OrderTracker() {
                         {orderDetail?.items?.map((item, index) => (
                             <div
                                 key={index}
-                                className="group p-3 md:p-4 rounded-2xl border border-transparent hover:border-pink-50 hover:bg-pink-50/30 transition-all duration-300 flex flex-row justify-between items-center gap-2">
-                                <div className="flex gap-3 md:gap-4 items-center">
+                                className="group p-3 md:p-4 rounded-2xl border border-transparent hover:border-pink-50 hover:bg-pink-50/30 transition-all duration-300 flex items-center gap-3 min-w-0"
+                            >
+                                <div className="flex gap-3 md:gap-4 items-center min-w-0 flex-1">
                                     <div className="relative shrink-0 overflow-hidden rounded-xl border border-gray-100">
                                         <img
                                             src={
                                                 item.productId?.attributes?.Color?.images?.[item.selectedColor]?.[0]
                                                 || item.productId?.prodImage
                                             }
-                                            className='w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 object-cover group-hover:scale-105 transition-transform duration-500'
+                                            className="w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     </div>
 
-                                    <div className="flex flex-col justify-center">
-                                        <h3 className="text-gray-800 font-bold text-sm md:text-md leading-tight uppercase tracking-tight w-34 sm:max-w-none">
+                                    <div className="flex flex-col justify-center min-w-0 flex-1">
+                                        <h3 className="text-gray-800 font-bold text-xs sm:text-sm md:text-base leading-tight uppercase tracking-tight line-clamp-3 wrap-break-words">
                                             {item.productId?.prodName}
                                         </h3>
 
                                         <p className="text-[10px] md:text-sm text-pink-500 font-bold mt-1 bg-pink-50 w-fit px-2 py-0.5 rounded-md">
-                                            {t('orderTracker.qty')}: {item.quantity}
+                                            {t('orderTracker.qty')} : {item.quantity}
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="text-right shrink-0">
-                                    <p className="text-md md:text-xl font-black text-gray-800 tracking-tighter">
+                                <div className="text-right shrink-0 max-w-18 sm:max-w-none">
+                                    <p className="text-sm md:text-xl font-black text-gray-800 tracking-tighter whitespace-nowrap">
                                         ₹{item.price}
                                     </p>
                                     <p className="hidden sm:block text-[10px] text-gray-400 uppercase font-bold tracking-widest">
@@ -152,7 +153,7 @@ function OrderTracker() {
                                 <div className="col-span-2 space-y-1 pt-2 border-t border-gray-50">
                                     <p className="text-[10px] md:text-[11px] font-bold text-gray-400 uppercase tracking-wider">
                                         {t('orderTracker.address')}
-                                        </p>
+                                    </p>
                                     <p className="text-gray-600 text-[12px] md:text-sm leading-relaxed">
                                         {orderDetail?.shippingAddress?.address},
                                         {orderDetail?.shippingAddress?.city},{' '} <br />
@@ -172,7 +173,7 @@ function OrderTracker() {
 
                                 <div className="space-y-1">
                                     <p className="text-[10px] md:text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                                       {t('orderTracker.status')}
+                                        {t('orderTracker.status')}
                                     </p>
                                     <span className={`py-1 rounded-full text-[10px] font-black uppercase tracking-wider
                                         ${statusStyles[orderDetail?.orderStatus] || 'bg-slate-100 text-slate-500'}`}>
@@ -187,7 +188,7 @@ function OrderTracker() {
                             <div className="absolute top-0 right-0 w-24 h-24 bg-pink-100/30 rounded-full -mr-12 -mt-12 blur-2xl"></div>
 
                             <h2 className='text-md md:text-lg font-bold text-gray-800 mb-4 flex items-center justify-between'>
-                               {t('orderTracker.billing')}
+                                {t('orderTracker.billing')}
                                 <span className="text-[9px] md:text-[10px] bg-white px-2 py-1 rounded-full text-gray-400 shadow-sm border border-gray-100">
                                     {orderDetail?.paymentStatus}
                                 </span>

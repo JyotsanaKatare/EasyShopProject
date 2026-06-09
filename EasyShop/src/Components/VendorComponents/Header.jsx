@@ -63,10 +63,10 @@ const VendorHeader = ({ onToggleSideBar, setCurrentPage }) => {
 
     return (
         <div className='bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-pink-50 dark:border-slate-800 p-4 lg:px-8 sticky top-0 z-40'>
-            <div className='flex items-center justify-between gap-2 lg:gap-4'>
+            <div className='flex items-center justify-between gap-3 lg:gap-4 min-w-0'>
 
                 {/* Left: Branding/Toggle */}
-                <div className='flex items-center space-x-4'>
+                <div className='flex items-center space-x-4 shrink-0'>
                     <button
                         onClick={onToggleSideBar}
                         className='p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-slate-800 transition-all cursor-pointer active:scale-90'
@@ -74,18 +74,18 @@ const VendorHeader = ({ onToggleSideBar, setCurrentPage }) => {
                         <Menu className='w-6 h-6 text-pink-500' />
                     </button>
 
-                    <div className='hidden lg:block'>
-                        <h1 className='text-lg md:text-xl font-bold bg-linear-to-r from-pink-600 to-pink-400 bg-clip-text text-transparent'>
+                    <div className='hidden xl:block'>
+                        <h1 className='text-sm md:text-xl font-bold bg-linear-to-r from-pink-600 to-pink-400 bg-clip-text text-transparent'>
                             {t('vendorHeader.vendor')}
                         </h1>
-                        <p className='text-[11px] md:text-xs text-slate-400 font-medium tracking-wide uppercase'>
+                        <p className='text-[11px] md:text-[12px] text-slate-400 font-medium tracking-wide uppercase'>
                             {t('vendorHeader.sellerCentral')}
                         </p>
                     </div>
                 </div>
 
                 {/* Center: Search Bar */}
-                <div className='flex-1 max-w-md hidden sm:block'>
+                <div className='flex-1 min-w-55 max-w-md hidden md:block'>
                     <div
                         className='relative group'
                         ref={searchRef}>
@@ -202,7 +202,7 @@ const VendorHeader = ({ onToggleSideBar, setCurrentPage }) => {
                 </div>
 
                 {/* Right: Actions & Profile */}
-                <div className='flex items-center space-x-2 lg:space-x-4'>
+                <div className='flex items-center space-x-2 lg:space-x-4 shrink-0'>
 
                     {/* Theme Toggle */}
                     <button className='md:ml-0 p-2.5 rounded-xl text-slate-500 hover:bg-pink-50 dark:hover:bg-slate-800 transition-all'>
@@ -247,7 +247,7 @@ const VendorHeader = ({ onToggleSideBar, setCurrentPage }) => {
 
                         {/* Enhanced Dropdown */}
                         {open && (
-                            <div className="absolute right-0 mt-3 w-35 md:w-48 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-xl shadow-slate-200/50 z-50 py-1 md:py-2 overflow-hidden animate-in fade-in zoom-in duration-200">
+                            <div className="absolute right-0 mt-3 w-37 md:w-48 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-xl shadow-slate-200/50 z-50 py-1 md:py-2 overflow-hidden animate-in fade-in zoom-in duration-200">
                                 <button
                                     onClick={() => {
                                         navigate("/vendor_profile");

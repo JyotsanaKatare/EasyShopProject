@@ -44,3 +44,19 @@ input[type="range"]::-moz-range-thumb {
   border: 2px solid white;
   cursor: pointer;
 }
+
+/* product filter page */
+.product-card-swiper.swiper,
+.product-card-swiper .swiper {
+  padding-bottom: 0 !important;
+}
+
+.product-card-swiper .swiper-wrapper,
+.product-card-swiper .swiper-slide {
+  height: 100%;
+}
+
+/* Thin scrollbar for chat */
+.chat-scrollbar::-webkit-scrollbar {
+    display: none;
+}

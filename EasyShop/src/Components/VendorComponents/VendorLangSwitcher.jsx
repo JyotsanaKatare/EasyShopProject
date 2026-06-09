@@ -35,22 +35,22 @@ function VendorLangSwitcher() {
         return () => document.removeEventListener("mousedown", handleClickOutsideLang);
     }, []);
 
-
     return (
-        <div className="relative flex items-center" ref={langDropdownRef}>
+        <div className="relative flex items-center " ref={langDropdownRef}>
             <button
                 onClick={() => setOpenLangDropdown(!openLangDropdown)}
                 className="flex items-center gap-1 cursor-pointer font-bold text-xs sm:text-sm tracking-wider text-gray-700 hover:text-pink-500 transition-colors py-1.5 focus:outline-none"
             >
                 <span>{selectedLang}</span>
                 <IoIosArrowDown
-                    className={`transition-transform duration-300 text-gray-400 text-xs sm:text-sm ${openLangDropdown ? 'rotate-180 text-pink-500' : ''}`}
+                    className={`transition-transform duration-300 text-gray-400 text-xs sm:text-sm 
+                        ${openLangDropdown ? 'rotate-180 text-pink-500' : ''}`}
                 />
             </button>
 
             {/* lang switcher drop down */}
             <div
-                className={`absolute right-0 top-full mt-3 w-28 bg-white border border-gray-100 shadow-2xl rounded-xl z-50 transition-all duration-200 origin-top-right ${openLangDropdown
+                className={`absolute right-0 top-full mt-3 w-28 bg-white border border-gray-100 shadow-2xl rounded-xl transition-all duration-200 origin-top-right ${openLangDropdown
                     ? 'opacity-100 scale-100 visible translate-y-0'
                     : 'opacity-0 scale-95 invisible -translate-y-1 pointer-events-none'
                     }`}

@@ -6,7 +6,7 @@ import sendEmail from '../utils/sendEmail.js';
 
 export const sendOTP = async (req, res) => {
     try {
-        const { email, role } = req.body; // role: 'user' ya 'vendor'
+        const { email, role } = req.body; 
 
         if (!email || !role) {
             return res.status(400).json({
@@ -15,10 +15,10 @@ export const sendOTP = async (req, res) => {
             });
         }
 
-        // 1. Role ke basis par sahi Model select karein
+        // 1. Select the correct model based on the role
         const Model = role === 'vendor' ? Vendor : User;
 
-        // 2. Check - email pehle se register toh nahi hai
+        // 2. Check if your email is already registered
         const existingAccount = await Model.findOne({ email });
         if (existingAccount) {
             return res.status(400).json({
@@ -29,7 +29,7 @@ export const sendOTP = async (req, res) => {
 
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-        // 3. OTP save karein (Yahan 'role' bhi save karein taaki verification secure ho)
+       // 3. Save the otp (also save 'role' here to secure the verification)
         await OTP.deleteOne({ email, role });
         await OTP.create({ email, otp, role });
 
@@ -61,7 +61,7 @@ export const sendOTP = async (req, res) => {
 
 export const verifyOTP = async (req, res) => {
     try {
-        const { email, otp, role } = req.body; // role bhi mangiye security ke liye
+        const { email, otp, role } = req.body; 
 
         // Check karein ki us email aur role ka OTP exist karta hai
         const storedOtpDetails = await OTP.findOne({ email, role }).sort({ createdAt: -1 });

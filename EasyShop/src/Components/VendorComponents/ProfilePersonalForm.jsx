@@ -2,8 +2,11 @@
 import React, { useEffect, useState } from 'react';
 import { HiOutlineCamera } from "react-icons/hi2";
 import { HiOutlineShieldCheck } from "react-icons/hi";
+import { useTranslation } from 'react-i18next';
 
 function ProfilePersonalForm({ vendorData, onSubmit, isPending }) {
+
+    const { t } = useTranslation();
 
     const [formData, setformData] = useState({
         name: vendorData?.name || "",
@@ -84,7 +87,7 @@ function ProfilePersonalForm({ vendorData, onSubmit, isPending }) {
                         <span
                             onClick={() => toggleEdit(fieldId)}
                             className={`text-pink-500 hover:text-pink-600 font-medium text-[13px] md:text-sm cursor-pointer`}>
-                            {!isEditing ? "Edit" : "Cancel"}
+                            {!isEditing ? t('vendorProfile.editLabel') : t('vendorProfile.cancelLabel')}
                         </span>
                     </div>
 
@@ -95,7 +98,7 @@ function ProfilePersonalForm({ vendorData, onSubmit, isPending }) {
                             onChange={(e) => handleInputChange(e, fieldId)}
                             placeholder="Sohan Sharma"
                             disabled={!isEditing}
-                            className={`flex-1 p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border transition-all text-sm outline-none
+                            className={`min-w-0 flex-1 p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border transition-all text-sm outline-none
                            ${!isEditing
                                     ? 'bg-slate-100 border-transparent text-slate-500 cursor-not-allowed'
                                     : 'bg-white border-slate-200 focus:ring-1 focus:ring-pink-500 text-slate-800 shadow-sm'
@@ -106,8 +109,8 @@ function ProfilePersonalForm({ vendorData, onSubmit, isPending }) {
                             <button
                                 onClick={() => handleSave(fieldId)}
                                 disabled={isPending}
-                                className='px-6 py-2.5 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-sm transition-all active:scale-95 shadow-lg shadow-pink-100'>
-                                {isPending ? "Saving..." : "Save"}
+                                className='whitespace-nowrap shrink-0 px-4 md:px-5 py-2.5 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-sm transition-all active:scale-95 shadow-lg shadow-pink-100'>
+                                {isPending ? t('vendorProfile.savingLabel') : t('vendorProfile.saveLabel')}
                             </button>
                         )}
 
@@ -157,10 +160,10 @@ function ProfilePersonalForm({ vendorData, onSubmit, isPending }) {
 
                     <div className="text-center md:text-left">
                         <h4 className="text-[13px] md:text-sm font-black text-slate-800 uppercase tracking-tight">
-                            Profile Photo
+                            {t('vendorProfile.profilePhoto')}
                         </h4>
                         <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">
-                            JPG, GIF or PNG. Max size of 2MB
+                            {t('vendorProfile.photoHint')}
                         </p>
 
                         {profileFile && (
@@ -169,20 +172,20 @@ function ProfilePersonalForm({ vendorData, onSubmit, isPending }) {
                                     const fd = new FormData();
                                     fd.append("profilePhoto", profileFile);
                                     onSubmit(fd);
-                                    setProfileFile(null); 
+                                    setProfileFile(null);
                                 }}
                                 disabled={isPending}
                                 className="mt-3 px-5 py-2 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-xs transition-all active:scale-95 shadow-lg shadow-pink-100 disabled:opacity-50">
-                                {isPending ? "Saving..." : "Save Photo"}
+                                {isPending ? t('vendorProfile.savingLabel') : t('vendorProfile.savePhoto')}
                             </button>
                         )}
                     </div>
                 </div>
 
                 {/* input fields */}
-                {RenderField("Full Name", "name")}
-                {RenderField("Email Address", "email", "email")}
-                {RenderField("Phone Number", "phone")}
+                {RenderField(t('vendorProfile.fieldFullName'), "name")}
+                {RenderField(t('vendorProfile.fieldEmail'), "email", "email")}
+                {RenderField(t('vendorProfile.fieldPhone'), "phone")}
             </div>
 
             {/* bottom section */}
@@ -191,7 +194,7 @@ function ProfilePersonalForm({ vendorData, onSubmit, isPending }) {
                     <HiOutlineShieldCheck size={20} />
                 </div>
                 <p className="text-[10px] lg:text-xs text-slate-500 font-medium">
-                    Your personal information is encrypted. Read our <span className="text-pink-500 cursor-pointer hover:underline">Privacy Policy</span>.
+                    {t('vendorProfile.privacyNote')} <span className="text-pink-500 cursor-pointer hover:underline">{t('vendorProfile.privacyLink')}</span>.
                 </p>
             </div>
         </>

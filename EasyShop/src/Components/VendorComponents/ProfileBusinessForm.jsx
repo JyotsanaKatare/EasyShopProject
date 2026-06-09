@@ -4,8 +4,11 @@ import { useState } from 'react';
 import { HiOutlineCamera } from "react-icons/hi2";
 import { HiOutlineShieldCheck } from "react-icons/hi";
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 function ProfileBusinessForm({ vendorData, onSubmit, isPending }) {
+
+  const { t } = useTranslation();
 
   const [formData, setformData] = useState({
     storeName: "",
@@ -23,12 +26,11 @@ function ProfileBusinessForm({ vendorData, onSubmit, isPending }) {
   });
 
   const [isEditIndex, setIsEditIndex] = useState({});
-  const [logoImage, setLogoImage] = useState(null); // ✅ null not hardcoded URL
-  const [logoFile, setLogoFile] = useState(null);   // ✅ actual file for upload
+  const [logoImage, setLogoImage] = useState(null);
+  const [logoFile, setLogoFile] = useState(null);
   const [gstFile, setGstFile] = useState(null);
 
-
-  // ✅ Prefill when vendorData arrives
+  // Prefill 
   useEffect(() => {
     if (vendorData) {
       setformData({
@@ -40,12 +42,12 @@ function ProfileBusinessForm({ vendorData, onSubmit, isPending }) {
         pincode: vendorData.pincode || "",
         businessType: vendorData.businessType || "",
         businessEmail: vendorData.businessEmail || "",
-        businessPhone: vendorData.businessContact || "", // ✅ schema field
-        panNumber: vendorData.businessPAN || "",          // ✅ schema field
+        businessPhone: vendorData.businessContact || "",
+        panNumber: vendorData.businessPAN || "",
         gstNumber: vendorData.gstNumber || "",
         category: vendorData.category || "",
       });
-      setLogoImage(vendorData.storeLogo || null); // ✅ schema field
+      setLogoImage(vendorData.storeLogo || null);
     }
   }, [vendorData]);
 
@@ -73,7 +75,6 @@ function ProfileBusinessForm({ vendorData, onSubmit, isPending }) {
   };
 
 
-  // ✅ handleSave now builds FormData and calls onSubmit
   const handleSave = (fieldId) => {
     toggleEdit(fieldId);
 
@@ -85,7 +86,7 @@ function ProfileBusinessForm({ vendorData, onSubmit, isPending }) {
     fd.append("state", formData.state);
     fd.append("pincode", formData.pincode);
     fd.append("businessEmail", formData.businessEmail);
-    fd.append("businessContact", formData.businessPhone); // ✅ schema name
+    fd.append("businessContact", formData.businessPhone);
     fd.append("gstNumber", formData.gstNumber);
     fd.append("category", formData.category);
     if (logoFile) fd.append("storeLogo", logoFile);
@@ -107,37 +108,36 @@ function ProfileBusinessForm({ vendorData, onSubmit, isPending }) {
               {label}
             </label>
 
-            {/* Sirf tab dikhega agar field ReadOnly NAHI hai */}
+            {/* visible when, if readOnly is not */}
             {!isReadOnly && (
               <span
                 onClick={() => toggleEdit(fieldId)}
                 className={`text-pink-500 hover:text-pink-600 font-medium text-[13px] md:text-sm cursor-pointer`}>
-                {!isEditing ? "Edit" : "Cancel"}
+                {!isEditing ? t('vendorProfile.editLabel') : t('vendorProfile.cancelLabel')}
               </span>
             )}
           </div>
 
           <div className='flex flex-row gap-5 items-center'>
-            
-              <input
-                type={type}
-                value={formData[fieldId]}
-                onChange={(e) => handleInputChange(e, fieldId)}
-                // placeholder="Sohan Sharma"
-                disabled={!isEditing || isReadOnly}
-                className={`flex-1 p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border transition-all text-sm outline-none
+
+            <input
+              type={type}
+              value={formData[fieldId]}
+              onChange={(e) => handleInputChange(e, fieldId)}
+              disabled={!isEditing || isReadOnly}
+              className={`min-w-0 flex-1 p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border transition-all text-sm outline-none
                   ${!isEditing || isReadOnly
-                    ? 'bg-slate-100 border-transparent text-slate-500 cursor-not-allowed'
-                    : 'bg-white border-slate-200 focus:ring-1 focus:ring-pink-500 text-slate-800 shadow-sm'
-                  }`}
-              />
+                  ? 'bg-slate-100 border-transparent text-slate-500 cursor-not-allowed'
+                  : 'bg-white border-slate-200 focus:ring-1 focus:ring-pink-500 text-slate-800 shadow-sm'
+                }`}
+            />
 
             {isEditing && !isReadOnly && (
               <button
                 onClick={() => handleSave(fieldId)}
                 disabled={isPending}
-                className='px-6 py-2.5 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-sm transition-all active:scale-95 shadow-lg shadow-pink-100'>
-                {isPending ? "Saving..." : "Save"}
+                className='whitespace-nowrap shrink-0 px-4 md:px-5 py-2.5 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-xl text-sm transition-all active:scale-95 shadow-lg shadow-pink-100'>
+                {isPending ? t('vendorProfile.savingLabel') : t('vendorProfile.saveLabel')}
               </button>
             )}
 
@@ -175,10 +175,10 @@ function ProfileBusinessForm({ vendorData, onSubmit, isPending }) {
 
         <div className="text-center lg:text-left">
           <h4 className="text-[13px] md:text-sm font-black text-slate-800 uppercase">
-            Store Identity
+            {t('vendorProfile.storeIdentity')}
           </h4>
           <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">
-            Logo must be 500x500px for better quality
+            {t('vendorProfile.logoHint')}
           </p>
         </div>
       </div>
@@ -186,29 +186,28 @@ function ProfileBusinessForm({ vendorData, onSubmit, isPending }) {
       {/* 2. Fields */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
 
-        {RenderField("Store Name", "storeName")}
+        {RenderField(t('vendorProfile.fieldStoreName'), "storeName")}
 
         <div className="lg:col-span-2">
-          {RenderField("About Shop", "aboutShop")}
+          {RenderField(t('vendorProfile.fieldAboutShop'), "aboutShop")}
         </div>
 
-        {RenderField("Business Type", "businessType", "text", true)}
-        {RenderField("Business Category", "category", "text", true)}
+        {RenderField(t('vendorProfile.fieldBusinessType'), "businessType", "text", true)}
+        {RenderField(t('vendorProfile.fieldBusinessCategory'), "category", "text", true)}
 
-        {RenderField("Business Email", "businessEmail")}
-        {RenderField("Business Phone", "businessPhone", "tel")}
+        {RenderField(t('vendorProfile.fieldBusinessEmail'), "businessEmail")}
+        {RenderField(t('vendorProfile.fieldBusinessPhone'), "businessPhone", "tel")}
 
         <div className="lg:col-span-2">
-          {RenderField("Address", "address")}
+          {RenderField(t('vendorProfile.fieldAddress'), "address")}
         </div>
 
-        {RenderField("City", "city")}
-        {RenderField("State", "state")}
-        {RenderField("Pin Code", "pincode")}
+        {RenderField(t('vendorProfile.fieldCity'), "city")}
+        {RenderField(t('vendorProfile.fieldState'), "state")}
+        {RenderField(t('vendorProfile.fieldPinCode'), "pincode")}
 
-
-        {RenderField("Business PAN", "panNumber", "text", true)}
-        {RenderField("GST Number", "gstNumber",)}
+        {RenderField(t('vendorProfile.fieldPAN'), "panNumber", "text", true)}
+        {RenderField(t('vendorProfile.fieldGST'), "gstNumber")}
 
         {/* for gst upload - conditionally */}
         {formData.gstNumber && (
@@ -217,17 +216,17 @@ function ProfileBusinessForm({ vendorData, onSubmit, isPending }) {
 
               <div>
                 <p className="text-xs font-black text-slate-800 uppercase tracking-tight">
-                  GST Certificate
+                  {t('vendorProfile.gstCertTitle')}
                 </p>
                 <p className="text-[10px] text-slate-500 mt-1 font-bold italic">
                   {vendorData?.gstDocumentUpload
-                    ? `Current: ${vendorData.gstDocumentUpload.split('/').pop()}`
-                    : "No document uploaded yet"}
+                    ? `${t('vendorProfile.currentFile')}: ${vendorData.gstDocumentUpload.split('/').pop()}`
+                    : t('vendorProfile.gstNoDoc')}
                 </p>
               </div>
 
               <label className="cursor-pointer bg-white px-6 py-2 rounded-xl border border-pink-200 text-pink-500 font-bold text-xs hover:bg-pink-50 transition-all uppercase">
-                Replace Document
+                {t('vendorProfile.gstReplace')}
                 <input
                   type="file"
                   hidden
@@ -248,7 +247,7 @@ function ProfileBusinessForm({ vendorData, onSubmit, isPending }) {
           <HiOutlineShieldCheck size={20} />
         </div>
         <p className="text-[10px] lg:text-xs text-slate-500 font-medium">
-          Contact admin to update legal info. Read our <span className="text-pink-500 cursor-pointer hover:underline">Privacy Policy</span>.
+          {t('vendorProfile.businessPrivacyNote')} <span className="text-pink-500 cursor-pointer hover:underline">{t('vendorProfile.privacyLink')}</span>.
         </p>
       </div>
     </div>

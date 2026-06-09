@@ -115,16 +115,17 @@ function AddBlog({ setCurrentPage }) {
     return (
         <div className='bg-slate-50/50 p-4 md:p-8 min-h-screen text-left'>
 
-            {/* header */}
-            <div className='max-w-4xl mx-auto p-4 md:p-8 bg-linear-to-br from-pink-500 to-pink-600 rounded-t-xl md:rounded-t-3xl relative overflow-hidden'>
-                <div className='absolute -top-10 -right-10 h-32 w-32 bg-white/10 rounded-full blur-2xl'></div>
-                <div className='absolute -bottom-10 -left-10 h-24 w-24 bg-white/10 rounded-full blur-xl'></div>
+            {/* Header */}
+            <div className='w-full max-w-4xl mx-auto p-6 md:p-10 bg-linear-to-br from-pink-500 to-pink-600 rounded-t-2xl md:rounded-t-3xl relative overflow-hidden shadow-lg'>
+                {/* Decorative Circles */}
+                <div className='absolute -top-12 -right-12 h-32 w-32 md:h-40 md:w-40 bg-white/10 rounded-full blur-2xl'></div>
+                <div className='absolute -bottom-10 -left-10 h-24 w-24 md:h-32 md:w-32 bg-white/10 rounded-full blur-xl'></div>
 
-                <div className='relative z-10 text-center md:text-start'>
-                    <h1 className='text-xl md:text-2xl font-bold text-white mb-1'>
+                <div className='relative z-10 text-center md:text-left flex flex-col items-center md:items-start'>
+                    <h1 className='text-lg md:text-2xl lg:text-3xl font-bold text-white mb-2 leading-tight'>
                         {t('addBlog.portalTitle')}
                     </h1>
-                    <p className='text-pink-50 text-xs font-medium opacity-90'>
+                    <p className='text-pink-50 text-[11px] md:text-sm font-medium opacity-90 max-w-md'>
                         {t('addBlog.portalSubtitle')}
                     </p>
                 </div>
@@ -137,7 +138,7 @@ function AddBlog({ setCurrentPage }) {
 
                     {/* blog title */}
                     <div className='flex flex-col gap-1.5 md:gap-2'>
-                        <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                        <label className='text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
                             {t('addBlog.labelTitle')}
                         </label>
                         <input
@@ -147,13 +148,13 @@ function AddBlog({ setCurrentPage }) {
                             value={formData.title}
                             onChange={handleInputChange}
                             placeholder={t('addBlog.placeholderTitle')}
-                            className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]"
+                            className="w-full px-3 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-pink-400 outline-none transition-all text-sm placeholder:text-xs md:placeholder:text-sm bg-slate-50"
                         />
                     </div>
 
                     {/* category */}
                     <div className='flex flex-col gap-1.5 md:gap-2'>
-                        <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                        <label className='text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
                             {t('addBlog.labelCategory')}
                         </label>
                         <input
@@ -163,13 +164,13 @@ function AddBlog({ setCurrentPage }) {
                             value={formData.category}
                             onChange={handleInputChange}
                             placeholder={t('addBlog.placeholderCategory')}
-                            className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]"
+                            className="w-full px-3 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-pink-400 outline-none transition-all text-sm placeholder:text-xs md:placeholder:text-sm bg-slate-50"
                         />
                     </div>
 
                     {/* card - short description */}
                     <div className='flex flex-col gap-1.5 md:gap-2 col-span-full'>
-                        <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                        <label className='text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
                             {t('addBlog.labelShortSummary')}
                         </label>
                         <textarea
@@ -179,13 +180,13 @@ function AddBlog({ setCurrentPage }) {
                             value={formData.description}
                             onChange={handleInputChange}
                             placeholder={t('addBlog.placeholderShortSummary')}
-                            className="p-3 md:p-4 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all resize-none placeholder:text-[11px] md:placeholder:text-[14px]"
+                            className="w-full px-3 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-pink-400 outline-none transition-all text-sm placeholder:text-xs md:placeholder:text-sm bg-slate-50"
                         />
                     </div>
 
                     {/* banner image */}
                     <div className="flex flex-col gap-3 col-span-full mt-1">
-                        <label className="text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1">
+                        <label className='text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
                             {t('addBlog.labelBannerImage')} <span className="text-pink-500">{t('addBlog.requiredIndicator')}</span>
                         </label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
@@ -222,7 +223,7 @@ function AddBlog({ setCurrentPage }) {
 
                     {/* main content */}
                     <div className='flex flex-col gap-1.5 md:gap-2 col-span-full mt-1'>
-                        <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                        <label className='text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
                             {t('addBlog.labelFullContent')}
                         </label>
                         <textarea
@@ -232,13 +233,13 @@ function AddBlog({ setCurrentPage }) {
                             value={formData.content}
                             onChange={handleInputChange}
                             placeholder={t('addBlog.placeholderFullContent')}
-                            className="p-3 md:p-4 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]"
+                            className="w-full px-3 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-pink-400 outline-none transition-all text-sm placeholder:text-xs md:placeholder:text-sm bg-slate-50"
                         />
                     </div>
 
                     {/* blockquote */}
                     <div className='flex flex-col gap-1.5 md:gap-2 col-span-full bg-pink-50/30 dark:bg-slate-800/50 p-4 rounded-2xl border border-pink-100/50 dark:border-slate-700'>
-                        <label className='text-[13px] font-semibold text-slate-700 dark:text-slate-200 ml-1'>
+                        <label className='text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
                             {t('addBlog.labelBlockquote')}
                         </label>
                         <p className='text-[11px] text-slate-500 mb-1 ml-1'>{t('addBlog.blockquoteNotice')}</p>
@@ -254,7 +255,7 @@ function AddBlog({ setCurrentPage }) {
 
                     {/* time - read */}
                     <div className='flex flex-col gap-1.5 md:gap-2'>
-                        <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                        <label className='text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
                             {t('addBlog.labelReadTime')}
                         </label>
                         <input
@@ -262,13 +263,13 @@ function AddBlog({ setCurrentPage }) {
                             name='readTime'
                             value={formData.readTime}
                             onChange={handleInputChange}
-                            className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all"
+                            className="w-full px-3 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-pink-400 outline-none transition-all text-sm placeholder:text-xs md:placeholder:text-sm bg-slate-50"
                         />
                     </div>
 
                     {/* Tags Input Field */}
                     <div className='flex flex-col gap-1.5 md:gap-2'>
-                        <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                        <label className='text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
                             {t('addBlog.labelTags')}
                         </label>
                         <input
@@ -277,13 +278,14 @@ function AddBlog({ setCurrentPage }) {
                             value={formData.tags}
                             onChange={handleInputChange}
                             placeholder={t('addBlog.placeholderTags')}
-                            className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]"
+                            className="w-full px-3 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-pink-400 outline-none transition-all text-sm placeholder:text-xs md:placeholder:text-sm bg-slate-50"
                         />
                     </div>
 
                     {/* Trends List Mapper Section */}
-                    <div className="col-span-full mt-2 bg-slate-50/50 dark:bg-slate-800/30 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
-                        <div className="flex justify-between items-center mb-4">
+                    <div className="col-span-full mt-2 bg-slate-50/50 dark:bg-slate-800/30 p-4 md:p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+                        {/* Header Section */}
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5">
                             <div>
                                 <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">
                                     {t('addBlog.trendSectionHeading')}
@@ -296,58 +298,63 @@ function AddBlog({ setCurrentPage }) {
                             <button
                                 type="button"
                                 onClick={addMoreTrend}
-                                className="px-3 py-1.5 text-xs bg-slate-900 text-white dark:bg-pink-600 dark:hover:bg-pink-700 rounded-xl font-bold uppercase hover:bg-slate-800 transition-all cursor-pointer"
+                                className="w-full sm:w-auto px-4 py-2 text-[11px] md:text-xs bg-slate-900 text-white dark:bg-pink-600 dark:hover:bg-pink-700 rounded-xl font-bold uppercase hover:bg-slate-800 transition-all cursor-pointer"
                             >
                                 {t('addBlog.addSectionBtn')}
                             </button>
                         </div>
 
-                        {trendsList.map((trend, index) => (
-                            <div
-                                key={index}
-                                className="flex gap-4 items-start bg-white dark:bg-slate-800 p-3.5 rounded-xl border border-slate-100 dark:border-slate-700 mb-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                        {/* Mapper Section */}
+                        <div className="space-y-4">
+                            {trendsList.map((trend, index) => (
+                                <div
+                                    key={index}
+                                    className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 animate-in fade-in slide-in-from-top-2 duration-300"
+                                >
+                                    {/* Inputs Group */}
+                                    <div className="flex-1 w-full space-y-3">
+                                        <input
+                                            type="text"
+                                            name="title"
+                                            value={trend.title}
+                                            onChange={(e) => handleTrendChange(index, e)}
+                                            placeholder={t('addBlog.placeholderTrendHeading', { index: index + 1 })}
+                                            className="w-full px-3 py-2.5 bg-slate-50/70 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-pink-400 dark:text-white transition-all"
+                                        />
 
-                                <div className="flex-1 space-y-2.5">
-                                    <input
-                                        type="text"
-                                        name="title"
-                                        value={trend.title}
-                                        onChange={(e) => handleTrendChange(index, e)}
-                                        placeholder={t('addBlog.placeholderTrendHeading', { index: index + 1 })}
-                                        className="w-full px-3 py-2 bg-slate-50/70 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-pink-400 dark:text-white"
-                                    />
+                                        <input
+                                            type="text"
+                                            name="desc"
+                                            value={trend.desc}
+                                            onChange={(e) => handleTrendChange(index, e)}
+                                            placeholder={t('addBlog.placeholderTrendDesc')}
+                                            className="w-full px-3 py-2.5 bg-slate-50/70 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-pink-400 dark:text-white transition-all"
+                                        />
+                                    </div>
 
-                                    <input
-                                        type="text"
-                                        name="desc"
-                                        value={trend.desc}
-                                        onChange={(e) => handleTrendChange(index, e)}
-                                        placeholder={t('addBlog.placeholderTrendDesc')}
-                                        className="w-full px-3 py-2 bg-slate-50/70 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-pink-400 dark:text-white"
-                                    />
+                                    {/* Remove Action */}
+                                    {trendsList.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeTrend(index)}
+                                            className="w-full sm:w-auto text-center px-3 py-2 text-[10px] uppercase font-bold text-red-500 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/40 rounded-lg transition-colors cursor-pointer"
+                                        >
+                                            {t('addBlog.removeSectionBtn')}
+                                        </button>
+                                    )}
                                 </div>
-
-                                {trendsList.length > 1 && (
-                                    <button
-                                        type="button"
-                                        onClick={() => removeTrend(index)}
-                                        className="p-1.5 text-xs text-red-500 font-bold hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer mt-1"
-                                    >
-                                        {t('addBlog.removeSectionBtn')}
-                                    </button>
-                                )}
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
 
-                    {/* action */}
-                    <div className='col-span-full flex flex-col sm:flex-row items-center justify-end gap-3 mt-4 md:mt-6 pt-6 border-t border-slate-50 dark:border-slate-800'>
+                    {/* Action Section */}
+                    <div className='col-span-full flex flex-col-reverse sm:flex-row items-center justify-end gap-3 mt-6 pt-6 border-t border-slate-100 dark:border-slate-800'>
 
                         <button
                             type="button"
                             disabled={isPending}
                             onClick={() => setCurrentPage('blogs')}
-                            className='w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:text-pink-500 hover:bg-pink-100 dark:hover:bg-slate-800 transition-all cursor-pointer active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 disabled:hover:bg-transparent disabled:hover:text-slate-500'
+                            className='w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-bold text-slate-500 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-slate-800 transition-all cursor-pointer active:scale-95 disabled:opacity-50 disabled:active:scale-100'
                         >
                             {t('addBlog.cancelBtn')}
                         </button>
@@ -355,7 +362,7 @@ function AddBlog({ setCurrentPage }) {
                         <button
                             type="submit"
                             disabled={isPending}
-                            className='w-full sm:w-auto md:px-10 py-2.5 rounded-xl text-sm font-bold text-white bg-linear-to-br from-pink-500 to-pink-600 shadow-lg shadow-pink-100 dark:shadow-none hover:shadow-pink-200 transition-all cursor-pointer active:scale-95 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed disabled:active:scale-100 disabled:shadow-none'
+                            className='w-full sm:w-auto px-8 py-3 rounded-xl text-sm font-bold text-white bg-pink-600 shadow-md shadow-pink-100 dark:shadow-none hover:bg-pink-700 transition-all cursor-pointer active:scale-95 disabled:bg-gray-400 disabled:active:scale-100 disabled:shadow-none'
                         >
                             {isPending ? t('addBlog.publishingBtnState') : t('addBlog.submitBtnState')}
                         </button>

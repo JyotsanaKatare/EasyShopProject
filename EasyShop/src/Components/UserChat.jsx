@@ -38,6 +38,13 @@ function UserChat({ isOpen, setIsOpen, vendorId }) {
                 });
                 console.log("accessChat response:", data);
 
+                // No conversation yet — user hasn't messaged this vendor before
+                if (!data.data) {
+                    setConversationId(null);
+                    setMessagesList([]);
+                    return;
+                }
+
                 const convId = data.data._id;
                 setConversationId(convId);
                 socketRef.current.emit("join_chat", convId);
@@ -58,11 +65,16 @@ function UserChat({ isOpen, setIsOpen, vendorId }) {
             setMessagesList((prev) => [...prev, newMsg]);
         });
 
+        socketRef.current.on("conversation_created", ({ conversationId: newConvId }) => {
+            setConversationId(newConvId);
+            socketRef.current.emit("join_chat", newConvId);
+        });
+
         return () => {
             socketRef.current?.disconnect();
         };
 
-    }, [isOpen, vendorId, userId]); // all three in deps
+    }, [isOpen, vendorId, userId]); 
 
     // 2. Auto scroll to bottom
     useEffect(() => {
@@ -71,10 +83,10 @@ function UserChat({ isOpen, setIsOpen, vendorId }) {
 
     // 3. Send message
     const sendMessage = async () => {
-        if (!inputMessage.trim() || !conversationId) return;
+        if (!inputMessage.trim()) return;
 
         const msgData = {
-            conversationId,
+            conversationId: conversationId || null, // null = first message
             senderId: userId,
             senderModel: "User",
             receiverId: vendorId,
@@ -104,7 +116,7 @@ function UserChat({ isOpen, setIsOpen, vendorId }) {
                     </h3>
                     <p className="text-[9px] opacity-80 font-bold">
                         {t('userChat.online')}
-                        </p>
+                    </p>
                 </div>
                 <button
                     onClick={() =>

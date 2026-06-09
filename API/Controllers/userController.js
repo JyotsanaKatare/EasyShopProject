@@ -47,6 +47,28 @@ export const userSignUp = async (req, res) => {
         });
 
         await user.save();
+
+        await user.save();
+
+        // Welcome email
+        const emailHtml = `
+    <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ffe4e6; border-radius: 10px; max-width: 600px; margin: auto;">
+        <h2 style="color: #db2777;">Hi ${user.name},</h2>
+        <p style="font-size: 16px;">Welcome to <strong>EasyShop</strong>! We're excited to have you on board.</p>
+        
+        <div style="background-color: #fff1f2; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #db2777;">
+            <p style="margin: 5px 0;"><strong>Email:</strong> ${user.email}</p>
+            <p style="margin: 5px 0;"><strong>Name:</strong> ${user.name}</p>
+        </div>
+        
+        <p>Start exploring thousands of products from top vendors across India.</p>
+        
+        <p>Thanks, <br/><strong style="color: #db2777;">EasyShop Team</strong></p>
+    </div>
+`;
+
+        sendEmail(user.email, "Welcome to EasyShop!", emailHtml);
+
         await OTP.deleteMany({ email, role: 'user' });
 
         await createAdminNotification({

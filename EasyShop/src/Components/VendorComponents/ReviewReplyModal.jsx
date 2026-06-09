@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 function ReviewReplyModal({ isOpen, onClose, review, onSubmit, isSubmitting }) {
-    
+
     const { t } = useTranslation();
     const [text, setText] = useState("");
 
@@ -18,12 +18,13 @@ function ReviewReplyModal({ isOpen, onClose, review, onSubmit, isSubmitting }) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-150 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-            <div className="bg-white dark:bg-slate-950 w-full max-w-md rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-150 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 overflow-y-auto">
+            <div className="bg-white dark:bg-slate-950 w-full max-w-md rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200 my-auto">
                 <h3 className="text-md font-bold text-slate-800 dark:text-white mb-1">
                     {t('vendorReviews.replyTo', { name: review?.userId?.name || t('vendorReviews.customer') })}
                 </h3>
-                <p className="text-xs text-slate-400 italic mb-4">
+
+                <p className="text-xs text-slate-400 italic mb-4 line-clamp-3">
                     "{review?.review || review?.comment}"
                 </p>
 

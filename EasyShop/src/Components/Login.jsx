@@ -79,11 +79,11 @@ function Login() {
     };
 
     return (
-        <section className="min-h-[70vh] bg-gray-50 py-10 px-4 lg:px-6">
+        <section className="min-h-[70vh] bg-gray-50 py-10 px-4 sm:px-5 lg:px-6">
 
             {/* tabs */}
             <div className="max-w-md mx-auto bg-white rounded-2xl md:rounded-3xl p-1.5 mb-8 shadow-sm border border-gray-50">
-                
+
                 <div className="grid grid-cols-2 bg-gray-100 rounded-xl md:rounded-2xl p-1 gap-1">
                     <button
                         onClick={() => setLoginType("user")}
@@ -163,7 +163,7 @@ function Login() {
                     <button
                         onClick={handleLogin}
                         disabled={isLogging}
-                        className={`w-full  font-bold py-3 md:py-4 rounded-2xl mt-4 shadow-lg shadow-pink-100 transition-all active:scale-[0.98] cursor-pointer
+                        className={`w-full truncate px-2 text-xs md:text-base bg-pink-500 text-white font-bold py-3 md:py-4 mt-2 rounded-2xl transition-all active:scale-[0.98] cursor-pointer
                             ${isLogging ? "text-gray-500 bg-gray-300 cursor-not-allowed" : "bg-pink-500 hover:bg-pink-600 text-white"}`}
                     >
                         {isLogging ?

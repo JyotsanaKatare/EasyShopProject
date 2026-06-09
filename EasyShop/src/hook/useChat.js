@@ -17,6 +17,6 @@ export const useVendorUnreadCount = (vendorId) => {
             return total;
         },
         enabled: !!vendorId,
-        staleTime: 1000 * 30
+        staleTime: 0
     });
 };

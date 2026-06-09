@@ -28,8 +28,8 @@ function OrdersOverTimeChart() {
     }
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-pink-50/50 dark:border-slate-700/50 transition-colors duration-200">
-            <div className="flex justify-between items-center mb-6">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-6 shadow-sm border border-pink-50/50 dark:border-slate-700/50 transition-colors duration-200 w-full">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                 <div>
                     <h3 className="text-base font-black text-slate-800 dark:text-white">
                         {t('ordersOverTime.title')}
@@ -41,7 +41,7 @@ function OrdersOverTimeChart() {
                 <select
                     value={days}
                     onChange={(e) => setDays(Number(e.target.value))}
-                    className="text-xs border border-pink-100 dark:border-slate-600 rounded-xl px-3 py-1.5 text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-pink-300 cursor-pointer"
+                    className="w-full sm:w-auto text-xs border border-pink-100 dark:border-slate-600 rounded-xl px-3 py-2 text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-pink-300 cursor-pointer"
                 >
                     <option value={7}>{t('ordersOverTime.days7')}</option>
                     <option value={30}>{t('ordersOverTime.days30')}</option>
@@ -54,79 +54,62 @@ function OrdersOverTimeChart() {
                     <span className="animate-pulse">{t('ordersOverTime.loading')}</span>
                 </div>
             ) : chartData.length === 0 ? (
-                <div className="h-64 flex items-center justify-center text-slate-400 text-sm">
+                <div className="h-64 flex items-center justify-center text-center text-slate-400 text-sm">
                     {t('ordersOverTime.noData')}
                 </div>
             ) : (
-                <ResponsiveContainer width="100%" height={280}>
-                    <LineChart data={chartData} margin={{ top: 10, right: 5, left: -20, bottom: 10 }}>
-
-                        <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-100 dark:text-slate-700/50" vertical={false} />
-
-                        <XAxis
-                            dataKey="date"
-                            height={40}
-                            tickLine={false}
-                            axisLine={false}
-                            tick={{ fontSize: 11, fill: '#94a3b8' }}
-                            tickFormatter={(val) => {
-                                if (!val) return "";
-                                const d = new Date(val);
-                                return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
-                            }}
-                        />
-                        <YAxis
-                            yAxisId="left"
-                            tickLine={false}
-                            axisLine={false}
-                            tick={{ fontSize: 11, fill: '#94a3b8' }}
-                        />
-                        <YAxis
-                            yAxisId="right"
-                            orientation="right"
-                            tickLine={false}
-                            axisLine={false}
-                            tick={{ fontSize: 11, fill: '#94a3b8' }}
-                            tickFormatter={(v) => `₹${v}`}
-                        />
-                        <Tooltip
-                            contentStyle={{
-                                backgroundColor: 'document' === 'undefined' ? '#fff' : undefined,
-                                borderRadius: '14px',
-                                border: 'none',
-                                boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)',
-                                fontSize: '12px'
-                            }}
-                            className="dark:bg-slate-900 dark:text-white"
-                            formatter={(value, name) => name === 'Revenue' ? [`₹${value}`, t('ordersOverTime.revenue')] : [value, t('ordersOverTime.orders')]}
-                        />
-                        <Legend
-                            wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
-                            iconType="circle"
-                            iconSize={8}
-                        />
-                        <Line
-                            yAxisId="left"
-                            type="monotone"
-                            dataKey="orders"
-                            stroke="#ec4899"
-                            strokeWidth={3}
-                            dot={false}
-                            activeDot={{ r: 6 }}
-                            name={t('ordersOverTime.orders')}
-                        />
-                        <Line
-                            yAxisId="right"
-                            type="monotone"
-                            dataKey="revenue"
-                            stroke="#f43f5e"
-                            strokeWidth={3}
-                            dot={false}
-                            activeDot={{ r: 6 }}
-                            name={t('ordersOverTime.revenue')}
-                        />
-                    </LineChart>
-                </ResponsiveContainer>
+                <div className="h-64 w-full overflow-hidden">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart
+                            data={chartData}
+                            margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-100 dark:text-slate-700/50" vertical={false} />
+                            <XAxis
+                                dataKey="date"
+                                height={40}
+                                tickLine={false}
+                                axisLine={false}
+                                tick={{ fontSize: 10, fill: '#94a3b8' }}
+                                interval="preserveStartEnd"
+                                tickFormatter={(val) => {
+                                    if (!val) return "";
+                                    const d = new Date(val);
+                                    return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+                                }}
+                            />
+                            <YAxis
+                                yAxisId="left"
+                                tickLine={false}
+                                axisLine={false}
+                                tick={{ fontSize: 10, fill: '#94a3b8' }}
+                                width={30}
+                            />
+                            <YAxis
+                                yAxisId="right"
+                                orientation="right"
+                                tickLine={false}
+                                axisLine={false}
+                                tick={{ fontSize: 10, fill: '#94a3b8' }}
+                                tickFormatter={(v) => `₹${v >= 1000 ? (v / 1000).toFixed(1) + 'k' : v}`}
+                                width={35}
+                            />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                    borderRadius: '14px',
+                                    border: 'none',
+                                    boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)',
+                                    fontSize: '11px'
+                                }}
+                                formatter={(value, name) => name === 'Revenue' ? [`₹${value}`, t('ordersOverTime.revenue')] : [value, t('ordersOverTime.orders')]}
+                            />
+                            <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} iconType="circle" iconSize={6} />
+                            <Line yAxisId="left" type="monotone" dataKey="orders" stroke="#ec4899" strokeWidth={2} dot={false} activeDot={{ r: 4 }} name={t('ordersOverTime.orders')} />
+                            <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="#f43f5e" strokeWidth={2} dot={false} activeDot={{ r: 4 }} name={t('ordersOverTime.revenue')} />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
             )}
         </div>
     );

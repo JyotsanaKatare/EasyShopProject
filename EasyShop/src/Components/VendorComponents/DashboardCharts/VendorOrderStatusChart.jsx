@@ -77,15 +77,15 @@ function VendorOrderStatusChart() {
                 </div>
             )}
             {chartData && chartData.length > 0 && (
-                <div className="relative">
+                <div className="relative min-w-0">
                     <ResponsiveContainer width="100%" height={260}>
-                        <PieChart>
+                        <PieChart margin={{ top: 0, right: 0, bottom: 24, left: 0 }}>
                             <Pie
                                 data={chartData}
                                 cx="50%"
-                                cy="50%"
-                                innerRadius={70}
-                                outerRadius={105}
+                                cy="44%"
+                                innerRadius="48%"
+                                outerRadius="72%"
                                 paddingAngle={3}
                                 dataKey="value"
                             >
@@ -93,21 +93,28 @@ function VendorOrderStatusChart() {
                                     <Cell key={i} fill={entry.color} stroke="none" />
                                 ))}
                             </Pie>
+
                             <Tooltip content={<CustomTooltip />} />
+
                             <Legend
                                 iconType="circle"
                                 iconSize={8}
-                                wrapperStyle={{ fontSize: "12px" }}
+                                verticalAlign="bottom"
+                                align="center"
+                                wrapperStyle={{
+                                    fontSize: "11px",
+                                    lineHeight: "16px",
+                                }}
                             />
                         </PieChart>
                     </ResponsiveContainer>
-
-                    {/* Centre label */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <span className="text-2xl font-bold text-slate-800 dark:text-white">
+                     
+                    {/* central label */}
+                    <div className="absolute inset-x-0 top-[35%] flex -translate-y-1/2 flex-col items-center justify-center pointer-events-none">
+                        <span className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">
                             {total}
                         </span>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-[10px] sm:text-xs text-slate-400">
                             {t('vendorPieChart.centerTotalLabel')}
                         </span>
                     </div>

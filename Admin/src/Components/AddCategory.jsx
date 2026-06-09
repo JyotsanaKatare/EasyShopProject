@@ -35,7 +35,7 @@ function AddCategory({ setCurrentPage }) {
       return toast.error("All fields are required");
     }
 
-    // Validation: Agar certificate chahiye toh label zaroori hai
+    // Validation
     if (formData.requiresCertificate && !formData.certificateLabel) {
       return toast.error("Please provide a Certificate Label (e.g. BIS License)");
     }
@@ -75,7 +75,7 @@ function AddCategory({ setCurrentPage }) {
     const file = e.target.files[0];
     if (file) {
       setSelectedCatImage(file);
-      // Preview create karein
+      // Preview 
       const reader = new FileReader();
       reader.onloadend = () => {
         setCatImagePreview(reader.result);
@@ -102,7 +102,7 @@ function AddCategory({ setCurrentPage }) {
           <h1 className='text-xl md:text-2xl font-bold text-white mb-1'>
             {t('addCategory.title')}
           </h1>
-          
+
           <p className='text-pink-50 text-xs font-medium opacity-90'>
             {t('addCategory.subtitle')}
           </p>
@@ -110,11 +110,11 @@ function AddCategory({ setCurrentPage }) {
       </div>
 
       {/* Form Container */}
-      <div className='max-w-4xl mx-auto bg-white dark:bg-slate-900 p-5 md:p-8 rounded-b-xl md:rounded-b-3xl shadow-sm border border-pink-50 dark:border-slate-800'>
+      <div className='w-full max-w-4xl mx-auto bg-white dark:bg-slate-900 p-5 md:p-8 rounded-b-xl md:rounded-b-3xl shadow-sm border border-pink-50 dark:border-slate-800'>
 
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 '>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
 
-          {/* Category Name */}
+          {/* Category Name & Department */}
           <div className='flex flex-col gap-1.5 md:gap-2'>
             <label htmlFor='catName' className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
               {t('addCategory.labelName')}
@@ -125,13 +125,14 @@ function AddCategory({ setCurrentPage }) {
               value={formData.catName}
               onChange={handleInputChange}
               placeholder={t('addCategory.placeholderName')}
-              className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]"
+              className="w-full p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all"
             />
           </div>
 
-          {/* Department */}
           <div className='flex flex-col gap-1.5 md:gap-2'>
-            <label htmlFor='department' className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+            <label 
+            htmlFor='department' 
+            className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
               {t('addCategory.labelDept')}
             </label>
             <input
@@ -140,18 +141,18 @@ function AddCategory({ setCurrentPage }) {
               value={formData.department}
               onChange={handleInputChange}
               placeholder={t('addCategory.placeholderDept')}
-              className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]"
+              className="w-full p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all"
             />
           </div>
 
-          {/* 3. NEW: Certificate Toggle Section */}
+          {/* Certificate Toggle Section */}
           <div className='col-span-full bg-pink-50/30 dark:bg-slate-800/50 p-4 rounded-2xl border border-pink-100/50 dark:border-slate-700 mt-2'>
-            <div className='flex items-center justify-between'>
+            <div className='flex items-center justify-between gap-4'>
               <div>
                 <h3 className='text-sm font-bold text-slate-700 dark:text-slate-200'>{t('addCategory.labelLegal')}</h3>
                 <p className='text-[11px] text-slate-500'>{t('addCategory.descLegal')}</p>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
+              <label className="relative inline-flex items-center cursor-pointer shrink-0">
                 <input
                   type="checkbox"
                   name="requiresCertificate"
@@ -163,10 +164,9 @@ function AddCategory({ setCurrentPage }) {
               </label>
             </div>
 
-            {/* 4. NEW: Certificate Label Input */}
             {formData.requiresCertificate && (
               <div className='mt-4 animate-in fade-in slide-in-from-top-2 duration-300'>
-                <label className='text-[13px] font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                <label className='text-[11px] md:text-[13px] font-semibold text-slate-600 dark:text-slate-400 ml-1'>
                   {t('addCategory.labelCertName')}
                 </label>
                 <input
@@ -175,34 +175,29 @@ function AddCategory({ setCurrentPage }) {
                   value={formData.certificateLabel}
                   onChange={handleInputChange}
                   placeholder={t('addCategory.placeholderCertName')}
-                  className="w-full mt-1.5 p-2.5 rounded-xl border border-pink-100 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all"
+                  className="w-full mt-1.5 p-2.5 rounded-xl border border-pink-100 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm truncate"
                 />
               </div>
             )}
           </div>
 
-          {/* Image Section */}
+          {/* Image section */}
           <div className="flex flex-col gap-3 col-span-full mt-2">
-            <label htmlFor='catImage' className="text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1">
+            <label className="text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1">
               {t('addCategory.labelImage')} <span className="text-pink-500">{t('addCategory.required')}</span>
             </label>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
-              <div className="relative h-35 md:h-44 border-2 border-dashed border-pink-100 dark:border-slate-700 rounded-2xl flex flex-col items-center justify-center bg-pink-50/10 hover:bg-pink-50/30 transition-all cursor-pointer group">
-                <input
-                  type="file"
-                  name='catImage'
-                  accept="image/*"
-                  onChange={handleCatImageChange}
-                  className="absolute inset-0 opacity-0 z-10 cursor-pointer" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="relative aspect-2/1 sm:aspect-video border-2 border-dashed border-pink-100 dark:border-slate-700 rounded-2xl flex flex-col items-center justify-center bg-pink-50/10 hover:bg-pink-50/30 transition-all cursor-pointer">
+                <input type="file" name='catImage' accept="image/*" onChange={handleCatImageChange} className="absolute inset-0 opacity-0 cursor-pointer" />
                 <HiOutlinePhotograph className="text-3xl text-pink-400 mb-2" />
-                <p className="text-xs text-pink-500 font-bold">{t('addCategory.uploadText')}</p>
+                <p className="text-xs text-pink-500 font-bold px-2 text-center">{t('addCategory.uploadText')}</p>
               </div>
 
               {catImagePreview && (
-                <div className="relative h-35 md:h-44 rounded-2xl overflow-hidden border border-pink-100 shadow-sm animate-in zoom-in duration-300">
+                <div className="relative aspect-2/1 sm:aspect-video rounded-2xl overflow-hidden border border-pink-100 shadow-sm">
                   <img src={catImagePreview} alt="Preview" className="w-full h-full object-cover" />
-                  <button onClick={removeCatImage} className="absolute top-2 right-2 bg-white p-1.5 rounded-full text-pink-500 shadow-md">
+                  <button onClick={removeCatImage} className="absolute top-2 right-2 bg-white/90 p-1.5 rounded-full text-pink-500 shadow-md">
                     <HiOutlineX size={14} />
                   </button>
                 </div>
@@ -221,22 +216,23 @@ function AddCategory({ setCurrentPage }) {
               value={formData.description}
               onChange={handleInputChange}
               placeholder={t('addCategory.placeholderDesc')}
-              className="p-3 md:p-4 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all resize-none placeholder:text-[11px] md:placeholder:text-[14px]" />
+              className="w-full p-3 md:p-4 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm resize-none"
+            />
           </div>
 
           {/* Action Buttons */}
-          <div className='col-span-full flex flex-col sm:flex-row items-center justify-end gap-3 mt-4 md:mt-6 pt-6 border-t border-slate-50 dark:border-slate-800'>
+          <div className='col-span-full flex flex-col-reverse sm:flex-row items-center justify-end gap-3 mt-4 pt-6 border-t border-slate-100 dark:border-slate-800'>
             <button
               type="button"
               onClick={() => setCurrentPage('categories')}
-              className='w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:text-pink-500 hover:bg-pink-100 transition-all active:scale-95 cursor-pointer'
+              className='w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all'
             >
               {t('addCategory.btnCancel')}
             </button>
             <button
               type="button"
               onClick={handleAdd}
-              className='w-full sm:w-auto md:px-10 py-2.5 rounded-xl text-sm font-bold text-white bg-linear-to-br from-pink-500 to-pink-600 shadow-lg shadow-pink-100 hover:shadow-pink-200 transition-all active:scale-95 cursor-pointer'
+              className='w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-bold text-white bg-pink-600 hover:bg-pink-700 shadow-lg transition-all'
             >
               {isAdding ? t('addCategory.btnAdding') : t('addCategory.btnAdd')}
             </button>

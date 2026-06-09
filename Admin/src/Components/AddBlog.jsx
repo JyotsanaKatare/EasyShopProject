@@ -146,7 +146,7 @@ function AddBlog({ setCurrentPage }) {
                             value={formData.title}
                             onChange={handleInputChange}
                             placeholder={t('addBlog.blogTitlePlaceholder')}
-                            className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]"
+                            className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[12px] md:placeholder:text-[14px] "
                         />
                     </div>
 
@@ -162,7 +162,7 @@ function AddBlog({ setCurrentPage }) {
                             value={formData.category}
                             onChange={handleInputChange}
                             placeholder={t('addBlog.categoryTagPlaceholder')}
-                            className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]"
+                            className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[12px] md:placeholder:text-[14px]"
                         />
                     </div>
 
@@ -178,7 +178,7 @@ function AddBlog({ setCurrentPage }) {
                             value={formData.description}
                             onChange={handleInputChange}
                             placeholder={t('addBlog.shortSummaryPlaceholder')}
-                            className="p-3 md:p-4 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all resize-none placeholder:text-[11px] md:placeholder:text-[14px]"
+                            className="p-3 md:p-4 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all resize-none placeholder:text-[12px] md:placeholder:text-[14px]"
                         />
                     </div>
 
@@ -233,7 +233,7 @@ function AddBlog({ setCurrentPage }) {
                             value={formData.content}
                             onChange={handleInputChange}
                             placeholder={t('addBlog.fullContentPlaceholder')}
-                            className="p-3 md:p-4 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]"
+                            className="p-3 md:p-4 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[12px] md:placeholder:text-[14px]"
                         />
                     </div>
 
@@ -251,7 +251,7 @@ function AddBlog({ setCurrentPage }) {
                             value={formData.blockquote}
                             onChange={handleInputChange}
                             placeholder={t('addBlog.blockquotePlaceholder')}
-                            className="w-full mt-1.5 p-3 rounded-xl border border-pink-100 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all italic text-pink-700 placeholder:italic placeholder:text-slate-300"
+                            className="w-full mt-1.5 p-3 rounded-xl border border-pink-100 dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-[12px] md:text-[14px] transition-all italic text-pink-700 placeholder:italic placeholder:text-slate-300"
                         />
                     </div>
 
@@ -265,7 +265,7 @@ function AddBlog({ setCurrentPage }) {
                             name='readTime'
                             value={formData.readTime}
                             onChange={handleInputChange}
-                            className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all"
+                            className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-[12px] md:text-[14px] transition-all"
                         />
                     </div>
 
@@ -280,18 +280,18 @@ function AddBlog({ setCurrentPage }) {
                             value={formData.tags}
                             onChange={handleInputChange}
                             placeholder={t('addBlog.tagsPlaceholder')}
-                            className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]"
+                            className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[12px] md:placeholder:text-[14px]"
                         />
                     </div>
 
                     {/* Trends List Mapper Section */}
-                    <div className="col-span-full mt-2 bg-slate-50/50 dark:bg-slate-800/30 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
-                        <div className="flex justify-between items-center mb-4">
-                            <div>
+                    <div className="col-span-full mt-2 bg-slate-50/50 dark:bg-slate-800/30 p-2 md:p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                        <div className="flex flex-wrap justify-between items-start gap-3 mb-4">
+                            <div className="flex-1 min-w-40">
                                 <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">
                                     {t('addBlog.trendsTitle')}
                                 </h3>
-                                <p className="text-[11px] text-slate-500">
+                                <p className="text-[11px] text-slate-500 leading-tight mt-0.5">
                                     {t('addBlog.trendsSubtitle')}
                                 </p>
                             </div>
@@ -299,7 +299,7 @@ function AddBlog({ setCurrentPage }) {
                             <button
                                 type="button"
                                 onClick={addMoreTrend}
-                                className="px-3 py-1.5 text-xs bg-slate-900 text-white dark:bg-pink-600 dark:hover:bg-pink-700 rounded-xl font-bold uppercase hover:bg-slate-800 transition-all cursor-pointer"
+                                className="shrink-0 px-3 py-1.5 text-[11px] md:text-xs bg-slate-900 text-white dark:bg-pink-600 dark:hover:bg-pink-700 rounded-xl font-bold uppercase hover:bg-slate-800 transition-all cursor-pointer"
                             >
                                 {t('addBlog.addSection')}
                             </button>
@@ -308,16 +308,16 @@ function AddBlog({ setCurrentPage }) {
                         {trendsList.map((trend, index) => (
                             <div
                                 key={index}
-                                className="flex gap-4 items-start bg-white dark:bg-slate-800 p-3.5 rounded-xl border border-slate-100 dark:border-slate-700 mb-3 animate-in fade-in slide-in-from-top-1 duration-200">
-
-                                <div className="flex-1 space-y-2.5">
+                                className="flex flex-col sm:flex-row gap-3 bg-white dark:bg-slate-800 p-2.5 md:p-3.5 rounded-xl border border-slate-100 dark:border-slate-700 mb-3 animate-in fade-in slide-in-from-top-1 duration-200"
+                            >
+                                <div className="flex-1 w-full space-y-2.5">
                                     <input
                                         type="text"
                                         name="title"
                                         value={trend.title}
                                         onChange={(e) => handleTrendChange(index, e)}
                                         placeholder={t('addBlog.trendHeadingPlaceholder', { index: index + 1 })}
-                                        className="w-full px-3 py-2 bg-slate-50/70 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-pink-400 dark:text-white"
+                                        className="w-full px-3 py-2.5 bg-slate-50/70 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-pink-400 dark:text-white"
                                     />
 
                                     <input
@@ -326,7 +326,7 @@ function AddBlog({ setCurrentPage }) {
                                         value={trend.desc}
                                         onChange={(e) => handleTrendChange(index, e)}
                                         placeholder={t('addBlog.trendDescPlaceholder')}
-                                        className="w-full px-3 py-2 bg-slate-50/70 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-pink-400 dark:text-white"
+                                        className="w-full px-3 py-2.5 bg-slate-50/70 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-lg text-xs md:text-sm focus:outline-none focus:ring-1 focus:ring-pink-400 dark:text-white"
                                     />
                                 </div>
 
@@ -334,7 +334,7 @@ function AddBlog({ setCurrentPage }) {
                                     <button
                                         type="button"
                                         onClick={() => removeTrend(index)}
-                                        className="p-1.5 text-xs text-red-500 font-bold hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer mt-1"
+                                        className="shrink-0 self-start sm:self-center px-3 py-2 text-[11px] text-red-500 font-bold hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer"
                                     >
                                         {t('addBlog.removeSection')}
                                     </button>
@@ -344,12 +344,13 @@ function AddBlog({ setCurrentPage }) {
                     </div>
 
                     {/* action */}
-                    <div className='col-span-full flex flex-col sm:flex-row items-center justify-end gap-3 mt-4 md:mt-6 pt-6 border-t border-slate-50 dark:border-slate-800'>
+                    <div className='col-span-full flex flex-col-reverse sm:flex-row items-center justify-end gap-3 mt-4 md:mt-6 pt-6 border-t border-slate-100 dark:border-slate-800'>
 
                         <button
                             type="button"
+                            onClick={() => setCurrentPage('blogs')}
                             disabled={isPending}
-                            className='w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:text-pink-500 hover:bg-pink-100 dark:hover:bg-slate-800 transition-all cursor-pointer active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 disabled:hover:bg-transparent disabled:hover:text-slate-500'
+                            className='w-full sm:w-auto px-6 py-3.5 sm:py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-slate-800 transition-all cursor-pointer active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100'
                         >
                             {t('addBlog.cancel')}
                         </button>
@@ -357,8 +358,11 @@ function AddBlog({ setCurrentPage }) {
                         <button
                             type="submit"
                             disabled={isPending}
-                            className='w-full sm:w-auto md:px-10 py-2.5 rounded-xl text-sm font-bold text-white bg-linear-to-br from-pink-500 to-pink-600 shadow-lg shadow-pink-100 dark:shadow-none hover:shadow-pink-200 transition-all cursor-pointer active:scale-95 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed disabled:active:scale-100 disabled:shadow-none'
+                            className='w-full sm:w-auto px-6 md:px-10 py-3.5 sm:py-2.5 rounded-xl text-sm font-bold text-white bg-linear-to-br from-pink-500 to-pink-600 shadow-lg shadow-pink-100 dark:shadow-none hover:shadow-pink-200 transition-all cursor-pointer active:scale-95 disabled:from-slate-400 disabled:to-slate-500 disabled:cursor-not-allowed disabled:active:scale-100 disabled:shadow-none flex items-center justify-center gap-2'
                         >
+                            {isPending ? (
+                                <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                            ) : null}
                             {isPending ? t('addBlog.submitting') : t('addBlog.submit')}
                         </button>
                     </div>

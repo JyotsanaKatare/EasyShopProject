@@ -44,13 +44,13 @@ function CartItem() {
     };
 
     return (
-        <section className="w-full min-h-[70vh] bg-white py-8 md:py-16 px-4 lg:px-6">
+        <section className="w-full min-h-[70vh] bg-white py-8 md:py-16 px-4 sm:px-5 lg:px-6">
             <div className="max-w-6xl mx-auto">
 
                 {/* heading */}
                 <div className="flex flex-col items-center mb-12">
                     <h1 className='text-2xl md:text-3xl text-pink-500 font-bold tracking-tight'>
-                       {t('cart.myCartItems')}
+                        {t('cart.myCartItems')}
                     </h1>
                     <div className="h-1 w-15 md:w-20 bg-pink-500 rounded-full mt-2 opacity-30"></div>
                 </div>
@@ -65,7 +65,7 @@ function CartItem() {
                             <div className="flex justify-end">
                                 <button
                                     onClick={clearCart}
-                                    className="text-[11px] font-black text-red-400 hover:text-red-500 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl transition-all cursor-pointer uppercase tracking-wider">
+                                    className="text-[10px] md:text-[11px] font-bold text-red-400 hover:text-red-500 bg-red-50 hover:bg-red-100 px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl transition-all uppercase tracking-wider">
                                     {t('cart.clearCart')}
                                 </button>
                             </div>
@@ -78,11 +78,12 @@ function CartItem() {
 
                                     <img
                                         src={item.prodImage || item.img}
-                                        className="w-20 h-20 md:w-28 md:h-28 rounded-2xl object-cover bg-gray-50 shrink-0" />
+                                        className="w-20 h-20 md:w-28 md:h-28 aspect-square rounded-2xl object-cover bg-gray-50 shrink-0"
+                                    />
 
                                     <div className="flex-1 min-w-0">
                                         <h3
-                                            className="font-bold text-gray-800 text-sm md:text-base cursor-pointer truncate pr-2">
+                                            className="font-bold text-gray-800 text-[12px] md:text-base cursor-pointer line-clamp-2 pr-2">
                                             {item.prodName}
                                         </h3>
 
@@ -118,7 +119,7 @@ function CartItem() {
                                                         e.stopPropagation();
                                                         updateQuantity(item._id, item.variantId, "dec");
                                                     }}
-                                                    className="p-1.5 text-pink-500 hover:bg-white rounded-lg transition-all cursor-pointer">
+                                                    className="p-2 text-pink-500 hover:bg-white rounded-lg transition-all cursor-pointer">
                                                     <FaMinus size={10} />
                                                 </button>
 
@@ -131,7 +132,7 @@ function CartItem() {
                                                         e.stopPropagation();
                                                         updateQuantity(item._id, item.variantId, "inc");
                                                     }}
-                                                    className="p-1.5 text-pink-500 hover:bg-white rounded-lg transition-all cursor-pointer">
+                                                    className="p-2 text-pink-500 hover:bg-white rounded-lg transition-all cursor-pointer">
                                                     <FaPlus size={10} />
                                                 </button>
                                             </div>
@@ -204,14 +205,14 @@ function CartItem() {
                         </div>
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center text-center py-20 px-4 min-h-100">
+                    <div className="flex flex-col items-center justify-center text-center py-15 px-4">
                         <div className="w-18 h-18 md:w-24 md:h-24 bg-pink-50 rounded-full flex items-center justify-center mb-6 animate-pulse">
                             <HiOutlineHeart className="text-pink-300 text-3xl md:text-5xl" />
                         </div>
 
                         {user?.role !== 'user' ? (
                             <>
-                                <h2 className="text-xl md:text-3xl font-black text-gray-900 tracking-tight">
+                                <h2 className="text-xl md:text-3xl font-bold md:font-black text-gray-900 tracking-tight">
                                     {t('cart.cartNotAvailable')}
                                 </h2>
                                 <p className="text-sm md:text-lg text-gray-500 mt-3 mb-10 max-w-70 md:max-w-md mx-auto leading-relaxed">
@@ -220,7 +221,7 @@ function CartItem() {
                             </>
                         ) : (
                             <>
-                                <h2 className="text-xl md:text-3xl font-black text-gray-900 tracking-tight">
+                                <h2 className="text-xl md:text-3xl font-bold md:font-black text-gray-900 tracking-tight">
                                     {t('cart.emptyCart')}
                                 </h2>
                                 <p className="text-sm md:text-lg text-gray-500 mt-3 mb-10 max-w-70 md:max-w-md mx-alpha leading-relaxed">

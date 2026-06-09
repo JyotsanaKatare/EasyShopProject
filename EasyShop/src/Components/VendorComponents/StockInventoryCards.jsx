@@ -66,31 +66,38 @@ function StockInventoryCards({ setCurrentPage }) {
   return (
     <div>
       {/* Heading Section */}
-      <div className="md:bg-white/80 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between text-center md:text-start gap-4 mb-3 md:mb-8">
+      <div className="bg-white md:bg-white/80 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between text-center sm:text-start gap-4 mb-4 md:mb-8">
 
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white tracking-tight">
+        {/* Title & Status */}
+        <div className="flex-1 min-w-0">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">
             {t('stockInventory.heading')}
           </h1>
 
-          <p className="text-[11px] md:text-xs font-medium text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-center md:justify-start gap-1 md:gap-2">
-            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-            {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-            <span className="opacity-30">|</span>
-            {t('stockInventory.realTimeUpdate')}
-          </p>
+          <div className="flex items-center justify-center sm:justify-start gap-2 mt-1">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <p className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400">
+              {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+              <span className="mx-2 opacity-30">|</span>
+              {t('stockInventory.realTimeUpdate')}
+            </p>
+          </div>
         </div>
 
         {/* Add Button */}
         <button
           onClick={() => setCurrentPage('Add Product')}
-          className="w-full sm:w-auto bg-linear-to-br from-pink-500 to-pink-600 text-white px-2 md:px-5 py-2 md:py-2.5 rounded-xl text-sm font-bold hover:shadow-lg hover:shadow-pink-200 transition-all active:scale-95 shrink-0 cursor-pointer">
+          className="w-full sm:w-auto bg-linear-to-br from-pink-500 to-pink-600 text-white px-5 py-3 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-pink-100 hover:shadow-lg hover:shadow-pink-200 transition-all active:scale-95 shrink-0 cursor-pointer"
+        >
           {t('stockInventory.addNewBtn')}
         </button>
       </div>
 
       {/* cards section */}
-      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 py-4 `}>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6 py-4">
         {cardItems.map((card, index) => (
           <div
             key={index}

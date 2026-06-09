@@ -16,7 +16,7 @@ import { getPaginationRange } from '../../utils/getPaginationRange';
 import { useTranslation } from 'react-i18next';
 
 function Customers() {
-    
+
     const { t } = useTranslation();
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
@@ -77,7 +77,7 @@ function Customers() {
         <div className="space-y-6">
 
             {/* stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                 {cards.map((stat, idx) => (
                     <div
                         key={idx}
@@ -111,25 +111,28 @@ function Customers() {
             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
 
                 {/* Header and Search */}
-                <div className="p-4 border-b border-slate-50 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-800/20">
+                <div className="p-4 border-b border-slate-50 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 bg-white dark:bg-slate-800/20">
 
-                    <div className='flex gap-2 items-center'>
-                        <h2 className="text-md md:text-lg font-bold text-slate-800 dark:text-white shrink-0">
+                    {/* Title & Counter Container */}
+                    <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
+                        <h2 className="text-sm md:text-lg font-bold text-slate-800 dark:text-white shrink-0">
                             {t('customers.tableTitle')}
                         </h2>
-                        <span className="hidden lg:flex bg-pink-100 text-pink-600 text-xs font-bold px-2.5 py-0.5 rounded-full">
+
+                        <span className="bg-pink-100 text-pink-600 dark:bg-pink-900/40 dark:text-pink-400 text-[10px] md:text-xs font-bold px-2.5 py-0.5 rounded-full shrink-0">
                             {t('customers.totalCounter', { total: count })}
                         </span>
                     </div>
 
+                    {/* Search Container */}
                     <div className="relative w-full md:w-80 group">
-                        <HiOutlineSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
+                        <HiOutlineSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
                         <input
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder={t('customers.searchPlaceholder')}
-                            className="w-full pl-11 pr-4 py-2 md:py-2.5 bg-slate-50 border border-pink-50 dark:bg-slate-800 focus:border-pink-500 focus:bg-white dark:focus:bg-slate-900 rounded-xl text-sm outline-none transition-all shadow-sm placeholder:text-xs md:placeholder:text-[13px]"
+                            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-pink-50 dark:bg-slate-800 dark:text-white focus:border-pink-500 focus:bg-white dark:focus:bg-slate-900 rounded-xl text-sm outline-none transition-all shadow-sm placeholder:text-xs md:placeholder:text-[13px]"
                         />
                     </div>
                 </div>
@@ -139,7 +142,7 @@ function Customers() {
                         <thead>
                             <tr className="border-b border-slate-50 dark:border-slate-800 text-[11px] uppercase tracking-widest text-slate-400 font-bold">
                                 <th className="px-6 py-4 text-center w-16">{t('customers.thId')}</th>
-                                <th className="px-6 py-4">{t('customers.thCustomer')}</th>
+                                <th className="px-6 py-4 min-w-50">{t('customers.thCustomer')}</th>
                                 <th className="px-6 py-4">{t('customers.thStatus')}</th>
                                 <th className="px-6 py-4 text-center">{t('customers.thOrders')}</th>
                                 <th className="px-6 py-4">{t('customers.thSpend')}</th>
@@ -157,10 +160,10 @@ function Customers() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <img  
-                                                src={customer.profilePhoto || 'https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png'} 
-                                                 alt={customer.name} 
-                                                 className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-700 shadow-sm object-cover" />
+                                                <img
+                                                    src={customer.profilePhoto || 'https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png'}
+                                                    alt={customer.name}
+                                                    className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-700 shadow-sm object-cover" />
                                                 <div className="min-w-0">
                                                     <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate">{customer.name}</h4>
                                                     <p className="text-[10px] text-slate-400 truncate">{customer.email}</p>

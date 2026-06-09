@@ -58,7 +58,7 @@ function FAQs() {
             </div>
 
             {/* main section */}
-            <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 px-4 lg:px-6 py-10 md:py-20 min-h-[70vh]">
+            <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 px-4 sm:px-5 lg:px-6 py-10 md:py-20 min-h-[70vh]">
 
                 {/* left section - category */}
                 <div className='w-full md:w-1/3 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-x-visible no-scrollbar md:sticky md:top-24 h-fit pb-4 md:pb-0'>

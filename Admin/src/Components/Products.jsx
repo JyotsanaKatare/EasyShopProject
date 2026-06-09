@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 function Products() {
 
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const [search, setSearch] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [page, setPage] = useState(1);
@@ -102,7 +102,7 @@ function Products() {
                             {t('adminProducts.title')}
                         </h2>
 
-                        <span className="hidden lg:flex bg-pink-100 text-pink-600 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                        <span className="bg-pink-100 text-pink-600 text-xs font-bold px-2.5 py-0.5 rounded-full">
                             {t('adminProducts.totalBadge')} {data?.count || 0}
                         </span>
                     </div>
@@ -361,41 +361,48 @@ function Products() {
                 className={`fixed inset-0 flex justify-center items-center bg-black/60 backdrop-blur-sm z-100 px-4 transition-all duration-300 
                 ${isDeletedOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
             >
+                {/* Backdrop */}
                 <div
-                    onClick={() => { setIsDeletedOpen(false); setSelectedProdId(null); }}
+                    onClick={() => { if (!isDeleting) { setIsDeletedOpen(false); setSelectedProdId(null); } }}
                     className="absolute inset-0"
                 ></div>
 
+                {/* Modal Container */}
                 <div
                     onClick={(e) => e.stopPropagation()}
-                    className={`relative transform transition-all duration-300 rounded-[2.5rem] bg-white dark:bg-slate-900 p-8 shadow-2xl w-full max-w-md border border-pink-50 dark:border-slate-800
-                    ${isDeletedOpen ? "scale-100 translate-y-0" : "scale-95 translate-y-4"}`}
+                    className={`relative w-full max-w-md max-h-[90vh] overflow-y-auto transform transition-all duration-300 rounded-4xl bg-white dark:bg-slate-900 p-6 md:p-8 shadow-2xl border border-pink-50 dark:border-slate-800
+                    ${isDeletedOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
                 >
+                    {/* Close Button */}
                     <button
-                        onClick={() => { setIsDeletedOpen(false); setSelectedProdId(null); }}
-                        className="absolute top-6 right-6 text-slate-400 hover:text-pink-500 transition-colors"
+                        onClick={() => { if (!isDeleting) { setIsDeletedOpen(false); setSelectedProdId(null); } }}
+                        className="absolute top-4 right-4 md:top-6 md:right-6 text-slate-400 hover:text-pink-500 transition-colors"
                     >
                         <HiOutlineX size={20} />
                     </button>
 
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 dark:bg-red-900/20 mb-6">
-                        <HiOutlineExclamation className="h-8 w-8 text-red-500" />
+                    {/* Icon */}
+                    <div className="mx-auto flex h-14 w-14 md:h-16 md:w-16 items-center justify-center rounded-2xl bg-red-50 dark:bg-red-900/20 mb-6">
+                        <HiOutlineExclamation className="h-7 w-7 md:h-8 md:w-8 text-red-500" />
                     </div>
 
+                    {/* Text Content */}
                     <div className="text-center">
-                        <h3 className="text-xl font-bold text-slate-800 dark:text-white">
+                        <h3 className="text-lg md:text-xl font-bold text-slate-800 dark:text-white">
                             {t('adminProducts.deleteTitle')}
                         </h3>
-                        <p className="mt-3 text-sm text-slate-500 dark:text-slate-400 leading-relaxed px-2">
-                            {isInfoLoading ? t('adminProducts.deleteChecking') : deleteInfo?.message}</p>
+                        <p className="mt-3 text-xs md:text-sm text-slate-500 dark:text-slate-400 leading-relaxed px-2">
+                            {isInfoLoading ? t('adminProducts.deleteChecking') : deleteInfo?.message}
+                        </p>
                     </div>
 
-                    <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                    {/* Buttons */}
+                    <div className="mt-8 flex flex-col-reverse sm:flex-row gap-3">
                         <button
                             type="button"
                             onClick={() => { if (!isDeleting) { setIsDeletedOpen(false); setSelectedProdId(null); } }}
                             disabled={isDeleting}
-                            className="w-full justify-center rounded-2xl bg-white px-3 py-3.5 text-sm font-bold text-slate-600 border border-slate-100 hover:bg-slate-50 transition-all sm:w-1/2 active:scale-95"
+                            className="w-full sm:w-1/2 justify-center rounded-2xl bg-slate-50 dark:bg-slate-800 px-4 py-3.5 text-sm font-bold text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all active:scale-95 disabled:opacity-50"
                         >
                             {t('adminProducts.deleteKeep')}
                         </button>
@@ -405,7 +412,7 @@ function Products() {
                                 type="button"
                                 onClick={handleDeleteProduct}
                                 disabled={isDeleting}
-                                className="w-full justify-center rounded-2xl bg-linear-to-br from-red-500 to-red-600 px-3 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-100 hover:from-red-600 hover:to-red-700 transition-all sm:w-1/2 flex items-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full sm:w-1/2 rounded-2xl bg-linear-to-br from-red-500 to-red-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-100 dark:shadow-none hover:from-red-600 hover:to-red-700 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isDeleting ? (
                                     <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>

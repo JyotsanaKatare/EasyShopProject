@@ -8,10 +8,10 @@ import { useTranslation } from 'react-i18next';
 
 function RecentOrderTable({ setCurrentPage }) {
 
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const { data: ordersResponse, isLoading, isError } = useVendorOrders();
     const orders = ordersResponse?.data || [];
-    
+
     const { mutate: updateOrderStatus, isPending: isUpdating } = useUpdateOrderStatus();
 
     const [selectedOrderId, setIsSelectedOrderId] = useState(null);
@@ -33,14 +33,15 @@ function RecentOrderTable({ setCurrentPage }) {
     return (
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-pink-50 dark:border-slate-800 shadow-sm overflow-hidden">
 
-            {/* heading */}
-            <div className="p-6 border-b border-pink-50 dark:border-slate-800 flex justify-between items-center">
-                <h2 className="text-sm md:text-lg font-bold text-slate-800 dark:text-white">
+            {/* Heading */}
+            <div className="px-4 py-4 md:p-6 border-b border-pink-50 dark:border-slate-800 flex justify-between items-center">
+                <h2 className="text-sm md:text-lg font-bold text-slate-800 dark:text-white truncate mr-2">
                     {t('recentOrdersTable.title')}
                 </h2>
                 <button
                     onClick={() => setCurrentPage("Orders")}
-                    className="text-xs md:text-sm font-semibold text-pink-500 hover:text-pink-600 transition-colors cursor-pointer">
+                    className="px-2 py-1 text-[11px] md:text-sm font-semibold text-pink-500 hover:text-pink-600 hover:bg-pink-50 rounded-lg transition-all cursor-pointer whitespace-nowrap"
+                >
                     {t('recentOrdersTable.viewAll')}
                 </button>
             </div>
@@ -121,7 +122,7 @@ function RecentOrderTable({ setCurrentPage }) {
                                         <span className={`px-3 py-1 rounded-full text-[10px] font-bold border 
                                         ${orderStatusStyles[order.orderStatus] || "bg-gray-50 text-gray-600 border-gray-100"}`}>
                                             {order.orderStatus === 'Pending' ? t('recentOrdersTable.optPending') :
-                                             order.orderStatus === 'Delivered' ? t('recentOrdersTable.optDelivered') : order.orderStatus}
+                                                order.orderStatus === 'Delivered' ? t('recentOrdersTable.optDelivered') : order.orderStatus}
                                         </span>
                                     ) : (
                                         <select

@@ -83,7 +83,7 @@ function ContactUs() {
                 <div className="max-w-3xl mx-auto">
 
                     {/* badge */}
-                    <span className="inline-block px-2 py-1 md:px-4 md:py-1.5 mb-6 text-[10px] md:text-xs font-bold tracking-widest text-pink-600 uppercase bg-white rounded-full shadow-sm border border-pink-100">
+                    <span className="inline-block px-2 py-1 md:px-4 md:py-1.5 mb-6 text-[8px] md:text-[10px] font-bold tracking-widest text-pink-600 uppercase bg-white rounded-full shadow-sm border border-pink-100">
                         {t('contact.getInTouch')}
                     </span>
 
@@ -99,7 +99,7 @@ function ContactUs() {
                 </div>
             </div>
 
-            <div className="max-w-6xl mx-auto px-4 lg:px-6 py-6 md:py-16 flex flex-col md:flex-row gap-8">
+            <div className="max-w-6xl mx-auto px-4 sm:px-5 lg:px-6 py-6 md:py-16 flex flex-col md:flex-row gap-8">
 
                 {/* left section */}
                 <div className='w-full md:w-[60%]'>
@@ -121,7 +121,7 @@ function ContactUs() {
                                     value={formData.firstName}
                                     onChange={handleInputChange}
                                     placeholder={t('contact.firstName')}
-                                    className='w-full border border-gray-400 py-3 px-2 md:px-4 rounded-md md:rounded-xl outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-100 transition-all'
+                                    className='w-full border border-gray-400 py-2 md:py-3 px-2 md:px-4 placeholder:text-sm md:placeholder:text-[15px] rounded-md md:rounded-xl outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-100 transition-all'
                                     required
                                 />
                             </div>
@@ -133,7 +133,7 @@ function ContactUs() {
                                     value={formData.lastName}
                                     onChange={handleInputChange}
                                     placeholder={t('contact.lastName')}
-                                    className='w-full border border-gray-400 py-3 px-2 md:px-4 rounded-md md:rounded-xl outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-100 transition-all'
+                                    className='w-full border border-gray-400 py-2 md:py-3 px-2 md:px-4 placeholder:text-sm md:placeholder:text-[15px] rounded-md md:rounded-xl outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-100 transition-all'
                                     required
                                 />
                             </div>
@@ -148,7 +148,7 @@ function ContactUs() {
                                     value={formData.email}
                                     onChange={handleInputChange}
                                     placeholder={t('contact.email')}
-                                    className='w-full border border-gray-400 py-3 px-2 md:px-4 rounded-md md:rounded-xl outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-100 transition-all'
+                                    className='w-full border border-gray-400 py-2 md:py-3 px-2 md:px-4 placeholder:text-sm md:placeholder:text-[15px] rounded-md md:rounded-xl outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-100 transition-all'
                                     required
                                 />
                             </div>
@@ -160,7 +160,7 @@ function ContactUs() {
                                     value={formData.contact}
                                     onChange={handleInputChange}
                                     placeholder={t('contact.mobile')}
-                                    className='w-full border border-gray-400 py-3 px-2 md:px-4 rounded-md md:rounded-xl outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-100 transition-all'
+                                    className='w-full border border-gray-400 py-2 md:py-3 px-2 md:px-4 placeholder:text-sm md:placeholder:text-[15px] rounded-md md:rounded-xl outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-100 transition-all'
                                     required
                                 />
                             </div>
@@ -175,7 +175,7 @@ function ContactUs() {
                                         className={`w-full flex items-center justify-between p-3 bg-gray-50 border rounded-lg md:rounded-2xl focus:border-pink-500 focus:bg-white transition-all outline-none
                                      ${isCategoryOpen ? "border-pink-500 ring-pink-500 bg-white" : "border-gray-400"}`}
                                     >
-                                        <span className={`text-sm md:text-base truncate ${formData.category ? "text-gray-900 font-medium" : "text-gray-400"}`}>
+                                        <span className={`text-sm md:text-[15px] truncate ${formData.category ? "text-gray-900 font-medium" : "text-gray-400"}`}>
                                             {formData.category || t('contact.selectCategory')}
                                         </span>
                                         <div className="text-gray-400">
@@ -223,7 +223,7 @@ function ContactUs() {
                                                 <div
                                                     key={index}
                                                     onClick={() => handleCategory(cat.catName)}
-                                                    className='hover:text-pink-600 flex justify-start items-center py-2.5 px-4 hover:bg-pink-100 cursor-pointer text-sm md:text-base'
+                                                    className='hover:text-pink-600 flex justify-start items-center py-2.5 px-4 hover:bg-pink-100 cursor-pointer text-sm md:text-[15px]'
                                                 >
                                                     <p>{cat.catName}</p>
                                                 </div>
@@ -243,8 +243,8 @@ function ContactUs() {
                                         value={formData.subCategory}
                                         onChange={handleInputChange}
                                         placeholder={t('contact.subCategory')}
-                                        className='w-full border border-gray-400 py-3 px-2 md:px-4 rounded-md md:rounded-xl outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-100 transition-all'
-                                        required
+                                        className='w-full border border-gray-400 py-2 md:py-3 px-2 md:px-4 placeholder:text-sm md:placeholder:text-[15px] rounded-md md:rounded-xl outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-100 transition-all'
+                                    required
                                     />
                                 </div>
                             ) : (
@@ -263,7 +263,7 @@ function ContactUs() {
                                     placeholder={formData.category === "Refund & Returns"
                                         ? t('contact.orderNumberRequired')
                                         : t('contact.orderNumberOptional')}
-                                    className='w-full border border-gray-400 py-3 px-2 md:px-4 rounded-md md:rounded-xl outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-100 transition-all'
+                                    className='w-full border border-gray-400 py-2 md:py-3 px-2 md:px-4 placeholder:text-sm md:placeholder:text-[15px] rounded-md md:rounded-xl outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-100 transition-all'
                                     required={formData.category === "Refund & Returns"}
                                 />
                             </div>
@@ -276,8 +276,8 @@ function ContactUs() {
                                 value={formData.message}
                                 onChange={handleInputChange}
                                 placeholder={t('contact.message')}
-                                className='w-full h-30 md:h-40 border border-gray-400 py-3 px-2 md:px-4 rounded-md md:rounded-xl outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-100 transition-all resize-none'
-                                required
+                                className='w-full border border-gray-400 py-2 md:py-3 px-2 md:px-4 placeholder:text-sm md:placeholder:text-[15px] rounded-md md:rounded-xl outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-100 transition-all'
+                                    required
                             ></textarea>
                         </div>
 

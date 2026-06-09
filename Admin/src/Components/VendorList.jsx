@@ -56,28 +56,33 @@ function VendorList() {
         <div className="space-y-6">
 
             {/* cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 {cards.map((card) => (
                     <div
                         key={card.label}
                         className="group bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-5 transition-all duration-300 hover:shadow-md hover:-translate-y-1 relative overflow-hidden"
                     >
                         <div className="flex items-start justify-between relative z-10">
-                            <div className="space-y-1">
-                                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                            <div className="space-y-1 overflow-hidden">
+                                <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate">
                                     {card.label}
                                 </p>
-                                <h3 className="text-2xl md:text-3xl font-black" style={{ color: card.color }}>
+                                <h3 className="text-xl sm:text-2xl md:text-3xl font-black truncate" style={{ color: card.color }}>
                                     {card.value ?? 0}
                                 </h3>
                             </div>
-                            <div className="p-2.5 rounded-xl text-xl shadow-sm" style={{ backgroundColor: card.bg, color: card.color }}>
+                            <div
+                                className="p-2.5 rounded-xl text-lg sm:text-xl shadow-sm shrink-0"
+                                style={{ backgroundColor: card.bg, color: card.color }}
+                            >
                                 {card.icon}
                             </div>
                         </div>
                         <div className="mt-4 flex items-center gap-1.5">
-                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: card.color }} />
-                            <p className="text-[10px] md:text-xs font-medium text-slate-400 italic">{card.sub}</p>
+                            <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: card.color }} />
+                            <p className="text-[10px] md:text-xs font-medium text-slate-400 italic truncate">
+                                {card.sub}
+                            </p>
                         </div>
                     </div>
                 ))}
@@ -93,8 +98,9 @@ function VendorList() {
                             <h2 className="text-md md:text-lg font-bold text-slate-800 dark:text-white shrink-0">
                                 {t('vendorList.title')}
                             </h2>
-                            <span className="hidden lg:flex bg-pink-100 text-pink-600 text-xs font-bold px-2.5 py-0.5 rounded-full">
-                                {t('vendorList.totalLabel')} : {vendorData?.count || 0}
+            
+                            <span className="hidden sm:flex bg-pink-100 text-pink-600 text-[10px] md:text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                                {t('vendorList.totalLabel')}: {vendorData?.count || 0}
                             </span>
                         </div>
                         <p className="text-[11px] md:text-xs text-slate-500 mt-1">
@@ -102,13 +108,13 @@ function VendorList() {
                         </p>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                    <div className="flex items-center w-full sm:w-auto">
                         <input
                             type="text"
                             value={searchVal}
                             onChange={(e) => setSearchVal(e.target.value)}
                             placeholder={t('vendorList.searchPlaceholder')}
-                            className="w-full sm:w-64 text-sm px-2 md:px-4 py-2 md:py-2.5 rounded-xl border border-pink-50 bg-slate-50 dark:bg-slate-800 focus:outline-pink-400 focus:bg-white transition-all shadow-sm placeholder:text-xs md:placeholder:text-[13px]"
+                            className="w-full sm:w-64 text-sm px-4 py-2.5 rounded-xl border border-pink-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-pink-400 focus:bg-white transition-all shadow-sm placeholder:text-xs"
                         />
                     </div>
                 </div>

@@ -5,6 +5,7 @@ import { LiaTrashSolid } from "react-icons/lia";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
 import { HiOutlineExclamation, HiOutlineTrash, HiOutlineX } from 'react-icons/hi';
+import { HiChevronDown } from 'react-icons/hi';
 
 import { useProductList, useToggleProductStatus } from '../../hook/uesProducts';
 import UpdateProductDrawer from './UpdateProductDrawer';
@@ -19,6 +20,15 @@ function AllProducts({ setCurrentPage }) {
     const [page, setPage] = useState(1);
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
+
+    const [isOpen, setIsOpen] = useState(false);
+
+    // Helper function to get label
+    const getStatusLabel = (value) => {
+        if (value === "true") return t('allProducts.filterActive');
+        if (value === "false") return t('allProducts.filterInactive');
+        return t('allProducts.filterAll');
+    };
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -58,49 +68,73 @@ function AllProducts({ setCurrentPage }) {
         <div className="bg-white dark:bg-slate-900 rounded-xl md:rounded-3xl border border-pink-50 dark:border-slate-800 shadow-sm overflow-hidden">
 
             {/* Heading with Search & Add Button */}
-            <div className="p-4 md:p-6 border-b border-pink-50 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="min-w-0 p-4 md:p-6 border-b border-pink-50 dark:border-slate-800 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
 
                 {/* Title */}
-                <div>
-                    <div className='flex gap-2 items-center'>
-                        <h2 className="text-md md:text-lg font-bold text-slate-800 dark:text-white shrink-0">
+                <div className="min-w-0">
+                    <div className="flex flex-wrap gap-2 items-center">
+                        <h2 className="min-w-0 text-base md:text-lg font-bold text-slate-800 dark:text-white wrap-break-word">
                             {t('allProducts.hubTitle')}
                         </h2>
-                        <span className="hidden lg:flex bg-pink-100 text-pink-600 text-xs font-bold px-2.5 py-0.5 rounded-full">
+
+                        <span className="hidden sm:inline-flex bg-pink-100 text-pink-600 text-xs font-bold px-2.5 py-0.5 rounded-full shrink-0">
                             {t('allProducts.totalCount', { count: totalCount || 0 })}
                         </span>
                     </div>
 
-                    <p className="text-[11px] md:text-xs text-slate-500 mt-1">
+                    <p className="text-[11px] md:text-xs text-slate-500 mt-1 wrap-break-word">
                         {t('allProducts.hubSubtitle')}
                     </p>
                 </div>
 
                 {/* Search & Button Group */}
-                <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1fr)_180px_auto] gap-3 w-full xl:w-auto xl:min-w-160">
                     <input
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder={t('allProducts.searchPlaceholder')}
-                        className="w-full sm:w-64 text-sm px-2 md:px-4 py-2 md:py-2.5 rounded-xl border border-pink-50 bg-slate-50 dark:bg-slate-800 focus:outline-pink-400 focus:bg-white transition-all shadow-sm placeholder:text-xs md:placeholder:text-[13px]"
+                        className="min-w-0 w-full text-sm px-3 md:px-4 py-2.5 rounded-xl border border-pink-50 bg-slate-50 dark:bg-slate-800 focus:outline-pink-400 focus:bg-white transition-all shadow-sm placeholder:text-xs md:placeholder:text-[13px]"
                     />
 
                     {/* Status Filter */}
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-                        className="w-full sm:w-auto text-sm px-3 py-2 md:py-2.5 rounded-xl border border-pink-50 bg-slate-50 dark:bg-slate-800 focus:outline-pink-400 transition-all shadow-sm text-slate-600 dark:text-slate-300"
-                    >
-                        <option value="">{t('allProducts.filterAll')}</option>
-                        <option value="true">{t('allProducts.filterActive')}</option>
-                        <option value="false">{t('allProducts.filterInactive')}</option>
-                    </select>
+                    <div className="relative min-w-0 w-full">
+                        <button
+                            onClick={() => setIsOpen(!isOpen)}
+                            className="w-full flex items-center justify-between gap-2 text-sm px-3 py-2.5 rounded-xl border border-pink-50 bg-slate-50 dark:bg-slate-800 focus:outline-pink-400 transition-all shadow-sm text-slate-600 dark:text-slate-300"
+                        >
+                            <span className="truncate">{getStatusLabel(statusFilter)}</span>
+                            <HiChevronDown className={`shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {isOpen && (
+                            <div className="absolute top-full left-0 mt-2 w-full bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden">
+                                {[
+                                    { label: t('allProducts.filterAll'), value: "" },
+                                    { label: t('allProducts.filterActive'), value: "true" },
+                                    { label: t('allProducts.filterInactive'), value: "false" }
+                                ].map((option) => (
+                                    <button
+                                        key={option.value}
+                                        onClick={() => {
+                                            setStatusFilter(option.value);
+                                            setPage(1);
+                                            setIsOpen(false);
+                                        }}
+                                        className="w-full text-left px-4 py-2.5 text-sm hover:bg-pink-50 dark:hover:bg-slate-700 transition-colors"
+                                    >
+                                        {option.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
 
                     {/* Add Button */}
                     <button
                         onClick={() => setCurrentPage('Add Product')}
-                        className="w-full sm:w-auto bg-linear-to-br from-pink-500 to-pink-600 text-white px-2 md:px-5 py-2 md:py-2.5 rounded-xl text-sm font-bold hover:shadow-lg hover:shadow-pink-200 transition-all active:scale-95 shrink-0 cursor-pointer">
+                        className="w-full sm:col-span-2 lg:col-span-1 lg:w-auto bg-linear-to-br from-pink-500 to-pink-600 text-white px-4 md:px-5 py-2.5 rounded-xl text-sm font-bold hover:shadow-lg hover:shadow-pink-200 transition-all active:scale-95 shrink-0 cursor-pointer"
+                    >
                         {t('allProducts.addNew')}
                     </button>
                 </div>

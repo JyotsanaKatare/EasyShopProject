@@ -51,32 +51,36 @@ function Blogs({ setCurrentPage }) {
     <div className="bg-white dark:bg-slate-900 rounded-xl md:rounded-3xl border border-pink-50 dark:border-slate-800 shadow-sm overflow-hidden">
 
       {/* Heading with Search & Add Button */}
-      <div className="p-4 md:p-6 border-b border-pink-50 dark:border-slate-850 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="min-w-0 p-4 md:p-6 border-b border-pink-50 dark:border-slate-800 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
 
-        <div>
-          <div className='flex items-center gap-2.5'>
-            <h2 className="text-md md:text-lg font-bold text-slate-800 dark:text-white shrink-0">
+        {/* Title */}
+        <div className="min-w-0">
+          <div className="flex flex-wrap gap-2 items-center">
+            <h2 className="min-w-0 text-base md:text-lg font-bold text-slate-800 dark:text-white wrap-break-word">
               {t('vendorBlogs.allBlogsHeading')}
             </h2>
-            <span className="bg-pink-100 text-pink-600 dark:bg-pink-950/40 dark:text-pink-400 px-2.5 py-0.5 md:py-1 rounded-full text-[11px] md:text-xs font-bold">
+
+            <span className="hidden sm:inline-flex bg-pink-100 text-pink-600 text-xs font-bold px-2.5 py-0.5 rounded-full shrink-0">
               {t('vendorBlogs.totalCounter', { total: count })}
             </span>
           </div>
-          <p className="text-[11px] md:text-xs text-slate-500 dark:text-slate-400 mt-1">
+
+          <p className="text-[11px] md:text-xs text-slate-500 mt-1 wrap-break-word">
             {t('vendorBlogs.subHeadingNotice')}
           </p>
         </div>
 
         {/* Search & Button Group */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1fr)_180px_auto] gap-3 w-full xl:w-auto xl:min-w-160">
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('vendorBlogs.searchPlaceholder')}
-            className="w-full sm:w-64 text-sm px-4 py-2 md:py-2.5 rounded-xl border border-pink-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white dark:focus:bg-slate-900 transition-all shadow-xs placeholder:text-xs md:placeholder:text-[13px] dark:text-white"
+            className="min-w-0 w-full text-sm px-3 md:px-4 py-2.5 rounded-xl border border-pink-50 bg-slate-50 dark:bg-slate-800 focus:outline-pink-400 focus:bg-white transition-all shadow-sm placeholder:text-xs md:placeholder:text-[13px]"
           />
 
+          {/* Status Filter */}
           <select
             value={status}
             onChange={(e) => { setStatus(e.target.value); setPage(1); }}
@@ -88,9 +92,10 @@ function Blogs({ setCurrentPage }) {
             <option value="Rejected">{t('vendorBlogs.statusRejected')}</option>
           </select>
 
+          {/* Add Button */}
           <button
             onClick={() => setCurrentPage('create-blog')}
-            className="w-full sm:w-auto bg-linear-to-br from-pink-500 to-pink-600 dark:from-pink-600 dark:to-pink-700 text-white px-4 md:px-5 py-2 md:py-2.5 rounded-xl text-sm font-bold hover:shadow-lg hover:shadow-pink-200 dark:hover:shadow-none transition-all active:scale-95 shrink-0 cursor-pointer"
+            className="w-full sm:col-span-2 lg:col-span-1 lg:w-auto bg-linear-to-br from-pink-500 to-pink-600 text-white px-4 md:px-5 py-2.5 rounded-xl text-sm font-bold hover:shadow-lg hover:shadow-pink-200 transition-all active:scale-95 shrink-0 cursor-pointer"
           >
             {t('vendorBlogs.addNewBtn')}
           </button>
@@ -103,7 +108,7 @@ function Blogs({ setCurrentPage }) {
           <table className="w-full text-sm text-left text-slate-500">
 
             {/* Table Head */}
-            <thead className="text-xs uppercase bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 border-b border-slate-100 dark:border-slate-800">
+            <thead className="bg-slate-50/50 dark:bg-slate-800/50 text-slate-500 uppercase text-[11px] font-bold tracking-wider">
               <tr>
                 <th scope="col" className="px-6 py-4">{t('vendorBlogs.thBlogInfo')}</th>
                 <th scope="col" className="px-6 py-4">{t('vendorBlogs.thCategory')}</th>

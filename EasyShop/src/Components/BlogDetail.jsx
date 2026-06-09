@@ -56,7 +56,7 @@ function BlogDetail() {
 
                     {/* badge */}
                     <div className="flex justify-center md:mb-6">
-                        <span className="inline-block px-2 py-1 md:px-4 md:py-1.5 mb-6 text-[10px] md:text-xs font-bold tracking-widest text-pink-600 uppercase bg-white rounded-full shadow-sm border border-pink-100">
+                        <span className="inline-block px-2 py-1 md:px-4 md:py-1.5 mb-6 text-[8px] md:text-[10px] font-bold tracking-widest text-pink-600 uppercase bg-white rounded-full shadow-sm border border-pink-100">
                             {blogDetail.category}
                         </span>
                     </div>
@@ -104,8 +104,8 @@ function BlogDetail() {
                 </div>
             </div>
 
-            {/* section */}
-            <div className="max-w-6xl mx-auto px-4 lg:px-6 py-6 md:pt-16">
+            {/* image section */}
+            <div className="max-w-6xl mx-auto px-4 sm:px-5 lg:px-6 py-6 md:pt-16">
 
                 <div className='shadow-xl md:shadow-2xl rounded-2xl md:rounded-3xl overflow-hidden'>
                     <img
@@ -117,21 +117,21 @@ function BlogDetail() {
             </div>
 
             {/* Content Area */}
-            <div className="max-w-3xl mx-auto px-4 py-5 md:py-10">
+            <div className="max-w-3xl mx-auto px-4 sm:px-5 lg:px-6 py-5 md:py-10">
 
                 {/* content */}
                 <article className="prose prose-lg max-w-none">
 
-                    <p className="text-gray-700 text-lg md:text-xl leading-relaxed first-letter:text-5xl md:first-letter:text-7xl first-letter:font-bold first-letter:text-pink-500 first-letter:mr-3 first-letter:float-left">
+                    <p className="text-gray-700 text-[15px] md:text-xl leading-8 first-letter:text-5xl md:first-letter:text-7xl first-letter:font-bold first-letter:text-pink-500 first-letter:mr-3 first-letter:float-left">
                         {blogDetail.description}
                     </p>
 
-                    <p className="text-gray-600 leading-8 mb-6 whitespace-pre-line">
+                    <p className="text-[15px] md:text-xl text-gray-600 leading-8 mb-6 whitespace-pre-line">
                         {blogDetail.content}
                     </p>
 
                     {blogDetail.blockquote && (
-                        <div className="my-10 border-l-4 border-pink-500 bg-pink-50 p-8 rounded-r-2xl italic">
+                        <div className="my-10 border-l-4 border-pink-500 bg-pink-50 p-5 md:p-8 rounded-r-2xl italic">
                             <p className="text-md md:text-2xl text-gray-800 font-medium">
                                 "{blogDetail.blockquote}"
                             </p>
@@ -140,7 +140,7 @@ function BlogDetail() {
 
                     {/* trends */}
                     {blogDetail.trendsList && blogDetail.trendsList.length > 0 && (
-                        <div className="mt-12">
+                        <div className="mt-12 text-center md:text-left">
                             <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-6 tracking-tight">
                                 {t('blog.latestTrends')}
                             </h2>
@@ -151,7 +151,7 @@ function BlogDetail() {
                                         key={point._id || i}
                                         className="p-5 md:p-6 bg-slate-50/70 rounded-2xl border border-slate-100/80 hover:border-pink-100 dark:hover:border-pink-900/30 transition-all duration-200 shadow-xs flex flex-col gap-1.5"
                                     >
-                                        <h3 className="text-md md:text-lg font-bold text-gray-900 flex items-center gap-2">
+                                        <h3 className="text-[16px] md:text-lg font-bold text-gray-900 flex items-center gap-2">
                                             <span className="w-2 h-2 rounded-full bg-pink-500 shrink-0"></span>
                                             {point.title}
                                         </h3>

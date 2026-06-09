@@ -12,159 +12,198 @@ import { useTranslation } from 'react-i18next';
 
 function VendorChat() {
 
-  const { t } = useTranslation();
-  const { user } = useAuthStore();
-  const vendorId = user?._id || user?.id;
+    const { t } = useTranslation();
+    const { user } = useAuthStore();
+    const vendorId = user?._id || user?.id;
 
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  const [inputMessage, setInputMessage] = useState("");
-  const [messagesList, setMessagesList] = useState([]);
-  const [selectedChat, setSelectedChat] = useState(null);
-  const [chats, setChats] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
+    const [inputMessage, setInputMessage] = useState("");
+    const [messagesList, setMessagesList] = useState([]);
+    const [selectedChat, setSelectedChat] = useState(null);
+    const [chats, setChats] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [loading, setLoading] = useState(true);
 
-  const socketRef = useRef(null);
-  const bottomRef = useRef(null);
-  const selectedChatRef = useRef(null);
+    const socketRef = useRef(null);
+    const bottomRef = useRef(null);
+    const selectedChatRef = useRef(null);
 
-  useEffect(() => {
-    selectedChatRef.current = selectedChat;
-  }, [selectedChat]);
+    useEffect(() => {
+        selectedChatRef.current = selectedChat;
+    }, [selectedChat]);
 
-  // 1. fetch all vendor chats on mounts
-  useEffect(() => {
-    if (!vendorId) return;
+    // 1. fetch all vendor chats on mounts
+    useEffect(() => {
+        if (!vendorId) return;
 
-    const fetchChats = async () => {
-      try {
-        const { data } = await API.get(`/message/vendor-messages/${vendorId}`);
-        setChats(data.data || []);
-      } catch (err) {
-        console.log("Error :", err);
-        toast.error("Something went wrong");
-      } finally {
-        setLoading(false);
-      }
+        const fetchChats = async () => {
+            try {
+                const { data } = await API.get(`/message/vendor-messages/${vendorId}`);
+                setChats(data.data || []);
+            } catch (err) {
+                console.log("Error :", err);
+                toast.error("Something went wrong");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchChats();
+    }, [vendorId]);
+
+    // 2. connect socket on mount
+    useEffect(() => {
+        socketRef.current = io(import.meta.env.VITE_SOCKET_URL);
+
+        socketRef.current.on("receive_message", (newMsg) => {
+            if (newMsg.senderId === vendorId) return;
+
+            queryClient.invalidateQueries(['vendorUnread', vendorId]);
+
+            if (newMsg.conversationId === selectedChatRef.current?._id) {
+                setMessagesList((prev) => [...prev, newMsg]);
+            }
+
+            // update last message AND bubble to top
+            setChats((prev) => {
+                const updated = prev.map((chat) =>
+                    chat._id === newMsg.conversationId
+                        ? {
+                            ...chat,
+                            lastMessage: { text: newMsg.text },
+                            unreadCount: {
+                                ...chat.unreadCount,
+                                [vendorId]: newMsg.conversationId !== selectedChatRef.current?._id
+                                    ? (chat.unreadCount?.[vendorId] || 0) + 1
+                                    : 0
+                            }
+                        }
+                        : chat
+                );
+                // move to top
+                const idx = updated.findIndex(c => c._id === newMsg.conversationId);
+                if (idx > 0) {
+                    const [moved] = updated.splice(idx, 1);
+                    return [moved, ...updated];
+                }
+                return updated;
+            });
+        });
+
+        return () => socketRef.current?.disconnect();
+    }, []);
+
+    // Join socket room
+    useEffect(() => {
+        if (!selectedChat?._id || !socketRef.current) return;
+        socketRef.current.emit("join_chat", selectedChat._id);
+    }, [selectedChat]);
+
+    // 3. When vendor selects a chat
+    const handleSelectChat = async (chat) => {
+        setSelectedChat(chat);
+
+        // reset unread count
+        try {
+            await API.post('/message/reset-unread', {
+                conversationId: chat._id,
+                userId: vendorId
+            });
+
+            // update sidebar count 
+            setChats((prev) => prev.map((c) =>
+                c._id === chat._id
+                    ? { ...c, unreadCount: { ...c.unreadCount, [vendorId]: 0 } }
+                    : c
+            ));
+
+            queryClient.invalidateQueries(['vendorUnread', vendorId]);
+
+        } catch (err) {
+            console.error("Reset unread error:", err);
+        }
+
+        // fetch msgs
+        try {
+            const { data } = await API.get(`/message/fetch-messages/${chat._id}`);
+            setMessagesList(data.data || []);
+        } catch (err) {
+            console.log("Error fetching messages ", err);
+        }
     };
 
-    fetchChats();
-  }, [vendorId]);
+    // 4. Auto scroll to bottom
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messagesList]);
 
-  // 2. connect socket on mount
-  useEffect(() => {
-    socketRef.current = io(import.meta.env.VITE_SOCKET_URL);
+    // 5. send message
+    const sendMessage = () => {
+        if (!inputMessage.trim() || !selectedChat) return;
 
-    socketRef.current.on("receive_message", (newMsg) => {
+        const userParticipant = selectedChat.participants.find(
+            (p) => p.participantModel === 'User'
+        );
 
-      if (newMsg.senderId === vendorId) return;
+        const msgData = {
+            conversationId: selectedChat._id,
+            senderId: vendorId,
+            senderModel: "Vendor",
+            receiverId: userParticipant?.details?._id || userParticipant?.participantId,
+            receiverModel: "User",
+            text: inputMessage
+        };
 
-      if (newMsg.conversationId === selectedChatRef.current?._id) {
-        setMessagesList((prev) => [...prev, newMsg]);
-      }
+        setMessagesList((prev) => [...prev, {
+            ...msgData,
+            createdAt: new Date().toISOString()
+        }]);
 
-      // update last msg in sidebar
-      setChats((prev) => prev.map((chat) =>
-        chat._id === newMsg.conversationId
-          ? { ...chat, lastMessage: { text: newMsg.text } }
-          : chat
-      ));
+        // bubble to top on send
+        setChats((prev) => {
+            const updated = prev.map((chat) =>
+                chat._id === selectedChat._id
+                    ? { ...chat, lastMessage: { text: inputMessage } }
+                    : chat
+            );
+            const idx = updated.findIndex(c => c._id === selectedChat._id);
+            if (idx > 0) {
+                const [moved] = updated.splice(idx, 1);
+                return [moved, ...updated];
+            }
+            return updated;
+        });
+
+        socketRef.current.emit("send_message", msgData);
+        setInputMessage("");
+    };
+
+    // Filter chats by search
+    const filteredChats = chats.filter((chat) => {
+        const userParticipant = chat.participants?.find(p => p.participantModel === 'User');
+        const name = userParticipant?.details?.name || '';
+        return name.toLowerCase().includes(searchTerm.toLowerCase());
     });
 
-    return () => socketRef.current?.disconnect();
-  }, []);
-
-  // Join socket room
-  useEffect(() => {
-    if (!selectedChat?._id || !socketRef.current) return;
-    socketRef.current.emit("join_chat", selectedChat._id);
-  }, [selectedChat]);
-
-  // 3. When vendor selects a chat
-  const handleSelectChat = async (chat) => {
-    setSelectedChat(chat);
-
-    // reset unread count
-    try {
-      await API.post('/message/reset-unread', {
-        conversationId: chat._id,
-        userId: vendorId
-      });
-
-      // update sidebar count to 0 immediately
-      setChats((prev) => prev.map((c) =>
-        c._id === chat._id
-          ? { ...c, unreadCount: { ...c.unreadCount, [vendorId]: 0 } }
-          : c
-      ));
-
-      queryClient.invalidateQueries(['vendorUnread', vendorId]);
-
-    } catch (err) {
-      console.error("Reset unread error:", err);
-    }
-
-    // fetch msgs
-    try {
-      const { data } = await API.get(`/message/fetch-messages/${chat._id}`);
-      setMessagesList(data.data || []);
-    } catch (err) {
-      console.log("Error fetching messages ", err);
-    }
-  };
-
-  // 4. Auto scroll to bottom
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messagesList]);
-
-  // 5. send message
-  const sendMessage = () => {
-    if (!inputMessage.trim() || !selectedChat) return;
-
-    // Get the user participant from conversation
-    const userParticipant = selectedChat.participants.find(
-      (p) => p.participantModel === 'User'
-    );
-
-    const msgData = {
-      conversationId: selectedChat._id,
-      senderId: vendorId,
-      senderModel: "Vendor",
-      receiverId: userParticipant?.details?._id || userParticipant?.participantId,
-      receiverModel: "User",
-      text: inputMessage
+    // Get user info from chat
+    const getChatUser = (chat) => {
+        let participant = chat.participants?.find(p => p.participantModel === 'User');
+        if (!participant) {
+            participant = chat.participants?.find(
+                p => p.participantId?.toString() !== vendorId?.toString()
+            );
+        }
+        return participant?.details || {};
     };
 
-    // Add to UI immediately — don't wait for socket
-    setMessagesList((prev) => [...prev, {
-      ...msgData,
-      createdAt: new Date().toISOString()
-    }]);
-
-    socketRef.current.emit("send_message", msgData);
-    setInputMessage("");
-  };
-
-  // Filter chats by search
-  const filteredChats = chats.filter((chat) => {
-    const userParticipant = chat.participants?.find(p => p.participantModel === 'User');
-    const name = userParticipant?.details?.name || '';
-    return name.toLowerCase().includes(searchTerm.toLowerCase());
-  });
-
-  // Get user info from chat
-  const getChatUser = (chat) => {
-    const participant = chat.participants?.find(p => p.participantModel === 'User');
-    return participant?.details || {};
-  };
-
-  return (
-        <div className="h-130 w-full flex flex-col md:flex-row bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+    return (
+        // <div className="h-130 w-full flex flex-col md:flex-row bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="h-[calc(100vh-120px)] md:flex-1 md:min-h-0 w-full flex flex-col md:flex-row bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
 
             {/* Left Sidebar */}
-            <div className={`${selectedChat ? "hidden md:flex" : "flex"} w-full md:w-1/3 border-r border-slate-100 flex flex-col bg-slate-50/20`}>
+            <div className={`${selectedChat ? "hidden md:flex" : "flex"} h-full w-full md:w-1/3 border-r border-slate-100 flex-col bg-slate-50/20 min-h-0`}>
+
                 <div className="p-5 border-b border-slate-50">
                     <h3 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-3">
                         {t('vendorChat.chatsTitle')}
@@ -181,16 +220,16 @@ function VendorChat() {
                     </div>
                 </div>
 
-                <div className="overflow-y-auto flex-1">
+                <div className="overflow-y-auto flex-1 chat-scrollbar">
                     {loading && <p className="text-center text-xs text-slate-400 p-4">{t('vendorChat.loading')}</p>}
                     {!loading && filteredChats.length === 0 && <p className="text-center text-xs text-slate-400 p-4">{t('vendorChat.noChats')}</p>}
-                    
+
                     {filteredChats.map((chat) => {
                         const chatUser = getChatUser(chat);
                         const unread = chat.unreadCount?.[vendorId] || 0;
 
                         return (
-                            <div key={chat._id} onClick={() => handleSelectChat(chat)} 
+                            <div key={chat._id} onClick={() => handleSelectChat(chat)}
                                 className={`p-4 flex items-center gap-3 cursor-pointer transition-all border-b border-slate-50/50 ${selectedChat?._id === chat._id ? "bg-pink-50" : "hover:bg-slate-50"}`}>
                                 <div className="relative">
                                     {chatUser.profilePhoto ? (
@@ -221,7 +260,9 @@ function VendorChat() {
             </div>
 
             {/* Right Side: Chat Window */}
-            <div className={`${!selectedChat ? "hidden md:flex" : "flex"} flex-1 flex-col`}>
+            {/* <div className={`${!selectedChat ? "hidden md:flex" : "flex"} flex-1 flex-col min-h-0 overflow-hidden`}> 
+            */}
+            <div className={`${!selectedChat ? "hidden md:flex" : "flex"} flex-1 flex-col min-h-0 overflow-hidden`}>
                 {selectedChat ? (
                     <>
                         <div className="bg-linear-to-br from-pink-500 to-pink-600 p-5 flex items-center gap-3 text-white">
@@ -236,7 +277,7 @@ function VendorChat() {
                             </div>
                         </div>
 
-                        <div className="grow overflow-y-auto p-6 space-y-4 bg-slate-50/30">
+                        <div className="grow overflow-y-auto p-6 space-y-4 bg-slate-50/30 chat-scrollbar">
                             {messagesList.length === 0 ? (
                                 <div className="h-full flex items-center justify-center text-slate-300 text-[10px] font-black uppercase tracking-widest">
                                     {t('vendorChat.noConversation')}

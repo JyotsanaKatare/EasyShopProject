@@ -260,25 +260,33 @@ const EditProductDrawer = ({ product, isOpen, onClose }) => {
                 <div className="flex flex-col h-full">
 
                     {/* Header */}
-                    <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                        <div>
-                            <h2 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-2">
-                                {t('editProductDrawer.title')} <span className="text-pink-500 text-xs font-bold px-2 py-0.5 bg-pink-50 rounded-full uppercase">{t('editProductDrawer.adminMode')}</span>
+                    <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between gap-4">
+
+                        <div className="min-w-0 flex-1">
+                            <h2 className="text-lg md:text-xl font-black text-slate-800 dark:text-white flex flex-wrap items-center gap-2">
+                                {t('editProductDrawer.title')}
+                                <span className="shrink-0 text-pink-500 text-[10px] md:text-xs font-bold px-2 py-0.5 bg-pink-50 dark:bg-pink-900/20 rounded-full uppercase">
+                                    {t('editProductDrawer.adminMode')}
+                                </span>
                             </h2>
-                            <p className="text-xs text-slate-400 font-medium mt-1">
+
+                            {/* ID - Added truncate to prevent breaking the layout */}
+                            <p className="text-[11px] md:text-xs text-slate-400 font-medium mt-1 truncate">
                                 ID: {product?._id}
                             </p>
                         </div>
 
+                        {/* Close Button - Added shrink-0 to ensure it never gets squashed */}
                         <button
                             onClick={onClose}
-                            className="p-2 hover:bg-slate-100 rounded-full">
-                            <HiOutlineX size={24} />
+                            className="shrink-0 p-2 -mr-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                        >
+                            <HiOutlineX size={20} className="md:size-6" />
                         </button>
                     </div>
 
                     {/* Body */}
-                    <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-6 custom-scrollbar">
 
                         {/* Section 1: Media (Compact Grid) */}
                         <div className="p-5 bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl border border-slate-100 dark:border-slate-800 space-y-4">
@@ -296,7 +304,7 @@ const EditProductDrawer = ({ product, isOpen, onClose }) => {
                                             className={`w-full h-full object-cover ${!mainImage && 'opacity-50'}`}
                                         />
                                     </div>
-                                    
+
                                     <div className="flex-1">
                                         <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">{t('editProductDrawer.labelCoverImage')}</label>
                                         <input
@@ -310,11 +318,11 @@ const EditProductDrawer = ({ product, isOpen, onClose }) => {
                                 {/* Gallery Input */}
                                 <div>
                                     <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">{t('editProductDrawer.labelGallery')}</label>
-                                    <input 
-                                    type="file" 
-                                    multiple 
-                                    onChange={handleGalleryImages} 
-                                    className="text-[10px] w-full file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 cursor-pointer" accept="image/*" />
+                                    <input
+                                        type="file"
+                                        multiple
+                                        onChange={handleGalleryImages}
+                                        className="text-[10px] w-full file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 cursor-pointer" accept="image/*" />
                                     <div className="flex gap-1.5 mt-2 overflow-x-auto py-1">
                                         {(galleryImages.length > 0 ? galleryImages : product?.prodImages || []).map((img, i) => (
                                             <div
@@ -525,41 +533,46 @@ const EditProductDrawer = ({ product, isOpen, onClose }) => {
 
                             {/* Status Control */}
                             <div className="space-y-3">
-                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                <h4 className="min-w-40 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
                                     {t('editProductDrawer.sectionProductStatus')}
                                 </h4>
-                                <div className="p-4 bg-emerald-50/50 dark:bg-emerald-950/10 rounded-2xl border border-emerald-100/50">
-                                    <select
-                                        value={formData.status || "Pending"}
-                                        disabled={isUpdating || isStatusUpdating}
-                                        onChange={handleStatusChange}
-                                        className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wide border cursor-pointer outline-none transition-all
-                                        ${statusStyles[formData.status] || statusStyles.Pending}`}
-                                    >
-                                        <option value="Pending">Pending</option>
-                                        <option value="Approved">Approved</option>
-                                        <option value="Rejected">Rejected</option>
-                                    </select>
 
-                                </div>
+                                <select
+                                    value={formData.status || "Pending"}
+                                    disabled={isUpdating || isStatusUpdating}
+                                    onChange={handleStatusChange}
+                                    className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wide border cursor-pointer outline-none transition-all
+                                        ${statusStyles[formData.status] || statusStyles.Pending}`}
+                                >
+                                    <option value="Pending">Pending</option>
+                                    <option value="Approved">Approved</option>
+                                    <option value="Rejected">Rejected</option>
+                                </select>
+
                             </div>
                         </div>
                     </div>
 
                     {/* Footer */}
-                    <div className="p-6 border-t border-pink-200 flex gap-4">
+                    <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex gap-4">
                         <button
                             onClick={onClose}
-                            className="flex-1 py-3 px-4 bg-slate-100 rounded-2xl text-xs font-black">
+                            className="flex-1 py-3.5 px-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95"
+                        >
                             {t('editProductDrawer.cancelBtn')}
                         </button>
 
                         <button
                             onClick={handleSubmit}
                             disabled={isUpdating}
-                            className="flex-1 py-3 px-4 bg-slate-900 text-white rounded-2xl text-xs font-black flex items-center justify-center gap-2"
+                            className="flex-1 py-3.5 px-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            <HiOutlineSave size={18} /> {isUpdating ? t('editProductDrawer.saving') : t('editProductDrawer.saveBtn')}
+                            {isUpdating ? (
+                                <span className="animate-spin h-4 w-4 border-2 border-white dark:border-slate-900 border-t-transparent rounded-full"></span>
+                            ) : (
+                                <HiOutlineSave size={16} />
+                            )}
+                            {isUpdating ? t('editProductDrawer.saving') : t('editProductDrawer.saveBtn')}
                         </button>
                     </div>
                 </div>

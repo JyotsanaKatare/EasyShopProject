@@ -307,20 +307,24 @@ const UpdateProductDrawer = ({ product, isOpen, onClose }) => {
                 <div className="flex flex-col h-full">
 
                     {/* Header */}
-                    <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                        <div>
-                            <h2 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-2">
-                                {t('editProduct.title')} <span className="text-pink-500 text-xs font-bold px-2 py-0.5 bg-pink-50 rounded-full uppercase">{t('editProduct.vendorMode')}</span>
+                    <div className="p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4">
+                        <div className="min-w-0 flex-1">
+                            <h2 className="text-lg sm:text-xl font-black text-slate-800 dark:text-white flex flex-wrap items-center gap-2">
+                                {t('editProduct.title')}
+                                <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 bg-pink-50 text-pink-500 rounded-full uppercase whitespace-nowrap">
+                                    {t('editProduct.vendorMode')}
+                                </span>
                             </h2>
-                            <p className="text-xs text-slate-400 font-medium mt-1">
+                            <p className="text-[10px] sm:text-xs text-slate-400 font-medium mt-1 truncate">
                                 {t('editProduct.id')}: {product?._id}
                             </p>
                         </div>
 
                         <button
                             onClick={onClose}
-                            className="p-2 hover:bg-slate-100 rounded-full">
-                            <HiOutlineX size={24} />
+                            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors shrink-0"
+                        >
+                            <HiOutlineX size={20} className="sm:size-6" />
                         </button>
                     </div>
 
@@ -702,13 +706,15 @@ const UpdateProductDrawer = ({ product, isOpen, onClose }) => {
                     </div>
 
                     {/* buttons */}
-                    <div className="p-6 border-t border-pink-200 flex gap-4">
-
+                    <div className="p-4 sm:p-6 border-t border-pink-100 flex flex-col sm:flex-row gap-3 sm:gap-4">
                         <button
                             onClick={onClose}
                             disabled={isUpdating}
-                            className={`flex-1 py-3 px-4 rounded-2xl text-xs font-black
-                        ${isUpdating ? "bg-slate-100 text-slate-400 cursor-not-allowed" : "bg-slate-100 text-slate-900 cursor-pointer"}`}
+                            className={`w-full sm:flex-1 py-3.5 px-4 rounded-2xl text-xs font-black transition-all
+                                ${isUpdating
+                                    ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                                    : "bg-slate-100 text-slate-900 hover:bg-slate-200 cursor-pointer"
+                                }`}
                         >
                             {t('common.cancel')}
                         </button>
@@ -716,12 +722,15 @@ const UpdateProductDrawer = ({ product, isOpen, onClose }) => {
                         <button
                             onClick={handleSubmit}
                             disabled={isUpdating}
-                            className={`flex-1 py-3 px-4 rounded-2xl text-xs font-black flex items-center justify-center gap-2
-                            ${isUpdating ? "bg-slate-400 cursor-not-allowed" : "bg-slate-900 text-white cursor-pointer"}`}
+                            className={`w-full sm:flex-1 py-3.5 px-4 rounded-2xl text-xs font-black flex items-center justify-center gap-2 transition-all
+            ${isUpdating
+                                    ? "bg-slate-400 text-white cursor-not-allowed"
+                                    : "bg-slate-900 text-white hover:bg-black cursor-pointer shadow-lg shadow-slate-200"
+                                }`}
                         >
-                            <HiOutlineSave size={18} /> {isUpdating ? t('common.saving') : t('common.saveChanges')}
+                            <HiOutlineSave size={18} />
+                            {isUpdating ? t('common.saving') : t('common.saveChanges')}
                         </button>
-
                     </div>
                 </div>
             </div>

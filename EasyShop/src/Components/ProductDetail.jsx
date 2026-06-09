@@ -327,7 +327,7 @@ function ProductDetail() {
     if (isError || !product) return <div className="p-20 text-center">{t('productDetail.notFound')}</div>;
 
     return (
-        <section className="w-full pb-5 pt-2 px-4 lg:px-6">
+        <section className="w-full pb-5 pt-2 px-4 sm:px-5 lg:px-6">
 
             {/* home cat name and product name */}
             <Breadcrumbs items={breadcrumbItems} />
@@ -381,9 +381,9 @@ function ProductDetail() {
                             </div>
                         </button>
 
-                        {/* Mobile Badge: Sirf desktop se niche dikhega */}
+                        {/* Mobile Badge */}
                         <div className="lg:hidden absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-xs">
-                            {product?.prodImages?.indexOf(mainImage) + 1} / {product?.prodImages?.length}
+                            {currentThumbnails.indexOf(mainImage) + 1} / {currentThumbnails.length}
                         </div>
                     </div>
                 </div>
@@ -527,7 +527,7 @@ function ProductDetail() {
                     )}
 
                     {/* quantity section */}
-                    <div className="mt-1 md:mt-0 flex flex-row items-start md:flex-col gap-2 md:gap-0">
+                    <div className="mt-1 md:mt-0 flex flex-row items-center md:items-start md:flex-col gap-2 md:gap-0">
                         <span className="text-[16px] md:text-xl text-black font-semibold">
                             {t('productDetail.quantity')}
                         </span>
@@ -564,12 +564,13 @@ function ProductDetail() {
                     <hr className='my-1 md:my-2 border-gray-300' />
 
                     {/* cart and buy buttons */}
-                    <div className='my-3 flex flex-col sm:flex-row items-stretch gap-3 md:gap-4'>
+                    <div className='my-3 flex flex-col sm:flex-row items-stretch gap-3'>
 
-                        <div className="hidden sm:flex flex-1 items-center gap-3">
+                        {/* Tablet/Desktop View */}
+                        <div className="hidden sm:flex flex-1 items-stretch gap-3 flex-wrap">
                             <button
                                 onClick={handleAddToCart}
-                                className='flex-1 py-3.5 flex items-center justify-center gap-2 bg-pink-500 hover:bg-pink-600 text-white rounded-md active:scale-95 transition-all font-bold uppercase text-sm'
+                                className='flex-[1_1_150px] py-3.5 flex items-center justify-center gap-2 bg-pink-500 hover:bg-pink-600 text-white rounded-md active:scale-95 transition-all font-bold uppercase text-xs lg:text-sm whitespace-nowrap px-2'
                             >
                                 <IoBagHandleOutline className='text-xl' />
                                 <span>{t('productDetail.addToBag')}</span>
@@ -577,15 +578,16 @@ function ProductDetail() {
 
                             <button
                                 onClick={handleBuyNow}
-                                className='flex-1 py-3.5 flex items-center justify-center gap-2 border border-pink-500 text-pink-500 rounded-md hover:bg-pink-50 active:scale-95 transition-all font-bold uppercase text-sm'
+                                className='flex-[1_1_150px] py-3.5 flex items-center justify-center gap-2 border border-pink-500 text-pink-500 rounded-md hover:bg-pink-50 active:scale-95 transition-all font-bold uppercase text-xs lg:text-sm whitespace-nowrap px-2'
                             >
                                 <BiPurchaseTagAlt className='text-xl' />
                                 <span>{t('productDetail.buyNow')}</span>
                             </button>
                         </div>
 
-                        {/* Mobile View (Stacked for better reach) */}
+                        {/* Mobile View */}
                         <div className="flex sm:hidden flex-col gap-3">
+                            {/* Mobile buttons same rahenge */}
                             <button
                                 onClick={handleAddToCart}
                                 className='w-full py-3.5 flex items-center justify-center gap-2 bg-pink-500 text-white rounded-md active:scale-95 transition-all font-bold uppercase text-sm shadow-sm'
@@ -605,15 +607,17 @@ function ProductDetail() {
                     </div>
 
                     {/* chat with seller button */}
-                    <button
-                        onClick={handleChatWithSeller}
-                        disabled={!product?.vendorId?._id}
-                        className="w-full mt-4 flex items-center justify-center gap-2 py-3 px-6 border-2 border-pink-500 text-pink-500 font-bold rounded-lg transition-all duration-300 hover:bg-pink-500 hover:text-white hover:shadow-lg hover:shadow-pink-200 active:scale-[0.98] group cursor-pointer">
-                        <IoChatbubblesOutline className="text-lg md:text-xl group-hover:scale-110 transition-transform" />
-                        <span className="tracking-wide uppercase text-xs md:text-sm">
-                            {t('productDetail.chatWithSeller')}
-                        </span>
-                    </button>
+                    {user?._id !== product?.vendorId?._id && user?.role !== "vendor" && (
+                        <button
+                            onClick={handleChatWithSeller}
+                            disabled={!product?.vendorId?._id}
+                            className="w-full mt-4 flex items-center justify-center gap-2 py-3 px-6 border-2 border-pink-500 text-pink-500 font-bold rounded-lg transition-all duration-300 hover:bg-pink-500 hover:text-white hover:shadow-lg hover:shadow-pink-200 active:scale-[0.98] group cursor-pointer">
+                            <IoChatbubblesOutline className="text-lg md:text-xl group-hover:scale-110 transition-transform" />
+                            <span className="tracking-wide uppercase text-xs md:text-sm">
+                                {t('productDetail.chatWithSeller')}
+                            </span>
+                        </button>
+                    )}
 
                     {/* delivery info */}
                     <div className='my-4 md:my-2'>
@@ -669,7 +673,7 @@ function ProductDetail() {
                     {/* seller info */}
                     <div className='my-2'>
                         <span className="text-[16px] md:text-xl text-black font-semibold">
-                           {t('productDetail.soldBy')}
+                            {t('productDetail.soldBy')}
                         </span>
 
                         <div
@@ -690,7 +694,7 @@ function ProductDetail() {
                                 className='flex justify-between items-center py-3 cursor-pointer group'
                             >
                                 <span className="text-[16px] md:text-xl text-black font-semibold group-hover:text-pink-500 transition-colors">
-                                   {t('productDetail.productDetails')}
+                                    {t('productDetail.productDetails')}
                                 </span>
                                 <div className="text-xl text-gray-600">
                                     {isSpecificationOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
@@ -744,7 +748,7 @@ function ProductDetail() {
                                 }
                             })}
                             className='mt-2 py-2.5 text-sm md:text-md border-2 border-pink-500 rounded-xl text-pink-500 font-bold hover:bg-pink-500 hover:text-white transition-all duration-300 cursor-pointer uppercase'>
-                           {t('productDetail.visitShop')}
+                            {t('productDetail.visitShop')}
                         </button>
                     </div>
 
@@ -772,76 +776,65 @@ function ProductDetail() {
                 />
             )}
 
-            {/*========= about shop popup section=========== */}
+            {/*========= about shop popup section =========== */}
             <div
                 className={`fixed inset-0 flex justify-center items-center bg-[#00000080] backdrop-blur-sm z-50 px-4 transition-all duration-500 
                 ${isSellerInfoOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}>
 
                 <div
-                    className={`bg-white p-6 rounded-xl shadow-2xl h-auto w-[60%] 
+                    className={`bg-white p-6 rounded-xl shadow-2xl h-auto max-h-[85vh] w-full sm:w-125 overflow-y-auto
                     transition-all duration-500 transform 
-                    ${isSellerInfoOpen ? "translate-y-0 scale-100" : "-translate-y-100 scale-90"}`}>
+                    ${isSellerInfoOpen ? "translate-y-0 scale-100" : "translate-y-10 scale-90"}`}>
 
                     <div className="w-full">
-
                         {/* icon and heading */}
-                        <div className='flex justify-between'>
-                            <h1 className='text-[23px] font-semibold'>
-                               {t('productDetail.sellerInfo')}
+                        <div className='flex justify-between items-center'>
+                            <h1 className='text-xl md:text-[23px] font-semibold'>
+                                {t('productDetail.sellerInfo')}
                             </h1>
                             <IoCloseSharp
                                 onClick={() => setIsSellerInfoOpen(false)}
-                                className="text-[20px] text-gray-600 cursor-pointer" />
+                                className="text-2xl text-gray-600 cursor-pointer" />
                         </div>
 
-                        <hr className='my-2 border-gray-300' />
+                        <hr className='my-3 border-gray-200' />
 
                         {/* about seller */}
-                        <div className='pt-4'>
-                            <h1 className='text-md font-semibold py-2 uppercase'>
+                        <div className='pt-2'>
+                            <h1 className='text-md font-semibold py-1 uppercase text-pink-500'>
                                 {product?.vendorId?.storeName}
                             </h1>
-                            <p className='text-gray-500'>
+                            <p className='text-gray-600 text-sm leading-relaxed'>
                                 {product?.vendorId?.aboutShop}
                             </p>
                         </div>
 
-                        <div className='pt-6 border-t border-gray-100 mt-4'>
-
-                            <div className='mb-4'>
-                                <p className='text-md font-semibold text-gray-900'>{t('productDetail.sellerCode')}</p>
-                                <p className='text-gray-500 font-mono text-sm'>
-                                    {/* Vendor DB ki ID access kar rahe hain */}
+                        <div className='pt-4 border-t border-gray-100 mt-4'>
+                            <div className='mb-3'>
+                                <p className='text-sm font-bold text-gray-900'>{t('productDetail.sellerCode')}</p>
+                                <p className='text-gray-500 font-mono text-xs mt-0.5'>
                                     {product?.vendorId?._id?.slice(-6).toUpperCase() || '---'}
                                 </p>
                             </div>
 
-                            {/* Seller Contact & Address */}
-                            <div className='mb-2'>
-                                <p className='text-md font-semibold text-gray-900'>
+                            <div className='mb-3'>
+                                <p className='text-sm font-bold text-gray-900 mb-1'>
                                     {t('productDetail.soldByContact')}
                                 </p>
-                                <p className='text-pink-600 font-medium mb-1'>
-                                    {product?.vendorId?.shopName || product?.vendorId?.name}
-                                </p>
-                                <p className='text-gray-500 leading-relaxed text-sm'>
-                                    {/* Dynamic Address Fields */}
-                                    {product?.vendorId?.address}, <br />
-                                    {product?.vendorId?.city}, {product?.vendorId?.state} - {product?.vendorId?.pincode}
+                                <p className='text-gray-600 leading-relaxed text-sm'>
+                                    {product?.vendorId?.address}, {product?.vendorId?.city}, {product?.vendorId?.state} - {product?.vendorId?.pincode}
                                 </p>
                             </div>
 
-                            <div className='pt-6 text-[16px]'>
-                                <p className='text-pink-600 font-semibold'>
-                                    {t('productDetail.email')} {product.vendorId.businessEmail}
+                            <div className='pt-2 text-sm space-y-1'>
+                                <p className='text-pink-600 font-semibold break-all'>
+                                    {t('productDetail.email')}: {product?.vendorId?.businessEmail}
                                 </p>
                                 <p className='text-pink-600 font-semibold'>
-                                    {t('productDetail.contact')} {product.vendorId.businessContact}
+                                    {t('productDetail.contact')}: {product?.vendorId?.businessContact}
                                 </p>
                             </div>
-
                         </div>
-
                     </div>
                 </div>
             </div>

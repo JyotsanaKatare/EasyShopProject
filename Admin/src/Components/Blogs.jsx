@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 function Blogs({ setCurrentPage }) {
 
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const [search, setSearch] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [page, setPage] = useState(1);
@@ -74,38 +74,38 @@ function Blogs({ setCurrentPage }) {
         <div className="bg-white dark:bg-slate-900 rounded-xl md:rounded-3xl border border-pink-50 dark:border-slate-800 shadow-sm overflow-hidden">
 
             {/* Heading with Search & Add Button */}
-            <div className="p-4 md:p-6 border-b border-pink-50 dark:border-slate-850 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="w-full p-4 md:p-6 border-b border-pink-50 dark:border-slate-800 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
-                <div>
+                {/* Title Section */}
+                <div className="min-w-0 flex-1">
                     <div className='flex items-center gap-2.5'>
-                        <h2 className="text-md md:text-lg font-bold text-slate-800 dark:text-white shrink-0">
-                           {t('adminBlogs.title')}
+                        <h2 className="text-md md:text-lg font-bold text-slate-800 dark:text-white truncate">
+                            {t('adminBlogs.title')}
                         </h2>
-
-                        <span className="bg-pink-100 text-pink-600 dark:bg-pink-950/40 dark:text-pink-400 px-2.5 py-0.5 md:py-1 rounded-full text-[11px] md:text-xs font-bold">
+                        {/* Counter Badge */}
+                        <span className="shrink-0 bg-pink-100 text-pink-600 dark:bg-pink-950/40 dark:text-pink-400 px-2.5 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs font-bold">
                             {t('adminBlogs.totalBadge')} {blogs?.length || 0}
                         </span>
                     </div>
 
-                    <p className="text-[11px] md:text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    <p className="text-[11px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">
                         {t('adminBlogs.description')}
                     </p>
                 </div>
 
                 {/* Search & Button Group */}
-                <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto shrink-0">
                     <input
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder={t('adminBlogs.searchPlaceholder')}
-                        className="w-full sm:w-64 text-sm px-4 py-2 md:py-2.5 rounded-xl border border-pink-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white dark:focus:bg-slate-900 transition-all shadow-xs placeholder:text-xs md:placeholder:text-[13px] dark:text-white"
+                        className="w-full sm:w-64 text-sm px-4 py-2.5 rounded-xl border border-pink-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all dark:text-white placeholder:text-xs"
                     />
 
-                    {/* Add Button */}
                     <button
                         onClick={() => setCurrentPage('create-blog')}
-                        className="w-full sm:w-auto bg-linear-to-br from-pink-500 to-pink-600 dark:from-pink-600 dark:to-pink-700 text-white px-4 md:px-5 py-2 md:py-2.5 rounded-xl text-sm font-bold hover:shadow-lg hover:shadow-pink-200 dark:hover:shadow-none transition-all active:scale-95 shrink-0 cursor-pointer"
+                        className="w-full sm:w-auto bg-linear-to-br from-pink-500 to-pink-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:shadow-lg hover:shadow-pink-200 transition-all active:scale-95 shrink-0 cursor-pointer"
                     >
                         {t('adminBlogs.addNew')}
                     </button>
@@ -136,7 +136,7 @@ function Blogs({ setCurrentPage }) {
                                     <td colSpan={6} className="px-6 py-16 text-center">
                                         <div className="text-center">
                                             <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                                               {t('adminBlogs.emptyTitle')}
+                                                {t('adminBlogs.emptyTitle')}
                                             </p>
                                             <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                                                 {t('adminBlogs.emptyDesc')}
@@ -282,7 +282,7 @@ function Blogs({ setCurrentPage }) {
                             disabled={page === totalPages}
                             className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-pink-100 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-pink-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                         >
-                           {t('adminBlogs.next')}
+                            {t('adminBlogs.next')}
                         </button>
                     </div>
                 )}
@@ -298,45 +298,54 @@ function Blogs({ setCurrentPage }) {
             {/* delete popup */}
             <div
                 className={`fixed inset-0 flex justify-center items-center bg-black/60 backdrop-blur-sm z-100 px-4 transition-all duration-300 
-                 ${isDeletedOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
+    ${isDeletedOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
             >
+                {/* Backdrop */}
                 <div
-                    onClick={() => setIsDeletedOpen(false)}
+                    onClick={() => !isDeleting && setIsDeletedOpen(false)}
                     className="absolute inset-0"
                 ></div>
 
+                {/* Modal Box */}
                 <div
                     onClick={(e) => e.stopPropagation()}
-                    className={`relative transform transition-all duration-300 rounded-[2.5rem] bg-white dark:bg-slate-900 p-8 shadow-2xl w-full max-w-md border border-pink-50 dark:border-slate-800
-                    ${isDeletedOpen ? "scale-100 translate-y-0" : "scale-95 translate-y-4"}`}
+                    className={`relative w-full max-w-md max-h-[90vh] overflow-y-auto transform transition-all duration-300 rounded-4xl bg-white dark:bg-slate-900 p-6 md:p-8 shadow-2xl border border-pink-50 dark:border-slate-800
+        ${isDeletedOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
                 >
+                    {/* Close Button */}
                     <button
-                        onClick={() => setIsDeletedOpen(false)}
-                        className="absolute top-6 right-6 text-slate-400 hover:text-pink-500 transition-colors"
+                        onClick={() => !isDeleting && setIsDeletedOpen(false)}
+                        className="absolute top-4 right-4 md:top-6 md:right-6 text-slate-400 hover:text-pink-500 transition-colors"
                     >
                         <HiOutlineX size={20} />
                     </button>
 
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 dark:bg-red-900/20 mb-6">
-                        <HiOutlineExclamation className="h-8 w-8 text-red-500" />
+                    {/* Icon */}
+                    <div className="mx-auto flex h-14 w-14 md:h-16 md:w-16 items-center justify-center rounded-2xl bg-red-50 dark:bg-red-900/20 mb-6">
+                        <HiOutlineExclamation className="h-7 w-7 md:h-8 md:w-8 text-red-500" />
                     </div>
 
+                    {/* Text Area */}
                     <div className="text-center">
-                        <h3 className="text-xl font-bold text-slate-800 dark:text-white">
-                           {t('adminBlogs.deleteTitle')}
+                        <h3 className="text-lg md:text-xl font-bold text-slate-800 dark:text-white">
+                            {t('adminBlogs.deleteTitle')}
                         </h3>
-                        <p className="mt-3 text-sm text-slate-500 dark:text-slate-400 leading-relaxed px-2">
-                            {t('adminBlogs.deleteMessage')} <span className="font-bold text-slate-700 dark:text-white">" {selectedBlog?.title || "this item"}"</span>
-                            {' '}{t('adminBlogs.deleteWarning')}
+                        <p className="mt-3 text-xs md:text-sm text-slate-500 dark:text-slate-400 leading-relaxed px-2 wrap-break-word">
+                            {t('adminBlogs.deleteMessage')}
+                            <span className="font-bold text-slate-700 dark:text-white mx-1">
+                                "{selectedBlog?.title || "this item"}"
+                            </span>
+                            {t('adminBlogs.deleteWarning')}
                         </p>
                     </div>
 
-                    <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                    {/* Action Buttons */}
+                    <div className="mt-8 flex flex-col-reverse sm:flex-row gap-3">
                         <button
                             type="button"
                             onClick={() => !isDeleting && setIsDeletedOpen(false)}
                             disabled={isDeleting}
-                            className="w-full justify-center rounded-2xl bg-white px-3 py-3.5 text-sm font-bold text-slate-600 border border-slate-100 hover:bg-slate-50 transition-all sm:w-1/2 active:scale-95"
+                            className="w-full sm:w-1/2 justify-center rounded-2xl bg-slate-50 dark:bg-slate-800 px-4 py-3.5 text-sm font-bold text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all active:scale-95 disabled:opacity-50"
                         >
                             {t('adminBlogs.deleteKeep')}
                         </button>
@@ -345,7 +354,7 @@ function Blogs({ setCurrentPage }) {
                             type="button"
                             onClick={handleDeleteBlog}
                             disabled={isDeleting}
-                            className="w-full justify-center rounded-2xl bg-linear-to-br from-red-500 to-red-600 px-3 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-100 hover:from-red-600 hover:to-red-700 transition-all sm:w-1/2 flex items-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full sm:w-1/2 rounded-2xl bg-linear-to-br from-red-500 to-red-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-100 dark:shadow-none hover:from-red-600 hover:to-red-700 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isDeleting ? (
                                 <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>

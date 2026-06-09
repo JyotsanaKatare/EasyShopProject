@@ -30,28 +30,28 @@ function Header() {
     ];
 
     return (
-        <section className="w-full bg-white px-4 lg:px-6">
+        <section className="w-full bg-white px-4 xl:px-6">
             <div className="max-w-6xl mx-auto shadow-sm rounded-xl flex items-center my-4 bg-white overflow-visible border border-gray-100">
 
-                {/* --- LEFT SIDE (Desktop: All Departments | Mobile: Support Section) --- */}
+                {/* --- LEFT SIDE (Desktop: All Departments | Mobile/Tablet: Support Section) --- */}
                 <div className='w-full lg:w-[28%] relative'>
 
-                    {/* All Departments Button - Desktop view (hide on mobile)  */}
+                    {/* All Departments Button - Desktop view only */}
                     <div
                         onClick={() => setIsOpen(!isOpen)}
-                        className={`hidden lg:flex items-center justify-between px-6 py-4 bg-pink-500 cursor-pointer transition-all duration-300 
+                        className={`hidden lg:flex items-center justify-between px-4 xl:px-6 py-4 bg-pink-500 cursor-pointer transition-all duration-300 
                     ${isOpen ? 'rounded-tl-xl' : 'rounded-l-xl hover:bg-pink-600'}`}
                     >
-                        <div className='flex items-center gap-3'>
+                        <div className='flex items-center lg:gap-2 xl:gap-3'>
                             <PiListHeartBold className='text-xl text-white' />
-                            <span className='text-sm text-white font-bold tracking-wider uppercase'>
+                            <span className='lg:text-xs xl:text-sm text-white font-bold tracking-wider uppercase'>
                                 {t('nav.allDepartments')}
                             </span>
                         </div>
                         {isOpen ? <IoIosArrowUp className='text-white' /> : <IoIosArrowDown className='text-white' />}
                     </div>
 
-                    {/* Mobile View: Support Section + Hamburger */}
+                    {/* Mobile/Tablet View: Support Section + Hamburger */}
                     <div className='flex lg:hidden items-center justify-between w-full px-4 py-3'>
                         <div className='flex items-center gap-3'>
                             <PiHeadsetFill className='text-pink-500 text-2xl' />
@@ -91,15 +91,15 @@ function Header() {
                         )}
                     </div>
 
-                    {/* Dropdown Mega Menu */}
+                    {/* Dropdown Mega Menu - Desktop only */}
                     {isOpen && (
                         <>
                             <div
-                                className="fixed inset-0 z-10"
+                                className="hidden lg:block fixed inset-0 z-10"
                                 onClick={() => setIsOpen(false)}>
                             </div>
 
-                            <div className="absolute left-0 top-full w-full bg-white shadow-2xl border-x border-b border-gray-100 rounded-b-xl z-100 animate-in fade-in slide-in-from-top-2">
+                            <div className="hidden lg:block absolute left-0 top-full w-full bg-white shadow-2xl border-x border-b border-gray-100 rounded-b-xl z-100 animate-in fade-in slide-in-from-top-2">
                                 {menuData?.map((category, index) => (
                                     <div
                                         key={category._id}
@@ -119,10 +119,10 @@ function Header() {
 
                                         {/* Mega Menu Content */}
                                         {activeMenu === index && category.subcategories?.length > 0 && (
-                                            <div className="absolute left-full top-0 w-207.5 bg-white p-8 shadow-2xl border-l border-pink-100 z-110 rounded-r-xl animate-in fade-in slide-in-from-left-2 duration-200">
+                                            <div className="absolute left-full top-0 w-207.5 max-w-[calc(100vw-20rem)] bg-white p-8 shadow-xl border-l border-pink-100 z-110 rounded-r-xl animate-in fade-in slide-in-from-left-2 duration-200">
 
                                                 <div className="grid grid-cols-3 gap-10">
-                                                    {category.subcategories.slice(0, 6).map((sub) => (
+                                                    {category.subcategories.slice(0, 5).map((sub) => (
                                                         <div
                                                             key={sub._id}
                                                             className="space-y-4">
@@ -142,7 +142,7 @@ function Header() {
                                                                                 setIsOpen(false);
                                                                             }}
                                                                         >
-                                                                            <span className="mr-2 text-[10px] text-pink-300">●</span>
+                                                                            <span className="mr-2 text-[10px] text-pink-300">•</span>
                                                                             {t('nav.shopBy')} {attr.name}
                                                                         </p>
                                                                     ))}

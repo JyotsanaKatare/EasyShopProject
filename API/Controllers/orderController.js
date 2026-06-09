@@ -4,6 +4,7 @@ import Cart from '../Models/cartModelSchema.js';
 import Product from '../Models/productModelSchema.js';
 import Transaction from '../Models/transactionModelSchema.js';
 import Vendor from '../Models/vendorModelSchema.js';
+import User from '../Models/userModelSchema.js';
 
 import mongoose from 'mongoose';
 import PDFDocument from 'pdfkit';
@@ -88,6 +89,26 @@ export const verifyRazorpayPayment = async (req, res) => {
             .digest('hex');
 
         if (expectedSignature !== razorpay_signature) {
+            const user = await User.findById(userId).select('name email');
+
+            const emailHtml = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #f0f0f0; border-radius: 10px;">
+            <h2 style="color: #2d3436;">Hi ${user.name},</h2>
+            <p style="font-size: 16px;">Unfortunately, your payment could not be verified and your order was not placed.</p>
+            <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <p style="margin: 5px 0;"><strong>Payment ID:</strong> ${razorpay_payment_id}</p>
+                <p style="margin: 5px 0;"><strong>Status:</strong> 
+                    <span style="color: #d63031; font-weight: bold;">Failed</span>
+                </p>
+                <p style="margin: 5px 0; color: #636e72; font-size: 12px;">Order Ref: #${razorpay_order_id}</p>
+            </div>
+            <p>Please try placing your order again. If the amount was deducted, it will be refunded within 5-7 business days.</p>
+            <p>Thanks, <br/><strong>EasyShop Team</strong></p>
+        </div>
+    `;
+
+            sendEmail(user.email, "EasyShop: Payment Failed", emailHtml);
+
             return res.status(400).json({ success: false, message: "Payment verification failed" });
         }
 
@@ -381,6 +402,23 @@ export const placeCartOrder = async (req, res) => {
             relatedId: newOrder._id
         });
 
+        // 7. Notify Customer (Email)
+        const customerEmailHtml = `
+    <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ffe4e6; border-radius: 10px; max-width: 600px; margin: auto;">
+        <h2 style="color: #db2777;">Order Confirmed! 🎉</h2>
+        <p>Hi ${req.user.name}, thank you for your order with EasyShop.</p>
+        <div style="background-color: #fff1f2; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <p><strong>Order ID:</strong> ${newOrder._id}</p>
+            <p><strong>Total Amount:</strong> ₹${newOrder.totalAmount}</p>
+        </div>
+        <p>We will notify you once your items are shipped.</p>
+        <p>Thanks, <br/><strong style="color: #db2777;">EasyShop Team</strong></p>
+    </div>
+`;
+
+        // Email bhej dein
+        await sendEmail(req.user.email, "Order Confirmation - EasyShop", customerEmailHtml);
+
         res.status(201).json({
             success: true,
             message: "Order placed successfully!",
@@ -523,8 +561,6 @@ export const placeDirectOrder = async (req, res) => {
                 });
             }
         }
-
-
 
         // create notification - order place
         await createNotification({

@@ -72,7 +72,7 @@ function ProductsFilterPart({ activeCatId, catName, onFilterChange, defaultSubCa
     };
 
     return (
-        <section className="w-full px-4">
+        <section className="w-full px-2">
 
             {/* cat name on top */}
             <div className='text-pink-500 text-[18px] md:text-[25px] font-semibold'>

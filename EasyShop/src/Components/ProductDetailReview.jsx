@@ -24,46 +24,45 @@ function ProductDetailReview({ prodId, averageRating, totalReviews }) {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-                    {/* Left Side: Summary */}
+                    {/* Left Side: rating */}
                     <div className="lg:col-span-1 h-fit lg:sticky lg:top-10">
-                        <div className="flex items-center lg:items-start gap-6 mb-6">
-                            <h1 className="text-5xl md:text-6xl font-black text-gray-900 leading-none">
+                        <div className="flex flex-col items-center sm:flex-row sm:items-start gap-4 sm:gap-6 mb-6">
+                            <h1 className="text-5xl font-black text-gray-900 leading-none">
                                 {averageRating}
                             </h1>
 
-                            {/* stars */}
-                            <div>
-                                <div className="flex text-xl md:text-2xl mb-1">
+                            <div className="text-center sm:text-left">
+                                <div className="flex text-xl md:text-2xl mb-1 justify-center sm:justify-start">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <IoIosStar key={star} className={star <= averageRating ? "text-yellow-400" : "text-gray-200"} />
                                     ))}
                                 </div>
-                                <p className="text-gray-500 text-sm font-semibold tracking-wide">
+                                <p className="text-gray-500 text-xs md:text-sm font-semibold tracking-wide">
                                     {t('reviews.basedOn', { count: totalReviews })}
                                 </p>
                             </div>
                         </div>
 
                         {/* Progress Bars */}
-                        <div className="bg-gray-50/50 p-6 rounded-3xl border border-gray-100">
+                        <div className="bg-gray-50/50 p-4 md:p-6 rounded-2xl border border-gray-100">
                             {totalReviews > 0 ? (
                                 [5, 4, 3, 2, 1].map((num) => (
-                                    <div key={num} className="flex items-center gap-4 mb-3 last:mb-0">
-                                        <span className="text-sm font-bold w-4 text-gray-600">{num}</span>
-                                        <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                    <div key={num} className="flex items-center gap-3 mb-2 last:mb-0">
+                                        <span className="text-xs font-bold w-3 text-gray-600">{num}</span>
+                                        <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                                             <div
                                                 className="h-full bg-pink-500 rounded-full transition-all duration-1000"
                                                 style={{ width: `${num === 5 ? '80%' : '5%'}` }}
                                             ></div>
                                         </div>
-                                        <span className="text-[12px] font-medium text-gray-400 w-8">
+                                        <span className="text-[10px] md:text-xs font-medium text-gray-400 w-8 text-right">
                                             {num === 5 ? '80%' : '5%'}
                                         </span>
                                     </div>
                                 ))
                             ) : (
-                                <div className="text-center py-4">
-                                    <p className="text-gray-400 text-sm italic font-medium">{t('reviews.noReviews')}</p>
+                                <div className="text-center py-2">
+                                    <p className="text-gray-400 text-xs italic">{t('reviews.noReviews')}</p>
                                 </div>
                             )}
                         </div>
@@ -78,20 +77,19 @@ function ProductDetailReview({ prodId, averageRating, totalReviews }) {
                         {totalReviews > 0 ? (
                             <div className="space-y-6">
                                 {productReviews.slice(0, reviewOpen ? undefined : 2).map((review) => (
-                                    <div key={review._id} className="border-b border-gray-100 pb-8 last:border-0 hover:bg-gray-50/30 p-2 rounded-xl transition-all">
-                                        <div className="flex justify-between items-start mb-4">
+                                    <div
+                                        key={review._id}
+                                        className="border-b border-gray-100 pb-6 last:border-0 p-2 rounded-xl">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start mb-3 gap-2">
                                             <div className="flex items-center gap-3">
-
-                                                <div className="w-12 h-12 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center font-bold text-lg">
+                                                <div className="w-10 h-10 md:w-12 md:h-12 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center font-bold text-sm md:text-lg shrink-0">
                                                     {review.userId?.name?.charAt(0) || 'U'}
                                                 </div>
-
                                                 <div>
-                                                    <h4 className="font-bold text-gray-900 text-base">
+                                                    <h4 className="font-bold text-gray-900 text-sm md:text-base">
                                                         {review.userId?.name}
                                                     </h4>
-
-                                                    <div className="flex text-yellow-400 text-[14px]">
+                                                    <div className="flex text-yellow-400 text-xs md:text-sm">
                                                         {[...Array(5)].map((_, i) => (
                                                             <IoIosStar key={i} className={i < review.rating ? "text-yellow-400" : "text-gray-200"} />
                                                         ))}
@@ -99,31 +97,21 @@ function ProductDetailReview({ prodId, averageRating, totalReviews }) {
                                                 </div>
                                             </div>
 
-                                            <span className="text-[11px] md:text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">
+                                            {/* Date */}
+                                            <span className="text-[10px] md:text-xs text-gray-400 bg-gray-50 px-2 py-0.5 rounded">
                                                 {new Date(review.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </span>
                                         </div>
-                                        <p className="text-gray-600 leading-relaxed italic pl-1 md:pl-15">"{review.review}"</p>
+                                        <p className="text-gray-600 leading-relaxed italic text-sm md:text-base pl-0 md:pl-15">
+                                            "{review.review}"
+                                        </p>
                                     </div>
                                 ))}
-
-                                {totalReviews > 2 && (
-                                    <div className="flex justify-center my-6">
-                                        <button
-                                            onClick={() => setReviewOpen(!reviewOpen)}
-                                            className="px-6 py-2 border border-pink-500 text-pink-500 font-bold rounded-full hover:bg-pink-500 hover:text-white transition-all uppercase text-xs"
-                                        >
-                                            {reviewOpen ? t('reviews.viewLess') : t('reviews.viewMore')}
-                                        </button>
-                                    </div>
-                                )}
+                                {/* View More button */}
                             </div>
                         ) : (
-                            /* Empty State Design */
-                            <div className="p-10 border border-dashed border-gray-200 rounded-3xl flex items-center justify-center bg-gray-50/30">
-                                <p className="text-gray-400 font-medium text-center text-sm">
-                                    {t('reviews.beFirst')}
-                                </p>
+                            <div className="p-8 border border-dashed border-gray-200 rounded-2xl bg-gray-50/30">
+                                <p className="text-gray-400 text-center text-sm">{t('reviews.beFirst')}</p>
                             </div>
                         )}
                     </div>

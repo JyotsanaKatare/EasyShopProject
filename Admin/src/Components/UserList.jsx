@@ -61,33 +61,35 @@ function UserList() {
         <div className="w-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
 
             {/* Header */}
-            <div className="p-6 border-b border-slate-50 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
-                <div>
+            <div className="p-6 border-b border-slate-50 dark:border-slate-800 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
+                {/* Left Side: Title & Description */}
+                <div className="min-w-0 w-full lg:w-auto">
                     <div className="flex items-center gap-2.5">
-                        <h3 className="text-md md:text-lg font-bold text-slate-800 dark:text-white shrink-0">
+                        <h3 className="text-lg font-bold text-slate-800 dark:text-white truncate">
                             {t('adminUsers.title')}
                         </h3>
-                        <span className="bg-pink-100 text-pink-600 dark:bg-pink-950/40 dark:text-pink-400 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+                        <span className="shrink-0 bg-pink-100 text-pink-600 dark:bg-pink-950/40 dark:text-pink-400 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
                             {t('adminUsers.totalBadge')} {totalCount}
                         </span>
                     </div>
-                    <p className="text-[11px] md:text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">
                         {t('adminUsers.description')}
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3 w-full sm:w-auto">
+                {/* Right Side: Search & Filter */}
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
                     <input
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder={t('adminUsers.searchPlaceholder')}
-                        className="w-full sm:w-56 text-sm px-4 py-2.5 rounded-xl border border-pink-50 bg-slate-50 dark:bg-slate-800 focus:outline-pink-400 focus:bg-white transition-all shadow-sm placeholder:text-xs"
+                        className="w-full sm:w-64 text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-pink-400 focus:ring-2 focus:ring-pink-100 transition-all shadow-sm placeholder:text-xs"
                     />
                     <select
                         value={status}
                         onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-                        className="text-xs font-semibold px-3 py-2.5 rounded-xl border border-pink-50 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 focus:outline-pink-400 cursor-pointer"
+                        className="w-full sm:w-auto text-xs font-semibold px-3 py-3 sm:py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 focus:outline-pink-400 cursor-pointer"
                     >
                         <option value="">{t('adminUsers.allStatus')}</option>
                         <option value="active">{t('adminUsers.statusActive')}</option>
@@ -239,43 +241,49 @@ function UserList() {
 
             {/* delete popup */}
             <div
-                className={`fixed inset-0 flex justify-center items-center bg-black/50 backdrop-blur-sm z-100 px-4 transition-all duration-500 
-                ${isDeletedOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
+                className={`fixed inset-0 flex justify-center items-center bg-black/50 backdrop-blur-sm z-50 p-4 transition-all duration-300 overflow-y-auto 
+                  ${isDeletedOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
             >
+                {/* Backdrop */}
                 <div
                     onClick={() => setIsDeletedOpen(false)}
                     className="absolute inset-0"
                 ></div>
 
                 {/* Modal Content */}
-                <div className="relative bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 p-6 overflow-hidden">
+                <div className="relative bg-white dark:bg-slate-900 w-full max-w-sm sm:max-w-md rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 p-6 sm:p-8 m-auto">
                     <button
                         onClick={() => setIsDeletedOpen(false)}
-                        className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+                        className="absolute top-4 right-4 p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
                     >
                         <HiOutlineX size={20} />
                     </button>
 
                     <div className="flex flex-col items-center text-center">
-
+                        {/* Icon */}
                         <div className="w-16 h-16 bg-rose-50 dark:bg-rose-900/20 rounded-full flex items-center justify-center text-rose-500 mb-4">
                             <HiOutlineExclamation size={32} />
                         </div>
 
-                        <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
+                        {/* Title */}
+                        <h3 className="text-lg sm:text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
                             {t('adminUsers.deleteTitle')}
                         </h3>
 
-                        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 px-4">
-                            {t('adminUsers.deleteMessagePrefix')}{' '} <span className="font-bold text-slate-700 dark:text-slate-200">
-                                {selectedUser?.name}</span>?
-                            {t('adminUsers.deleteMessageSuffix')}
+                        {/* Message */}
+                        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 px-2 sm:px-4 leading-relaxed">
+                            {t('adminUsers.deleteMessagePrefix')}{' '}
+                            <span className="font-bold text-slate-900 dark:text-slate-100 wrap-break-word">
+                                {selectedUser?.name}
+                            </span>?
+                            <br className="hidden sm:block" /> {t('adminUsers.deleteMessageSuffix')}
                         </p>
 
-                        <div className="mt-8 flex gap-3 w-full">
+                        {/* Actions */}
+                        <div className="mt-8 flex flex-col-reverse sm:flex-row gap-3 w-full">
                             <button
                                 onClick={() => setIsDeletedOpen(false)}
-                                className="flex-1 px-4 py-3 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                                className="flex-1 px-4 py-3.5 sm:py-3 rounded-2xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                             >
                                 {t('adminUsers.deleteCancel')}
                             </button>
@@ -283,7 +291,7 @@ function UserList() {
                             <button
                                 onClick={handleDelete}
                                 disabled={isLoading}
-                                className="flex-1 px-4 py-3 rounded-2xl text-sm font-bold bg-rose-500 hover:bg-rose-600 text-white shadow-lg shadow-rose-200 dark:shadow-none transition-all disabled:opacity-50 flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+                                className="flex-1 px-4 py-3.5 sm:py-3 rounded-2xl text-sm font-bold bg-rose-500 hover:bg-rose-600 text-white shadow-lg shadow-rose-200 dark:shadow-none transition-all disabled:opacity-50 flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
                             >
                                 {isLoading ? t('adminUsers.deleteDeleting') : t('adminUsers.deleteConfirm')}
                             </button>

@@ -146,41 +146,45 @@ function Orders() {
     return (
         <div>
             {/* Heading Section */}
-            <div className="md:bg-white/80 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between text-center md:text-start gap-4 mb-3 md:mb-8">
-                <div>
+            <div className="bg-slate-50/50 md:bg-white/80 p-4 md:p-6 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between text-center sm:text-start gap-4 mb-4 md:mb-8">
+                <div className="flex-1">
                     <h1 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white tracking-tight">
                         {t('vendorOrders.heading')}
                     </h1>
 
-                    <p className="text-[11px] md:text-xs font-medium text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-center md:justify-start gap-1 md:gap-2">
-                        <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                        {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        <span className="opacity-30">|</span>
-                        {t('vendorOrders.realTimeUpdates')}
-                    </p>
+                    <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <p className="text-[10px] md:text-xs font-semibold text-slate-500 dark:text-slate-400">
+                            {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            <span className="mx-2 opacity-30">|</span>
+                            {t('vendorOrders.realTimeUpdates')}
+                        </p>
+                    </div>
                 </div>
             </div>
 
             {/* Order Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-10 md:my-15">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 md:mb-12">
                 {stats.map((item, index) => (
                     <div
                         key={index}
-                        className={`flex justify-between items-start bg-white dark:bg-slate-900 p-5 lg:py-5 lg:px-3 xl:p-5 rounded-xl  dark:border-slate-800 border-l-4 border-b-2 
-                            ${item.borderColor || 'border-pink-400'} 
-                            shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer group`}
+                        className={`flex justify-between items-start bg-white dark:bg-slate-900 p-5 rounded-xl border-l-4 border-b-2 
+        ${item.borderColor || 'border-pink-400'} 
+        shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer group`}
                     >
                         <div className="flex flex-col gap-1">
                             <p className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase tracking-widest">
                                 {item.label}
                             </p>
-
                             <h3 className="text-2xl md:text-3xl font-black text-slate-800 dark:text-white">
                                 {item.count}
                             </h3>
                         </div>
 
-                        <div className={`w-10 h-10 flex items-center justify-center rounded-2xl ${item.bg} ${item.color} text-xl shadow-inner`}>
+                        <div className={`w-10 h-10 flex items-center justify-center rounded-2xl ${item.bg} ${item.color} text-lg shadow-inner`}>
                             {item.icon}
                         </div>
                     </div>
@@ -191,7 +195,7 @@ function Orders() {
             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
 
                 {/* Header and Search */}
-                <div className="p-4 border-b border-slate-50 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-3 bg-white dark:bg-slate-800/20">
+                <div className="p-4 border-b border-slate-50 dark:border-slate-800 bg-white dark:bg-slate-800/20 flex flex-col lg:flex-col xl:flex-row xl:items-center xl:justify-between gap-3">
 
                     <div className="flex items-center gap-2.5">
                         <h3 className="text-[11px] md:text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider">
@@ -204,10 +208,10 @@ function Orders() {
                         )}
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full xl:w-auto">
 
                         {/* Search */}
-                        <div className="relative w-full md:w-80 group">
+                        <div className="relative w-full sm:w-64 xl:w-80 group">
                             <HiOutlineSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
                             <input
                                 type="text"
@@ -226,7 +230,7 @@ function Orders() {
                         >
                             <option value="">{t('vendorOrders.filterAllStatus')}</option>
                             <option value="Processing">{t('vendorOrders.optionProcessing')}</option>
-                            <option value="Shipped">{t('vendorOrders.optionShipped')} </option>
+                            <option value="Shipped">{t('vendorOrders.optionShipped')}</option>
                             <option value="Cancelled">{t('vendorOrders.optionCancelled')}</option>
                             <option value="Delivered">{t('vendorOrders.optionDelivered')}</option>
                         </select>
@@ -415,7 +419,7 @@ function Orders() {
                             disabled={page === 1}
                             className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-pink-100 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-pink-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                         >
-                           {t('vendorOrders.paginationPrev')}
+                            {t('vendorOrders.paginationPrev')}
                         </button>
 
                         {getPaginationRange(page, totalPages).map((num, idx) =>

@@ -35,7 +35,7 @@ function ForgotPassword() {
             onSuccess: (res) => {
 
                 setIsSubmitted(true);
-                setTimer(60); // Pehli baar success par timer start karein
+                setTimer(60);
 
             },
             onError: (err) => {
@@ -56,7 +56,6 @@ function ForgotPassword() {
     // resend btn
     const handleResend = () => {
 
-        // Check karein agar pehle se request ja rahi hai
         if (isForgettingPass) return;
 
         setTimer(60);
@@ -73,14 +72,14 @@ function ForgotPassword() {
     };
 
     return (
-        <section className="min-h-[70vh] bg-gray-50 py-10 px-4 lg:px-6">
+        <section className="min-h-[70vh] bg-gray-50 py-10 px-4 sm:px-5 lg:px-6">
             <div className="max-w-xl mx-auto">
 
                 <div className="bg-pink-50/30 rounded-[30px] shadow-md p-6 md:p-12 border border-gray-100 my-6 md:mt-10">
 
                     {/* heading */}
                     <div className='mb-8 text-center md:text-left'>
-                        <h2 className="text-xl md:text-2xl font-bold text-gray-800">
+                        <h2 className="text-xl md:text-2xl font-bold text-gray-800 wrap-break-word">
                             {role === 'vendor'
                                 ? t('forgotPassword.vendorRecovery')
                                 : t('forgotPassword.userRecovery')
@@ -116,22 +115,19 @@ function ForgotPassword() {
                         </div>
 
                         {/* buttons */}
-                        <div className='flex flex-col md:flex-row gap-4 pt-4'>
+                        <div className='flex flex-col md:flex-row gap-4 pt-4 w-full'>
                             <button
                                 onClick={() => navigate("/login")}
-                                className="w-full order-2 md:order-1 text-sm md:text-base bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 md:py-4 rounded-2xl shadow-lg shadow-pink-100 transition-all active:scale-[0.98] cursor-pointer"
+                                className="w-full truncate px-2 text-xs md:text-base bg-pink-500 text-white font-bold py-3 md:py-4 rounded-2xl transition-all active:scale-[0.98] cursor-pointer"
                             >
                                 {t('forgotPassword.backToLogin')}
                             </button>
 
                             <button
                                 onClick={() => handleSubmit()}
-                                disabled={isForgettingPass}
-                                className={`w-full order-1 md:order-2 text-sm md:text-base  font-bold py-3 md:py-4 rounded-2xl shadow-lg shadow-pink-100 transition-all active:scale-[0.98] 
-                                    ${isForgettingPass ? "text-gray-500 bg-gray-300 cursor-not-allowed" : "bg-pink-500 hover:bg-pink-600 text-white cursor-pointer"}
-                                    `}
+                                className="w-full truncate px-2 text-xs md:text-base font-bold py-3 md:py-4 rounded-2xl transition-all active:scale-[0.98] cursor-pointer"
                             >
-                                {isForgettingPass ? t('forgotPassword.sending') : t('forgotPassword.sendResetLink')}
+                                {t('forgotPassword.sendResetLink')}
                             </button>
                         </div>
                     </div>

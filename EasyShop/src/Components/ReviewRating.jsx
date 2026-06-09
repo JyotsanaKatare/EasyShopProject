@@ -75,6 +75,7 @@ function ReviewRating() {
                         <h1 className="text-xl md:text-3xl font-black text-gray-900 tracking-tight">
                             {t('reviewRating.titleStart')} <span className="text-pink-500">{t('reviewRating.titleEnd')}</span>
                         </h1>
+
                         <p className="text-xs md:text-sm mt-1 text-gray-400 font-medium">
                             {t('reviewRating.subtitle')}
                         </p>
@@ -182,7 +183,7 @@ function ReviewRating() {
                             </div>
 
                             {/* Dynamic Label with better spacing */}
-                            <p className="text-[14px] md:text-[16px] font-bold ml-2 md:ml-4 whitespace-nowrap">
+                            <p className="text-[10px] md:text-[16px] font-bold ml-2 md:ml-4 whitespace-nowrap">
                                 {clickIndex === 1 ? <span className="text-red-500">{t('reviewRating.veryBad')}</span>
                                     : clickIndex === 2 ? <span className="text-orange-500">{t('reviewRating.bad')}</span>
                                         : clickIndex === 3 ? <span className="text-yellow-500">{t('reviewRating.good')}</span>
@@ -218,10 +219,11 @@ function ReviewRating() {
                         <button
                             onClick={handleSubmitReview}
                             disabled={isPending}
-                            className="w-full md:w-auto px-10 py-2 bg-pink-500 text-white rounded-2xl font-semibold text-[16px] md:text-[18px] hover:bg-pink-600 shadow-lg shadow-pink-100 active:scale-95 transition-all duration-150 uppercase tracking-wider cursor-pointer"
+                            className="w-full md:w-auto px-10 py-3 md:py-4 bg-pink-500 text-white rounded-2xl font-semibold text-xs md:text-base hover:bg-pink-600 shadow-lg shadow-pink-100 active:scale-95 transition-all duration-150 uppercase tracking-wider cursor-pointer"
                         >
                             {isPending ? t('reviewRating.submitting') : t('reviewRating.submitReview')}
                         </button>
+
                     </div>
                 </div>
             </div>
@@ -236,7 +238,7 @@ function ReviewRating() {
                     }}
                     className="fixed inset-0 flex justify-center items-center bg-black/60 backdrop-blur-md z-200 px-4 transition-all duration-500">
 
-                    <div className={`bg-white p-6 md:p-10 rounded-4xl md:rounded-[3rem] shadow-2xl text-center w-full max-w-[90%] md:max-w-100 border border-gray-100 transition-all duration-500 transform scale-100 animate-in zoom-in-95`}>
+                    <div className={`bg-white p-5 md:p-10 rounded-4xl md:rounded-[3rem] shadow-2xl text-center w-full max-w-[90%] md:max-w-100 border border-gray-100 transition-all duration-500 transform scale-100 animate-in zoom-in-95`}>
 
                         <div className="mb-4 md:mb-6 flex justify-center">
                             <div className="relative">
@@ -261,7 +263,7 @@ function ReviewRating() {
                                 setReviewPopup(false);
                                 navigate('/my_orders');
                             }}
-                            className="mt-6 md:mt-8 w-full py-3.5 md:py-4 bg-gray-900 text-white rounded-xl md:rounded-2xl font-bold text-sm md:text-base hover:bg-black transition-all active:scale-95 shadow-xl shadow-gray-200 cursor-pointer"
+                            className="mt-6 md:mt-8 w-full py-3 md:py-4 bg-gray-900 text-white rounded-xl md:rounded-2xl font-bold text-sm md:text-base hover:bg-black transition-all active:scale-95 shadow-xl shadow-gray-200 cursor-pointer"
                         >
                             {t('reviewRating.done')}
                         </button>

@@ -20,8 +20,7 @@ const authMiddleware = (roles = []) => {
             // 1. User/Vendor ka data request mein daalna
             req.user = decoded;
 
-            // 2. Role Check: Kya ye role allowed hai?
-            // Agar roles array khali nahi hai, toh check karein
+            // 2. Role Check
             if (roles.length && !roles.includes(decoded.role)) {
                 return res.status(403).json({
                     success: false,

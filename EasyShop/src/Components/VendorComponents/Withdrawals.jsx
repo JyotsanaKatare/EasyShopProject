@@ -126,20 +126,23 @@ function Withdrawals() {
 
       {/* Action Area */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-2 py-4">
+
         <button
           onClick={() => setIsActionOpen(true)}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-lg shadow-pink-200 dark:shadow-none transition-all active:scale-95 cursor-pointer">
+          className="w-full md:w-auto flex items-center justify-center gap-2 bg-pink-600 hover:bg-pink-700 text-white px-8 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 cursor-pointer"
+        >
           <HiOutlinePlusCircle size={20} />
           {t('withdrawals.requestNewPayout')}
         </button>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-50 transition-all shadow-sm">
-            <HiOutlineDocumentDownload size={18} className="text-pink-500" />
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm">
+            <HiOutlineDocumentDownload size={18} />
             {t('withdrawals.exportCsv')}
           </button>
-          <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-50 transition-all shadow-sm">
-            <HiOutlinePrinter size={18} className="text-slate-400" />
+
+          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm">
+            <HiOutlinePrinter size={18} />
             {t('withdrawals.print')}
           </button>
         </div>
@@ -149,44 +152,43 @@ function Withdrawals() {
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
 
         {/* Header & Search/Filter */}
-        <div className="p-4 border-b border-slate-50 dark:border-slate-800 flex flex-col lg:flex-row justify-between items-center md:text-start bg-white dark:bg-slate-800/20">
+        <div className="p-4 border-b border-slate-50 dark:border-slate-800 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-3 bg-white dark:bg-slate-800/20">
 
-          <div className='flex gap-2 items-center'>
+          <div className="flex gap-2 items-center">
             <h2 className="text-md md:text-lg font-bold text-slate-800 dark:text-white shrink-0">
               {t('withdrawals.historyHeading')}
             </h2>
-            <span className="hidden lg:flex bg-pink-100 text-pink-600 text-xs font-bold px-2.5 py-0.5 rounded-full">
+            <span className="bg-pink-100 text-pink-600 text-xs font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap">
               {t('withdrawals.totalCounter', { total: count || 0 })}
             </span>
           </div>
 
-          <div className="flex flex-col md:flex-row items-center gap-3 md:gap-5 lg:gap-3 w-full lg:w-auto mt-3 lg:mt-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full xl:w-auto">
 
             {/* Search Bar */}
-            <div className="relative w-full lg:w-80 group">
-              <HiOutlineSearch className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
+            <div className="relative w-full sm:w-56 xl:w-80 group">
+              <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t('withdrawals.searchPlaceholder')}
-                className="w-full pl-8 md:pl-11 pr-4 py-2 bg-slate-50 border border-pink-50 dark:bg-slate-800 dark:text-white focus:border-pink-500 focus:bg-white dark:focus:bg-slate-900 rounded-xl text-sm outline-none transition-all shadow-sm placeholder:text-xs md:placeholder:text-[13px]"
+                className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-pink-50 dark:bg-slate-800 dark:text-white focus:border-pink-500 focus:bg-white dark:focus:bg-slate-900 rounded-xl text-sm outline-none transition-all shadow-sm placeholder:text-xs"
               />
             </div>
 
-            {/* status dropdown */}
-            <div className='relative w-full md:w-48 lg:w-auto '>
-              <select
-                value={status}
-                onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-                className="w-full md:w-auto text-sm px-4 py-2 rounded-xl border border-pink-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
-              >
-                <option value="">{t('withdrawals.filterAllStatus')}</option>
-                <option value="Processing">{t('withdrawals.statusProcessing')}</option>
-                <option value="Approved">{t('withdrawals.statusApproved')}</option>
-                <option value="Rejected">{t('withdrawals.statusRejected')}</option>
-              </select>
-            </div>
+            {/* Status Dropdown */}
+            <select
+              value={status}
+              onChange={(e) => { setStatus(e.target.value); setPage(1); }}
+              className="w-full sm:w-auto text-sm px-4 py-2 rounded-xl border border-pink-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
+            >
+              <option value="">{t('withdrawals.filterAllStatus')}</option>
+              <option value="Processing">{t('withdrawals.statusProcessing')}</option>
+              <option value="Approved">{t('withdrawals.statusApproved')}</option>
+              <option value="Rejected">{t('withdrawals.statusRejected')}</option>
+            </select>
+
           </div>
         </div>
 
@@ -197,9 +199,9 @@ function Withdrawals() {
               <tr className="border-b border-slate-50 dark:border-slate-800 text-[11px] uppercase tracking-widest text-slate-400 font-bold">
                 <th className="px-6 py-4">{t('withdrawals.thRequestId')}</th>
                 <th className="px-6 py-4">{t('withdrawals.thAmount')}</th>
-                <th className="px-6 py-4">{t('withdrawals.thPayoutMethod')}</th>
+                <th className="px-6 py-4 min-w-28">{t('withdrawals.thPayoutMethod')}</th>
                 <th className="px-6 py-4">{t('withdrawals.thStatus')}</th>
-                <th className="px-6 py-4">{t('withdrawals.thUtrRef')}</th>
+                <th className="px-6 py-4 min-w-28">{t('withdrawals.thUtrRef')}</th>
                 <th className="px-6 py-4 text-right">{t('withdrawals.thAction')}</th>
               </tr>
             </thead>

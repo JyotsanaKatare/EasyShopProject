@@ -1240,7 +1240,7 @@ export const getSearchSuggestions = async (req, res) => {
                 { description: searchRegex }
             ]
         })
-            .select("prodName prodImage price description")
+            .select("prodName prodImage price description totalReviews")
             .limit(6);
 
         res.status(200).json(suggestions);

@@ -71,7 +71,7 @@ const Header = ({ onToggleSideBar, setCurrentPage }) => {
                         <Menu className='w-6 h-6 text-pink-500' />
                     </button>
 
-                    <div className='hidden lg:block'>
+                    <div className='hidden xl:block'>
                         <h1 className='text-lg md:text-xl font-bold bg-linear-to-r from-pink-600 to-rose-400 bg-clip-text text-transparent'>
                             {t('adminHeader.panel')}
                         </h1>

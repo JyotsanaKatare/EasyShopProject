@@ -3,8 +3,12 @@ import React, { useState } from 'react';
 import { HiOutlineShieldCheck } from "react-icons/hi";
 import { useChangePassword } from '../../hook/useAuth';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 function ProfileSecurityForm({ vendorData }) {
+
+    const { t } = useTranslation();
+
     const [formData, setformData] = useState({
         oldPassword: "",
         newPassword: "",
@@ -51,7 +55,7 @@ function ProfileSecurityForm({ vendorData }) {
                 </label>
 
                 <input
-                    type="password" 
+                    type="password"
                     value={formData[fieldId]}
                     onChange={(e) => handleInputChange(e, fieldId)}
                     disabled={!isEditing}
@@ -73,14 +77,14 @@ function ProfileSecurityForm({ vendorData }) {
                 <button
                     onClick={() => setIsEditing(!isEditing)}
                     className={`text-pink-500 hover:text-pink-600 font-medium text-[13px] md:text-[16px] cursor-pointer`}>
-                    {!isEditing ? "Edit" : "Cancel"}
+                    {!isEditing ? t('vendorProfile.editLabel') : t('vendorProfile.cancelLabel')}
                 </button>
             </div>
 
             {/*Login Email (Hamesha Locked) */}
             <div className="mb-10">
                 <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
-                    Login Email
+                    {t('vendorProfile.fieldLoginEmail')}
                 </label>
 
                 <div className="mt-2 p-4 bg-slate-100 border border-slate-100 rounded-2xl flex items-center justify-between">
@@ -88,7 +92,7 @@ function ProfileSecurityForm({ vendorData }) {
                         {vendorData?.email || "—"}
                     </span>
                     <span className="text-[9px] bg-pink-50 px-2 py-1 rounded-lg text-pink-500 font-bold uppercase">
-                        Primary
+                        {t('vendorProfile.primaryBadge')}
                     </span>
                 </div>
             </div>
@@ -96,9 +100,9 @@ function ProfileSecurityForm({ vendorData }) {
             {/* input fields */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
 
-                {RenderField("Current password", "oldPassword")}
-                {RenderField("New Password", "newPassword")}
-                {RenderField("Confirm password", "confirmPassword")}
+                {RenderField(t('vendorProfile.fieldCurrentPassword'), "oldPassword")}
+                {RenderField(t('vendorProfile.fieldNewPassword'), "newPassword")}
+                {RenderField(t('vendorProfile.fieldConfirmPassword'), "confirmPassword")}
 
             </div>
 
@@ -109,7 +113,7 @@ function ProfileSecurityForm({ vendorData }) {
                         onClick={handleSave}
                         disabled={isPending}
                         className='px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl text-xs transition-all active:scale-95 shadow-xl shadow-pink-100 uppercase tracking-widest cursor-pointer'>
-                        {isPending ? "Saving..." : "Save Password"}
+                        {isPending ? t('vendorProfile.savingLabel') : t('vendorProfile.savePassword')}
                     </button>
                 </div>
             )}
@@ -120,7 +124,7 @@ function ProfileSecurityForm({ vendorData }) {
                     <HiOutlineShieldCheck size={20} />
                 </div>
                 <p className="text-[10px] lg:text-xs text-slate-500 font-medium leading-relaxed">
-                    Security added. Read our <span className="text-pink-500 cursor-pointer hover:underline">Security Protocol</span>.
+                    {t('vendorProfile.securityNote')} <span className="text-pink-500 cursor-pointer hover:underline">{t('vendorProfile.securityProtocol')}</span>.
                 </p>
             </div>
         </div>

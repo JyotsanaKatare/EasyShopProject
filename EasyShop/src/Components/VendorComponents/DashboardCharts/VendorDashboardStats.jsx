@@ -67,7 +67,8 @@ function VendorDashboardStats() {
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 py-4">
+        // <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 py-4">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6 py-4">
             {cardItems.map((card) => (
                 <div
                     key={card.id}
@@ -79,7 +80,7 @@ function VendorDashboardStats() {
                             <div className='w-6 h-6 text-2xl'>{card.icon}</div>
                         </div>
 
-                        <span className="text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded-lg">
+                        <span className="text-[11px] md:text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded-lg">
                             {card.growth}
                         </span>
                     </div>

@@ -17,13 +17,13 @@ function SearchResults() {
     if (isLoading) return <EasyShopLoader />;
 
     return (
-        <div className="max-w-6xl mx-auto px-4 py-10 min-h-[80vh]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-5 lg-px-6 py-6 md:py-10 min-h-[80vh]">
 
             {/* Header section */}
             {results && results.length > 0 && (
-                <h2 className="text-xl font-bold text-gray-800 mb-6 border-b border-gray-100 pb-4">
+                <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-6 border-b border-gray-100 pb-4 px-2">
                     {t('searchResults.resultsFor')} <span className="text-pink-500">"{query}"</span>
-                    <span className="text-gray-400 text-sm font-normal ml-2">
+                    <span className="text-gray-400 text-xs md:text-sm font-normal ml-2">
                         ({results.length} {results.length === 1
                             ? t('searchResults.product')
                             : t('searchResults.products')} {t('searchResults.found')})
@@ -34,39 +34,39 @@ function SearchResults() {
             {/* Main Logic: Found vs Not Found */}
             {!results || results.length === 0 ? (
                 <div className="min-h-[50vh] flex flex-col items-center justify-center text-center py-10">
-                    <div className="w-24 h-24 bg-pink-50 rounded-full flex items-center justify-center text-5xl mb-6 text-pink-500">
+                    <div className="w-20 h-20 md:w-24 md:h-24 bg-pink-50 rounded-full flex items-center justify-center text-4xl md:text-5xl mb-6 text-pink-500">
                         🔍
                     </div>
-                    <h3 className="text-xl md:text-2xl font-black text-gray-800 mb-2 px-4">
+                    <h3 className="text-lg md:text-2xl font-black text-gray-800 mb-2 px-4">
                         {t('searchResults.noResults')} "{query}"
                     </h3>
-                    <p className="text-gray-400 text-sm max-w-sm mb-8 leading-relaxed px-4">
+                    <p className="text-gray-400 text-xs md:text-sm max-w-sm mb-8 leading-relaxed px-4">
                         {t('searchResults.noResultsDesc')}
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs sm:max-w-none sm:w-auto px-4">
+                    <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs px-4">
                         <button
                             onClick={() => navigate(-1)}
-                            className="w-full sm:w-auto px-6 py-2.5 border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 active:scale-95 transition-all cursor-pointer"
+                            className="w-full px-6 py-3 border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 active:scale-95 transition-all cursor-pointer"
                         >
                             {t('searchResults.goBack')}
                         </button>
                         <button
                             onClick={() => navigate('/')}
-                            className="w-full sm:w-auto px-6 py-2.5 bg-pink-500 text-white rounded-xl text-sm font-bold hover:bg-pink-600 active:scale-95 transition-all shadow-md shadow-pink-100 cursor-pointer"
+                            className="w-full px-6 py-3 bg-pink-500 text-white rounded-xl text-sm font-bold hover:bg-pink-600 active:scale-95 transition-all shadow-md shadow-pink-100 cursor-pointer"
                         >
                             {t('searchResults.browseAll')}
                         </button>
                     </div>
                 </div>
             ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 gap-3 md:gap-6">
                     {results.map((product) => (
                         <div
                             key={product._id}
                             onClick={() => navigate(`/product_detail/${product._id}/${product.prodName}`)}
-                            className="bg-white border border-gray-100 rounded-2xl p-3 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer flex flex-col justify-between group"
+                            className="bg-white border border-gray-100 rounded-xl md:rounded-2xl p-2 md:p-3 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer flex flex-col group"
                         >
-                            <div className="relative overflow-hidden rounded-xl bg-gray-50 aspect-square mb-3">
+                            <div className="relative overflow-hidden rounded-lg md:rounded-xl bg-gray-100 aspect-square mb-2 md:mb-3">
                                 <img
                                     src={product.prodImage}
                                     alt={product.prodName}
@@ -74,29 +74,22 @@ function SearchResults() {
                                 />
                             </div>
 
-                            <div className="flex flex-col flex-1 justify-between">
-                                <div>
-                                    <h3 className="text-sm font-bold text-gray-800 line-clamp-1 group-hover:text-pink-500 transition-colors uppercase tracking-tight">
-                                        {product.prodName}
-                                    </h3>
-                                    <p className="text-xs text-gray-400 mt-1 line-clamp-2 leading-relaxed">
-                                        {product.description || t('searchResults.defaultDesc')}
-                                    </p>
-                                </div>
+                            <div className="flex flex-col flex-1 px-1">
+                                <h3 className="text-[11px] md:text-sm font-bold text-gray-800 line-clamp-2 group-hover:text-pink-500 transition-colors uppercase tracking-tight">
+                                    {product.prodName}
+                                </h3>
+                                <p className="text-[10px] md:text-xs text-gray-400 mt-1 line-clamp-1">
+                                    {product.description || t('searchResults.defaultDesc')}
+                                </p>
 
-                                <div className="mt-3">
-                                    <div className="flex items-baseline gap-2">
-                                        <span className="text-sm font-black text-pink-500">₹{product.price}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1 mt-1 text-xs text-gray-400">
+                                <div className="mt-auto pt-2">
+                                    <span className="text-sm md:text-base font-black text-pink-500">₹{product.price}</span>
+                                    <div className="flex items-center gap-0.5 mt-0.5 text-[10px] md:text-xs text-gray-400">
                                         <div className="flex text-yellow-400 gap-0.5">
-                                            <AiFillStar />
-                                            <AiFillStar />
-                                            <AiFillStar />
-                                            <AiFillStar />
+                                            <AiFillStar /> <AiFillStar /> <AiFillStar /> <AiFillStar />
                                             <span className="text-gray-200"><AiFillStar /></span>
                                         </div>
-                                        <span>(0)</span>
+                                        <span>({product?.totalReviews || 0})</span>
                                     </div>
                                 </div>
                             </div>

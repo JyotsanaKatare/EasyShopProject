@@ -46,10 +46,14 @@ function CmsEditor({ cmsKey, title }) {
             toast.error('Content cannot be empty');
             return;
         }
+        const isUpdate = !!data;
+
         mutate(
-            { key: cmsKey, formData: { title, content, status } },
+            { key: cmsKey, formData: { content, status } },
             {
-                onSuccess: () => toast.success(status === 'published' ? 'Published successfully' : 'Saved as draft'),
+                onSuccess: () => toast.success(
+                    status === 'published' ? 'Published successfully' : 'Saved as draft'
+                ),
                 onError: () => toast.error('Failed to save content'),
             }
         );
@@ -123,13 +127,13 @@ function CmsEditor({ cmsKey, title }) {
                     <EditorContent editor={editor} />
                 </div>
 
-                {/* actions */}
-                <div className='flex flex-col sm:flex-row items-center justify-end gap-3 p-5 md:p-6'>
+                {/* Actions */}
+                <div className='flex flex-col-reverse sm:flex-row items-center justify-end gap-3 p-5 md:p-6'>
                     <button
                         type="button"
                         disabled={isPending}
                         onClick={() => handleSave('draft')}
-                        className='w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:text-pink-500 hover:bg-pink-100 dark:hover:bg-slate-800 transition-all cursor-pointer active:scale-95 disabled:cursor-not-allowed disabled:opacity-50'
+                        className='w-full sm:w-auto px-6 py-3.5 sm:py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer active:scale-95 disabled:cursor-not-allowed disabled:opacity-50'
                     >
                         {isPending ? t('cmsEditor.saving') : t('cmsEditor.saveDraft')}
                     </button>
@@ -138,9 +142,16 @@ function CmsEditor({ cmsKey, title }) {
                         type="button"
                         disabled={isPending}
                         onClick={() => handleSave('published')}
-                        className='w-full sm:w-auto md:px-10 py-2.5 rounded-xl text-sm font-bold text-white bg-linear-to-br from-pink-500 to-pink-600 shadow-lg shadow-pink-100 dark:shadow-none hover:shadow-pink-200 transition-all cursor-pointer active:scale-95 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed disabled:shadow-none'
+                        className='w-full sm:w-auto md:px-10 py-3.5 sm:py-2.5 rounded-xl text-sm font-bold text-white bg-pink-500 hover:bg-pink-600 shadow-lg shadow-pink-100 dark:shadow-none transition-all cursor-pointer active:scale-95 disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center justify-center'
                     >
-                        {isPending ? t('cmsEditor.publishing') : t('cmsEditor.publish')}
+                        {isPending ? (
+                            <>
+                                <span className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                                {t('cmsEditor.publishing')}
+                            </>
+                        ) : (
+                            t('cmsEditor.publish')
+                        )}
                     </button>
                 </div>
             </div>

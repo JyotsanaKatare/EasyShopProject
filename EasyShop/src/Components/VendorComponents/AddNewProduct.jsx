@@ -408,16 +408,16 @@ function AddNewProduct({ setCurrentPage }) {
         <div className='min-h-screen bg-slate-50/50 p-4 md:p-8'>
 
             {/* Header */}
-            <div className='max-w-4xl mx-auto p-4 md:p-8 bg-linear-to-br from-pink-500 to-pink-600 rounded-t-xl md:rounded-t-3xl relative overflow-hidden'>
+            <div className='w-full max-w-4xl mx-auto p-6 md:p-10 bg-linear-to-br from-pink-500 to-pink-600 rounded-t-2xl md:rounded-t-3xl relative overflow-hidden shadow-lg'>
                 {/* Decorative Circles */}
-                <div className='absolute -top-10 -right-10 h-32 w-32 bg-white/10 rounded-full blur-2xl'></div>
-                <div className='absolute -bottom-10 -left-10 h-24 w-24 bg-white/10 rounded-full blur-xl'></div>
+                <div className='absolute -top-12 -right-12 h-32 w-32 md:h-40 md:w-40 bg-white/10 rounded-full blur-2xl'></div>
+                <div className='absolute -bottom-10 -left-10 h-24 w-24 md:h-32 md:w-32 bg-white/10 rounded-full blur-xl'></div>
 
-                <div className='relative z-10 text-center md:text-start'>
-                    <h1 className='text-xl md:text-2xl font-bold text-white mb-1'>
+                <div className='relative z-10 text-center md:text-left flex flex-col items-center md:items-start'>
+                    <h1 className='text-lg md:text-2xl lg:text-3xl font-bold text-white mb-2 leading-tight'>
                         {t('addProduct.title')}
                     </h1>
-                    <p className='text-pink-50 text-xs font-medium opacity-90'>
+                    <p className='text-pink-50 text-[11px] md:text-sm font-medium opacity-90 max-w-md'>
                         {t('addProduct.subtitle')}
                     </p>
                 </div>
@@ -428,67 +428,79 @@ function AddNewProduct({ setCurrentPage }) {
 
                 {/* Category  */}
                 <div className='mb-6 md:mb-8'>
-                    <label className='ml-1 text-[12px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5 md:mb-2 block'>
+
+                    {/* Label */}
+                    <label className='ml-1 text-[11px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2 block'>
                         {t('addProduct.selectedCategoryLabel')}
                     </label>
 
-                    <div className="w-full bg-slate-100 dark:bg-slate-800/50 px-4 md:px-5 py-3 md:py-3.5 rounded-xl md:rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between group">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-pink-500/10 flex items-center justify-center">
-                                <HiOutlineInformationCircle className="text-pink-500" size={18} />
+                    {/* Info Card */}
+                    <div className="w-full bg-slate-50 dark:bg-slate-800/50 px-3 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 group transition-all hover:border-pink-200">
+                        <div className="flex items-center gap-3 overflow-hidden">
+                            <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-pink-500/10 flex items-center justify-center shrink-0">
+                                <HiOutlineInformationCircle className="text-pink-500" size={20} />
                             </div>
-                            <div>
-                                <span className="text-slate-800 dark:text-white font-bold text-sm md:text-base">
+
+                            <div className="min-w-0">
+                                <span className="block text-slate-800 dark:text-white font-bold text-xs md:text-sm truncate">
                                     {user?.category || t('addProduct.categoryGeneral')}
                                 </span>
-                                <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">
+                                <p className="text-[9px] md:text-[10px] text-slate-400 font-medium uppercase tracking-wider truncate">
                                     {t('addProduct.categoryFixedNotice')}
                                 </p>
                             </div>
                         </div>
-                        <HiOutlineLockClosed className="text-slate-300" size={16} />
+
+                        {/* Lock Icon */}
+                        <HiOutlineLockClosed className="text-slate-400 shrink-0" size={16} />
                     </div>
                 </div>
 
-                {/* sub cat */}
-                <div className='mb-6 md:mb-8 '>
-                    <label className='ml-1 text-[12px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5 md:mb-2 block'>
-                        {t('addProduct.subCategoryLabel')} {isLoading && <span className="text-pink-400 animate-pulse text-[10px] ml-2">{t('addProduct.loading')}</span>}
+                {/* Sub Category Section */}
+                <div className='mb-6 md:mb-8 w-full'>
+                    {/* Label */}
+                    <label className='ml-1 text-[11px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2 block'>
+                        {t('addProduct.subCategoryLabel')}
+                        {isLoading && <span className="text-pink-400 animate-pulse text-[10px] ml-2">{t('addProduct.loading')}</span>}
                     </label>
 
+                    {/* Dropdown Button */}
                     <button
                         type="button"
                         disabled={isLoading || subCategories.length === 0}
                         onClick={() => setIsSubOpen(!isSubOpen)}
-                        className={`w-full bg-slate-50 dark:bg-slate-800 px-4 md:px-5 py-3 md:py-3.5 rounded-xl md:rounded-2xl flex justify-between items-center transition-all border text-sm md:text-base
-                        ${isSubOpen ? 'border-pink-400 ring-2 ring-pink-50' : 'border-transparent hover:border-pink-200'} 
-                        ${(isLoading || subCategories.length === 0) ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
+                        className={`w-full bg-slate-50 dark:bg-slate-800 px-4 py-3.5 rounded-xl flex justify-between items-center transition-all border text-sm
+        ${isSubOpen ? 'border-pink-400 ring-2 ring-pink-50' : 'border-slate-200 dark:border-slate-700 hover:border-pink-200'} 
+        ${(isLoading || subCategories.length === 0) ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
                     >
-                        <span className={`${selectedSubCat ? 'text-slate-800 dark:text-white font-medium' : 'text-slate-400'} text-[11px] md:text-[14px] truncate mr-2`}>
+                        <span className={`${selectedSubCat ? 'text-slate-800 dark:text-white font-medium' : 'text-slate-400'} text-xs md:text-sm truncate mr-2`}>
                             {selectedSubCat ? selectedSubCat.subCatName : (subCategories.length === 0 ? t('addProduct.noSubCategoriesAvailable') : t('addProduct.chooseSubCategory'))}
                         </span>
 
-                        <div className="shrink-0">
+                        <div className="shrink-0 ml-2">
                             {isSubOpen ? <IoIosArrowUp className='text-pink-500' /> : <IoIosArrowDown className='text-slate-400' />}
                         </div>
                     </button>
 
-                    {/* Dropdown Menu */}
+                    {/* Dropdown Menu - Optimized for mobile scroll */}
                     {isSubOpen && (
-                        <div className='w-full mt-2 bg-white dark:bg-slate-900 rounded-xl md:rounded-2xl shadow-2xl border border-pink-50 dark:border-slate-700 py-2 overflow-hidden animate-in fade-in zoom-in duration-200'>
-                            <div className='max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700'>
+                        <div className='relative w-full mt-2 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-pink-100 dark:border-slate-700 overflow-hidden z-20'>
+                            <div className='max-h-60 overflow-y-auto scrollbar-thin'>
                                 {subCategories.length > 0 ? (
                                     subCategories.map((item) => (
                                         <div
                                             key={item._id}
-                                            onClick={() => handleSubCategory(item)}
-                                            className='px-4 md:px-5 py-3 hover:bg-pink-50 dark:hover:bg-slate-800 cursor-pointer text-slate-700 dark:text-slate-300 hover:text-pink-600 font-medium transition-colors text-[11px] md:text-[14px] border-b border-slate-50 dark:border-slate-800 last:border-none'
+                                            onClick={() => {
+                                                handleSubCategory(item);
+                                                setIsSubOpen(false);
+                                            }}
+                                            className='px-4 py-3.5 hover:bg-pink-50 dark:hover:bg-slate-800 cursor-pointer text-slate-700 dark:text-slate-300 hover:text-pink-600 font-medium transition-colors text-xs md:text-sm border-b border-slate-50 dark:border-slate-800 last:border-none'
                                         >
                                             {item.subCatName}
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="px-5 py-3 text-slate-400 text-xs italic text-center">
+                                    <div className="px-4 py-3 text-slate-400 text-xs italic text-center">
                                         {t('addProduct.noSubCategoriesFound')}
                                     </div>
                                 )}
@@ -498,14 +510,14 @@ function AddNewProduct({ setCurrentPage }) {
                 </div>
 
                 {selectedSubCat && (
-                    <div className="animate-in slide-in-from-top-4 duration-300">
+                    <div className="animate-in slide-in-from-top-4 duration-300 w-full">
 
                         {/* 2. Basic Information */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
 
-                            {/* prod name */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-semibold text-slate-600 ml-1">
+                            {/* Prod Name */}
+                            <div className="flex flex-col gap-1.5 md:gap-2 w-full">
+                                <label className="text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-300 ml-1">
                                     {t('addProduct.productNameLabel')}
                                 </label>
                                 <input
@@ -514,13 +526,13 @@ function AddNewProduct({ setCurrentPage }) {
                                     value={formData.prodName}
                                     onChange={handleInputChange}
                                     placeholder={t('addProduct.productNamePlaceholder')}
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all text-sm placeholder:text-[11px] md:placeholder:text-[14px]"
+                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-pink-400 outline-none transition-all text-sm placeholder:text-xs md:placeholder:text-sm"
                                 />
                             </div>
 
-                            {/* stock - always visible */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-semibold text-slate-600 ml-1">
+                            {/* Stock */}
+                            <div className="flex flex-col gap-1.5 md:gap-2 w-full">
+                                <label className="text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-300 ml-1">
                                     {t('addProduct.stockQuantityLabel')}
                                 </label>
                                 <input
@@ -530,22 +542,24 @@ function AddNewProduct({ setCurrentPage }) {
                                     onChange={!autoCalculatedStock ? handleInputChange : undefined}
                                     readOnly={autoCalculatedStock}
                                     placeholder="0"
-                                    className={`w-full px-4 py-3 rounded-xl border border-slate-200 text-sm
-                                    ${autoCalculatedStock ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'focus:border-pink-400 outline-none'}`}
+                                    className={`w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm transition-all
+                                        ${autoCalculatedStock
+                                            ? 'bg-slate-50 dark:bg-slate-900 text-slate-400 cursor-not-allowed'
+                                            : 'dark:bg-slate-800 dark:text-white focus:border-pink-400 outline-none'}`}
                                 />
                                 {autoCalculatedStock && (
-                                    <p className="text-[11px] text-slate-400 ml-1">
+                                    <p className="text-[10px] md:text-[11px] text-slate-400 ml-1 mt-0.5">
                                         {t('addProduct.autoStockCalculatedNotice')}
                                     </p>
                                 )}
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 bg-pink-50/30 p-4 rounded-2xl border border-pink-100">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8 bg-pink-50/30 p-4 md:p-6 rounded-2xl border border-pink-100 dark:bg-slate-900/20 dark:border-slate-800">
 
-                            {/* selling price */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-semibold text-slate-600 ml-1">
+                            {/* Selling Price */}
+                            <div className="flex flex-col gap-1.5 md:gap-2">
+                                <label className="text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-300 ml-1">
                                     {t('addProduct.sellingPriceLabel')}
                                 </label>
                                 <input
@@ -553,13 +567,13 @@ function AddNewProduct({ setCurrentPage }) {
                                     name="price"
                                     value={formData.price}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring focus:ring-pink-400 text-sm placeholder:text-[11px] md:placeholder:text-[14px]"
+                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all text-sm"
                                 />
                             </div>
 
-                            {/* original price */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-semibold text-slate-500 ml-1">
+                            {/* MRP Price */}
+                            <div className="flex flex-col gap-1.5 md:gap-2">
+                                <label className="text-xs md:text-sm font-semibold text-slate-500 dark:text-slate-400 ml-1">
                                     {t('addProduct.mrpPriceLabel')}
                                 </label>
                                 <input
@@ -567,13 +581,13 @@ function AddNewProduct({ setCurrentPage }) {
                                     name="originalPrice"
                                     value={formData.originalPrice}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring focus:ring-pink-400 text-sm placeholder:text-[11px] md:placeholder:text-[14px]"
+                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all text-sm"
                                 />
                             </div>
 
-                            {/* description */}
-                            <div className='flex flex-col gap-1.5 md:gap-2 col-span-full mt-2'>
-                                <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                            {/* Description - col-span-full is perfect here */}
+                            <div className='flex flex-col gap-1.5 md:gap-2 col-span-1 md:col-span-2'>
+                                <label className='text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-300 ml-1'>
                                     {t('addProduct.descriptionLabel')}
                                 </label>
                                 <textarea
@@ -582,7 +596,8 @@ function AddNewProduct({ setCurrentPage }) {
                                     value={formData.description}
                                     onChange={handleInputChange}
                                     placeholder={t('addProduct.descriptionPlaceholder')}
-                                    className="p-3 md:p-4 rounded-lg md:rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring focus:ring-pink-400 dark:text-white text-sm transition-all resize-none placeholder:text-[11px] md:placeholder:text-[14px]" />
+                                    className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all text-sm resize-none placeholder:text-xs md:placeholder:text-sm"
+                                />
                             </div>
                         </div>
 
@@ -626,16 +641,16 @@ function AddNewProduct({ setCurrentPage }) {
                                                         {(formData.attributes[attr.name]?.values || []).map((size, i) => (
                                                             <div
                                                                 key={i}
-                                                                className="flex items-center gap-3 p-2.5 bg-pink-50 border border-pink-100 rounded-xl">
+                                                                className="flex items-center gap-2 p-2.5 bg-pink-50 border border-pink-100 rounded-xl min-w-0">
 
                                                                 {/* Size name */}
-                                                                <span className="text-xs font-black text-pink-600 w-10 shrink-0">
+                                                                <span className="text-xs font-black text-pink-600 w-8 shrink-0">
                                                                     {size}
                                                                 </span>
 
                                                                 {/* Stock input */}
                                                                 {!vendorAddedColors && (
-                                                                    <div className="flex items-center gap-2 flex-1">
+                                                                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
                                                                         <label className="text-[11px] text-slate-400 font-medium shrink-0">
                                                                             {t('addProduct.stockLabel')}
                                                                         </label>
@@ -645,11 +660,10 @@ function AddNewProduct({ setCurrentPage }) {
                                                                             placeholder="0"
                                                                             value={getVariantStockValue(null, size)}
                                                                             onChange={(e) => updateVariantStock(null, size, e.target.value)}
-                                                                            className="w-20 px-3 py-1 bg-white rounded-lg border border-pink-100 text-xs font-bold outline-none focus:border-pink-400"
+                                                                            className="w-16 min-w-0 px-2 py-1 bg-white rounded-lg border border-pink-100 text-xs font-bold outline-none focus:border-pink-400"
                                                                         />
                                                                     </div>
                                                                 )}
-
 
                                                                 {/* Remove size */}
                                                                 <button
@@ -665,7 +679,7 @@ function AddNewProduct({ setCurrentPage }) {
                                                                             stock: updatedStock
                                                                         });
                                                                     }}
-                                                                    className="text-red-400 hover:text-red-600 text-xs font-bold shrink-0"
+                                                                    className="text-red-400 hover:text-red-600 text-xs font-bold shrink-0 ml-auto"
                                                                 >✕</button>
                                                             </div>
                                                         ))}
@@ -781,11 +795,11 @@ function AddNewProduct({ setCurrentPage }) {
                                                     ))}
 
                                                     {/* Add new color input */}
-                                                    <div className="flex gap-2">
+                                                    <div className="flex flex-col sm:flex-row gap-2">
                                                         <input
                                                             type="text"
                                                             placeholder={t('addProduct.colorInputPlaceholder')}
-                                                            className="flex-1 px-4 py-2.5 bg-slate-50 rounded-lg border border-slate-200 focus:border-pink-400 outline-none text-sm"
+                                                            className="w-full px-4 py-2.5 bg-slate-50 rounded-lg border border-slate-200 focus:border-pink-400 outline-none text-sm"
                                                             onKeyDown={(e) => {
                                                                 if (e.key === 'Enter' && e.target.value.trim()) {
                                                                     e.preventDefault();
@@ -817,7 +831,7 @@ function AddNewProduct({ setCurrentPage }) {
                                                                     input.value = '';
                                                                 }
                                                             }}
-                                                            className="px-4 py-2 bg-pink-500 text-white text-xs font-bold rounded-lg hover:bg-pink-600"
+                                                            className="w-full sm:w-auto px-6 py-2.5 bg-pink-500 text-white text-sm font-bold rounded-lg hover:bg-pink-600 shrink-0"
                                                         >
                                                             {t('addProduct.addBtn')}
                                                         </button>
@@ -879,10 +893,9 @@ function AddNewProduct({ setCurrentPage }) {
                             </div>
                         )}
 
-                        {/* 5. upload image section - if color/size not select */}
+                        {/* 5. upload image section */}
                         {!vendorAddedColors && (
                             <div className="bg-white dark:bg-slate-900">
-
                                 <h2 className="text-lg md:text-xl font-bold text-slate-800 dark:text-white mb-4 md:mb-6">
                                     {t('addProduct.mediaSectionTitle')}
                                 </h2>
@@ -891,44 +904,32 @@ function AddNewProduct({ setCurrentPage }) {
 
                                     {/* --- Main Product Image --- */}
                                     <div className="flex flex-col gap-3">
-
                                         <label className="text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-400">
                                             {t('addProduct.mainImageLabel')} <span className="text-pink-500">{t('addProduct.requiredLabel')}</span>
                                         </label>
 
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 items-start">
-
-                                            {/* Upload image */}
-                                            <div className="relative h-45 md:h-52 border-2 border-dashed border-pink-100 dark:border-slate-700 rounded-2xl md:rounded-4xl flex flex-col items-center justify-center bg-pink-50/10 hover:bg-pink-50/30 transition-all cursor-pointer group">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            <div className="relative h-48 sm:h-56 border-2 border-dashed border-pink-100 dark:border-slate-700 rounded-2xl flex flex-col items-center justify-center bg-pink-50/10 hover:bg-pink-50/30 transition-all cursor-pointer group">
                                                 <input
                                                     type="file"
                                                     accept="image/*"
                                                     onChange={handleMainImageChange}
-                                                    className="absolute inset-0 opacity-0 z-10 cursor-pointer" />
-
-                                                <div className="flex flex-col items-center group-hover:scale-105 transition-transform">
+                                                    className="absolute inset-0 opacity-0 z-10 cursor-pointer"
+                                                />
+                                                <div className="flex flex-col items-center px-4 text-center">
                                                     <HiOutlinePhotograph className="text-4xl text-pink-400 mb-2" />
                                                     <p className="text-xs text-pink-500 font-bold">{t('addProduct.uploadMainImgBtn')}</p>
-                                                    <p className="text-[10px] text-slate-400 mt-1 italic text-center px-4">{t('addProduct.bestSizeNotice')}</p>
+                                                    <p className="text-[10px] text-slate-400 mt-1 italic">{t('addProduct.bestSizeNotice')}</p>
                                                 </div>
                                             </div>
 
-                                            {/* Preview Box */}
                                             {mainImagePreview && (
-                                                <div className="relative h-45 md:h-52 rounded-2xl md:rounded-4xl overflow-hidden border border-pink-100 dark:border-slate-800 shadow-sm group animate-in fade-in zoom-in duration-300">
-
-                                                    <img
-                                                        src={mainImagePreview}
-                                                        alt="Main Preview"
-                                                        className="w-full h-full object-cover" />
-
-                                                    <button
-                                                        type="button"
-                                                        onClick={removeMainImage}
-                                                        className="absolute top-3 right-3 bg-white/90 dark:bg-slate-800/90 p-1.5 rounded-full text-pink-500 shadow-md md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                                <div className="relative h-48 sm:h-56 rounded-2xl overflow-hidden border border-pink-100 dark:border-slate-800 shadow-sm">
+                                                    <img src={mainImagePreview} alt="Main" className="w-full h-full object-cover" />
+                                                    <button type="button" onClick={removeMainImage} className="absolute top-2 right-2 bg-white/90 p-1.5 rounded-full text-pink-500 shadow-md">
                                                         <HiOutlineX size={16} />
                                                     </button>
-                                                    <span className="absolute bottom-3 left-3 bg-pink-500 text-white text-[8px] px-2 py-0.5 rounded-full font-bold shadow-lg">{t('addProduct.primaryBadge')}</span>
+                                                    <span className="absolute bottom-2 left-2 bg-pink-500 text-white text-[8px] px-2 py-0.5 rounded-full font-bold">{t('addProduct.primaryBadge')}</span>
                                                 </div>
                                             )}
                                         </div>
@@ -936,63 +937,39 @@ function AddNewProduct({ setCurrentPage }) {
 
                                     {/* Gallery Images */}
                                     <div className="flex flex-col gap-3">
-
-                                        {/* heading */}
                                         <div className="flex justify-between items-center mb-1">
-
-                                            <label className="text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-400">
-                                                {t('addProduct.galleryImagesLabel')}
-                                            </label>
-
-                                            <span className="text-[10px] md:text-xs text-center font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
-                                                {t('addProduct.gallerySlotsCounter', { current: galleryImages.length, max: MAX_GALLERY_IMAGES })}
+                                            <label className="text-xs md:text-sm font-semibold text-slate-600">{t('addProduct.galleryImagesLabel')}</label>
+                                            <span className="text-[10px] bg-slate-100 px-2 py-1 rounded-md text-slate-400">
+                                                {galleryImages.length} / {MAX_GALLERY_IMAGES}
                                             </span>
                                         </div>
 
-                                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 md:gap-4">
-
-                                            {/* Gallery Upload Box */}
-                                            <div className={`aspect-square border-2 border-dashed border-pink-100 dark:border-slate-700 rounded-2xl flex flex-col items-center justify-center bg-pink-50/10 hover:bg-pink-50/30 transition-all relative 
-                                            ${galleryImages.length >= MAX_GALLERY_IMAGES ? 'hidden' : 'flex'}`}>
-
-                                                <input
-                                                    type="file"
-                                                    multiple accept="image/*"
-                                                    onChange={handleGalleryImageChange}
-                                                    disabled={galleryImages.length >= MAX_GALLERY_IMAGES}
-                                                    className="absolute inset-0 opacity-0 cursor-pointer z-10" />
-
-                                                <HiOutlineCloudUpload className="text-3xl text-pink-400 mb-1" />
-                                                <p className="text-[10px] text-pink-500 font-bold">{t('addProduct.addImagesBtn')}</p>
-                                            </div>
-
-                                            {/* Gallery Previews */}
+                                        {/* Responsive grid for gallery */}
+                                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
                                             {galleryImages.map((img, i) => (
-                                                <div
-                                                    key={i}
-                                                    className="relative aspect-square rounded-2xl overflow-hidden border border-pink-50 dark:border-slate-800 shadow-sm group animate-in fade-in duration-300">
-                                                    <img
-                                                        src={img.preview}
-                                                        alt={`Gallery Preview ${i + 1}`}
-                                                        className="w-full h-full object-cover" />
-
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeGalleryImage(i)}
-                                                        className="absolute top-1.5 right-1.5 bg-white/90 dark:bg-slate-800/90 p-1 rounded-full text-red-500 shadow-sm md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                                                        <HiOutlineX size={12} />
+                                                <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-pink-100 shadow-sm">
+                                                    <img src={img.preview} className="w-full h-full object-cover" alt="Gallery" />
+                                                    <button type="button" onClick={() => removeGalleryImage(i)} className="absolute top-1 right-1 bg-white/90 p-0.5 rounded-full text-red-500">
+                                                        <HiOutlineX size={10} />
                                                     </button>
                                                 </div>
                                             ))}
+
+                                            {galleryImages.length < MAX_GALLERY_IMAGES && (
+                                                <label className="aspect-square border-2 border-dashed border-pink-100 rounded-xl flex flex-col items-center justify-center bg-pink-50/10 cursor-pointer hover:bg-pink-50/30">
+                                                    <input type="file" multiple accept="image/*" onChange={handleGalleryImageChange} className="hidden" />
+                                                    <HiOutlineCloudUpload className="text-xl text-pink-400" />
+                                                    <span className="text-[9px] text-pink-500 font-bold mt-1">Add</span>
+                                                </label>
+                                            )}
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         )}
 
                         {/* Action Buttons */}
-                        <div className='col-span-full flex flex-col sm:flex-row items-center justify-end gap-3 mt-4 md:mt-6 pt-6 border-t border-slate-50 dark:border-slate-800'>
+                        <div className='col-span-full flex flex-col-reverse sm:flex-row items-center justify-end gap-3 mt-4 md:mt-6 pt-6 border-t border-slate-50 dark:border-slate-800'>
                             <button
                                 type="button"
                                 onClick={() => setCurrentPage('All Products')}

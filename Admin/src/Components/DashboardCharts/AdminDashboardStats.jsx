@@ -54,11 +54,12 @@ function AdminDashboardStats() {
     ];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 py-4">
+         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 py-4">
+        {/* <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6 py-4"> */}
             {cardItems.map((card, index) => (
                 <div
                     key={index}
-                    className="p-6 bg-white dark:bg-slate-800 rounded-3xl border border-pink-50/50 dark:border-slate-700/50 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group truncate"
+                    className="p-6 bg-white dark:bg-slate-800 rounded-2xl border border-pink-50 shadow-sm hover:shadow-md transition-all"
                 >
                     <div className="flex justify-between items-start">
                         <div className={`p-3 rounded-2xl text-white shadow-lg transition-transform group-hover:scale-110 duration-300 ${card.color}`}>
@@ -76,9 +77,9 @@ function AdminDashboardStats() {
                     </div>
 
                     <div className="mt-5">
-                        <p className="text-slate-400 dark:text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                        <h3 className="text-slate-500 text-sm font-medium">
                             {card.title}
-                        </p>
+                        </h3>
 
                         <div className="flex items-baseline gap-1 mt-1">
                             <h2 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
@@ -86,7 +87,7 @@ function AdminDashboardStats() {
                             </h2>
                         </div>
 
-                        <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-2 leading-relaxed line-clamp-2">
+                        <p className="text-xs text-slate-400 mt-1">
                             {card.para}
                         </p>
                     </div>

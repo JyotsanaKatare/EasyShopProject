@@ -115,7 +115,7 @@ function Products() {
             <ProductsBanner />
 
             {/* Main section */}
-            <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-0 flex flex-col lg:flex-row gap-6 mt-6">
+            <div className="max-w-6xl mx-auto px-4 sm:px-5 lg:px-6 flex flex-col lg:flex-row gap-6 mt-6">
 
                 {/* ======== DESKTOP SIDEBAR FILTER ========== */}
                 <aside className='hidden lg:block w-[25%] shrink-0 sticky top-24 h-fit bg-gray-50 dark:bg-slate-800 rounded-2xl p-2'>
@@ -130,23 +130,27 @@ function Products() {
                 {/* prod content */}
                 <div className='flex-1 w-full'>
 
-                    <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3 mb-4">
+                    <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3 mb-4 overflow-hidden">
 
                         {/* Breadcrumbs */}
-                        <Breadcrumbs items={breadcrumbItems} />
+                        <div className="min-w-0">
+                            <Breadcrumbs items={breadcrumbItems} />
+                        </div>
 
                         {/* Mobile and Tablet Only Filter Action Button */}
-                        <button
-                            onClick={() => setIsMobileFilterOpen(true)}
-                            className="lg:hidden flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-gray-800 dark:text-slate-200 text-xs font-bold rounded-xl shadow-xs active:scale-95 transition-all cursor-pointer"
-                        >
-                            <HiOutlineFilter size={15} className="text-pink-500" />
-                            {t('products.filters')}
-                        </button>
+                        <div className="shrink-0">
+                            <button
+                                onClick={() => setIsMobileFilterOpen(true)}
+                                className="lg:hidden flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-gray-800 dark:text-slate-200 text-xs font-bold rounded-xl shadow-xs active:scale-95 transition-all cursor-pointer"
+                            >
+                                <HiOutlineFilter size={15} className="text-pink-500" />
+                                {t('products.filters')}
+                            </button>
+                        </div>
                     </div>
 
                     {/* =========== RESPONSIVE PRODUCT GRID ============ */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
                         {allProducts.map((product, index) => {
 
                             const colorImages = product.attributes?.Color?.images?.[selectColor];
@@ -176,10 +180,10 @@ function Products() {
                                             swiper.slideTo(0);
                                         }
                                     }}
-                                    className="group relative cursor-pointer bg-white rounded-xl overflow-hidden shadow-xs border border-slate-100/60 hover:shadow-lg transition-all duration-300 flex flex-col h-full"
+                                    className="group relative min-w-0 cursor-pointer bg-white rounded-xl overflow-hidden shadow-xs border border-slate-100/60 hover:shadow-lg transition-all duration-300 flex flex-col h-full"
                                 >
                                     {/* Image Section */}
-                                    <div className="product-card-swiper relative w-full aspect-3/4 bg-gray-50 overflow-hidden">
+                                    <div className="product-card-swiper relative w-full aspect-square bg-gray-50 overflow-hidden">
                                         <Swiper
                                             modules={[Autoplay, Pagination]}
                                             onSwiper={(swiper) => {
@@ -191,14 +195,14 @@ function Products() {
                                                 disableOnInteraction: false,
                                             }}
                                             pagination={false}
-                                            className="w-full h-full"
+                                            className="absolute inset-0 w-full h-full"
                                         >
                                             {allProductImages.map((img, imgIdx) => (
                                                 <SwiperSlide key={imgIdx} className="w-full h-full">
                                                     <img
                                                         src={img}
                                                         alt={`${product.prodName}-${imgIdx}`}
-                                                        className="h-full w-full object-cover"
+                                                        className="block h-full w-full object-cover"
                                                     />
                                                 </SwiperSlide>
                                             ))}
@@ -215,18 +219,18 @@ function Products() {
                                     </div>
 
                                     {/* Content Section */}
-                                    <div className="relative flex flex-col flex-1 px-3 sm:px-4 pb-4 bg-white overflow-hidden transition-all duration-300">
-                                        <p className="text-gray-950 font-extrabold text-[12px] sm:text-[13px] uppercase tracking-wider mb-0.5 mt-3 truncate">
+                                    <div className="relative min-w-0 flex flex-col flex-1 px-2.5 sm:px-4 pb-3 sm:pb-4 bg-white overflow-hidden transition-all duration-300">
+                                        <p className=" text-gray-950 font-bold text-[11px] min-[380px]:text-[12px] sm:text-[13px] uppercase tracking-wide mb-0.5 mt-3 line-clamp-2 leading-tight min-h-7">
                                             {product.prodName}
                                         </p>
 
-                                        <h3 className="line-clamp-2 text-gray-500 text-[11px] sm:text-[13px] leading-snug min-h-8 sm:min-h-9 mb-2">
+                                        <h3 className="pt-2 line-clamp-2 text-gray-500 text-[11px] sm:text-[13px] leading-snug min-h-8 sm:min-h-9 mb-2">
                                             {product.description}
                                         </h3>
 
                                         <div className="mt-auto transition-transform duration-300 ease-out sm:group-hover:translate-y-2">
                                             <div className="flex items-baseline gap-2">
-                                                <span className="text-gray-900 text-sm sm:text-base font-bold">
+                                                <span className="text-pink-500 text-sm sm:text-base font-bold">
                                                     ₹{product.price}
                                                 </span>
                                                 {product.originalPrice > product.price && (
@@ -237,7 +241,7 @@ function Products() {
                                             </div>
 
                                             {/* Rating Stars */}
-                                            <div className="flex items-center gap-0.5 mt-1 text-yellow-400 text-xs sm:text-sm">
+                                            <div className="flex flex-wrap items-center gap-0.5 mt-1 text-yellow-400 text-xs sm:text-sm">
                                                 <IoMdStar />
                                                 <IoMdStar />
                                                 <IoMdStar />
@@ -253,7 +257,7 @@ function Products() {
                                         <div className="hidden md:block absolute left-0 -bottom-full w-full px-4 pb-4 pt-2 bg-white transition-all duration-300 ease-out opacity-0 group-hover:opacity-100 group-hover:bottom-0 z-10">
                                             <button
                                                 onClick={(e) => handleAddToCart(e, product)}
-                                                className="w-full py-2 bg-pink-500 hover:bg-pink-600 text-white text-[13px] font-semibold tracking-wide rounded-lg cursor-pointer transition-colors shadow-sm uppercase"
+                                                className="w-full min-h-10.5 px-2 py-2 bg-pink-500 hover:bg-pink-600 text-white text-[11px] sm:text-[12px] md:text-[13px] font-semibold rounded-lg cursor-pointer transition-colors shadow-sm uppercase leading-tight text-center whitespace-normal wrap-break-words flex items-center justify-center"
                                             >
                                                 {t('products.addToCart')}
                                             </button>
@@ -264,7 +268,7 @@ function Products() {
                                     <div className="block md:hidden px-3 pb-3 bg-white">
                                         <button
                                             onClick={(e) => { e.stopPropagation(); handleAddToCart(e, product); }}
-                                            className="w-full py-1.5 bg-slate-900 text-white text-[11px] font-bold rounded-lg uppercase tracking-wide active:bg-pink-500"
+                                            className="w-full min-h-11 px-2 py-2 bg-slate-900 text-white text-[10px] min-[380px]:text-[11px] font-bold rounded-lg uppercase tracking-wide active:bg-pink-500 leading-tight text-center whitespace-normal wrap-break-words flex items-center justify-center"
                                         >
                                             {t('products.addToCart')}
                                         </button>
@@ -325,7 +329,7 @@ function Products() {
                     </div>
                 </div>
             )}
-            
+
         </section>
     );
 }

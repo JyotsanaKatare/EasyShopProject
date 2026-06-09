@@ -147,7 +147,7 @@ function AddBanner({ setCurrentPage }) {
                             value={formData.order}
                             onChange={handleInputChange}
                             min={0}
-                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all'
+                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-[12px] md:text-[14px] transition-all'
                         />
                     </div>
 
@@ -162,7 +162,7 @@ function AddBanner({ setCurrentPage }) {
                             value={formData.badge}
                             onChange={handleInputChange}
                             placeholder={t('addBanner.placeholderBadge')}
-                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]'
+                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[12px] md:placeholder:text-[14px]'
                         />
                     </div>
 
@@ -177,7 +177,7 @@ function AddBanner({ setCurrentPage }) {
                             value={formData.offerText}
                             onChange={handleInputChange}
                             placeholder={t('addBanner.placeholderOfferText')}
-                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]'
+                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[12px] md:placeholder:text-[14px]'
                         />
                     </div>
 
@@ -192,7 +192,7 @@ function AddBanner({ setCurrentPage }) {
                             value={formData.headingMain}
                             onChange={handleInputChange}
                             placeholder={t('addBanner.placeholderHeadingMain')}
-                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]'
+                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[12px] md:placeholder:text-[14px]'
                         />
                     </div>
 
@@ -207,7 +207,7 @@ function AddBanner({ setCurrentPage }) {
                             value={formData.headingAccent}
                             onChange={handleInputChange}
                             placeholder={t('addBanner.placeholderHeadingAccent')}
-                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]'
+                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[12px] md:placeholder:text-[14px]'
                         />
                     </div>
 
@@ -222,7 +222,7 @@ function AddBanner({ setCurrentPage }) {
                             onChange={handleInputChange}
                             rows={2}
                             placeholder={t('addBanner.placeholderParagraph')}
-                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px] resize-none'
+                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[12px] md:placeholder:text-[14px] resize-none'
                         />
                     </div>
 
@@ -237,7 +237,7 @@ function AddBanner({ setCurrentPage }) {
                             value={formData.ctaText}
                             onChange={handleInputChange}
                             placeholder={t('addBanner.placeholderCtaText')}
-                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]'
+                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[12px] md:placeholder:text-[14px]'
                         />
                     </div>
 
@@ -252,7 +252,7 @@ function AddBanner({ setCurrentPage }) {
                             value={formData.ctaLink}
                             onChange={handleInputChange}
                             placeholder={t('addBanner.placeholderCtaLink')}
-                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]'
+                            className='p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[12px] md:placeholder:text-[14px]'
                         />
                     </div>
 
@@ -293,30 +293,41 @@ function AddBanner({ setCurrentPage }) {
                         </div>
                     </div>
 
-                    {/* is active */}
-                    <div className='col-span-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700'>
-                        <input
-                            type='checkbox'
-                            id='isActive'
-                            name='isActive'
-                            checked={formData.isActive}
-                            onChange={handleInputChange}
-                            className='w-4 h-4 accent-pink-500'
-                        />
+                    {/* is active - check box */}
+                    <div className='col-span-full'>
                         <label
                             htmlFor='isActive'
-                            className='text-sm font-semibold text-slate-600 dark:text-slate-300 cursor-pointer'>
-                            {t('addBanner.isActiveLabel')}
+                            className='flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-all'
+                        >
+                            <div className="relative flex items-center">
+                                <input
+                                    type='checkbox'
+                                    id='isActive'
+                                    name='isActive'
+                                    checked={formData.isActive}
+                                    onChange={handleInputChange}
+                                    className='peer w-4 h-4 md:w-5 md:h-5 accent-pink-500 rounded cursor-pointer'
+                                />
+                            </div>
+
+                            <div className="flex flex-col">
+                                <span className='text-xs md:text-[14px] font-bold text-slate-700 dark:text-slate-200'>
+                                    {t('addBanner.isActiveLabel')}
+                                </span>
+                                <span className='text-[11px] text-slate-400'>
+                                    {formData.isActive ? t('addBanner.statusEnabled') : t('addBanner.statusDisabled')}
+                                </span>
+                            </div>
                         </label>
                     </div>
 
                     {/* actions */}
-                    <div className='col-span-full flex flex-col sm:flex-row items-center justify-end gap-3 mt-4 md:mt-6 pt-6 border-t border-slate-50 dark:border-slate-800'>
+                    <div className='col-span-full flex flex-col-reverse sm:flex-row items-center justify-end gap-3 mt-4 md:mt-6 pt-6 border-t border-slate-100 dark:border-slate-800'>
                         <button
                             type='button'
                             disabled={isPending}
                             onClick={() => setCurrentPage('banners')}
-                            className='w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:text-pink-500 hover:bg-pink-100 dark:hover:bg-slate-800 transition-all cursor-pointer active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 disabled:hover:bg-transparent disabled:hover:text-slate-500'
+                            className='w-full sm:w-auto px-6 py-3.5 sm:py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer active:scale-95 disabled:cursor-not-allowed disabled:opacity-50'
                         >
                             {t('addBanner.cancel')}
                         </button>
@@ -324,9 +335,16 @@ function AddBanner({ setCurrentPage }) {
                         <button
                             type='submit'
                             disabled={isPending}
-                            className='w-full sm:w-auto md:px-10 py-2.5 rounded-xl text-sm font-bold text-white bg-linear-to-br from-pink-500 to-pink-600 shadow-lg shadow-pink-100 dark:shadow-none hover:shadow-pink-200 transition-all cursor-pointer active:scale-95 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed disabled:active:scale-100 disabled:shadow-none'
+                            className='w-full sm:w-auto md:px-10 py-3.5 sm:py-2.5 rounded-xl text-sm font-bold text-white bg-pink-500 hover:bg-pink-600 shadow-lg shadow-pink-100 dark:shadow-none transition-all cursor-pointer active:scale-95 disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center justify-center'
                         >
-                            {isPending ? t('addBanner.submitting') : t('addBanner.submit')}
+                            {isPending ? (
+                                <>
+                                    <span className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                                    {t('addBanner.submitting')}
+                                </>
+                            ) : (
+                                t('addBanner.submit')
+                            )}
                         </button>
                     </div>
                 </form>

@@ -63,7 +63,7 @@ function OrderProgressBar({ orderStatus }) {
                             </div>
 
                             {/* Label — positioned absolutely so it doesn't affect layout */}
-                            <p className={`absolute top-12 text-[9px] md:text-[10px] font-bold uppercase tracking-tight text-center w-20 -translate-x-1/2 left-1/2
+                            <p className={`absolute top-12 text-[8px] md:text-[10px] font-bold uppercase tracking-tight text-center w-20 px-2 -translate-x-1/2 left-1/2
                                 ${isDone || isActive ? 'text-pink-500 ' : 'text-slate-400'}`}>
                                 {step.label}
                             </p>

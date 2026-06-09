@@ -91,7 +91,7 @@ function VendorShop() {
             </div>
 
             {/* 2. Shop Info */}
-            <div className="max-w-6xl mx-auto px-4 lg:px-6 -mt-12 md:-mt-16 relative z-10 mb-12">
+            <div className="max-w-6xl mx-auto px-4 sm:px-5 lg:px-6 -mt-12 md:-mt-16 relative z-10 mb-12">
                 <div className="bg-white rounded-2xl p-4 md:p-6 shadow-lg border border-gray-100 flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-6">
 
                     <div className="w-24 h-24 md:w-28 md:h-28 bg-white rounded-xl shadow-md border-4 border-white overflow-hidden shrink-0">
@@ -134,7 +134,7 @@ function VendorShop() {
             </div>
 
             {/* 3. Products Grid */}
-            <div className='max-w-6xl mx-auto px-4 lg:px-6'>
+            <div className='max-w-6xl mx-auto px-4 sm:px-5 lg:px-6'>
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-lg md:text-xl font-bold text-gray-800 border-l-4 border-pink-500 pl-3 leading-tight">
                         {t('vendorShop.storeCollection')}
@@ -169,14 +169,14 @@ function VendorShop() {
                                         <div
                                             onClick={(e) => handleWishList(e, product)}
                                             className={`absolute right-3 top-3 p-2 rounded-full shadow-md cursor-pointer z-10 transition-all duration-300
-                                ${isFavorite ? 'bg-pink-500 text-white' : 'bg-white/90 text-gray-600 hover:bg-pink-500 hover:text-white'}`}
+                                            ${isFavorite ? 'bg-pink-500 text-white' : 'bg-white/90 text-gray-600 hover:bg-pink-500 hover:text-white'}`}
                                         >
                                             {isFavorite ? <GoHeartFill className="text-lg" /> : <GoHeart className="text-lg" />}
                                         </div>
                                     </div>
 
                                     {/* Content Section */}
-                                    <div className="p-3 md:p-4 text-center">
+                                    <div className="p-3 md:p-4 text-center flex-1">
                                         <h3 className="text-gray-800 font-bold text-xs md:text-sm uppercase truncate mb-1">
                                             {product.prodName}
                                         </h3>

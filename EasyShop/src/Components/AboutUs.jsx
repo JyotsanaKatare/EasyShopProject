@@ -157,8 +157,12 @@ function AboutUs() {
                                     alt="Aman Verma"
                                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                             </div>
-                            <h4 className="text-xl font-bold text-gray-800">Aman Verma</h4>
-                            <p className="text-pink-500 font-medium">{t('about.coFounderCEO')}</p>
+                            <h4 className="text-lg md:text-xl font-bold text-gray-800">
+                                Aman Verma
+                            </h4>
+                            <p className="text-sm md:text-[16px] text-pink-500 font-medium">
+                                {t('about.coFounderCEO')}
+                            </p>
                         </div>
 
                         {/* Founder 2 */}
@@ -169,8 +173,12 @@ function AboutUs() {
                                     alt="Sanya Malhotra"
                                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                             </div>
-                            <h4 className="text-xl font-bold text-gray-800">Sanya Malhotra</h4>
-                            <p className="text-pink-500 font-medium">{t('about.coFounderCOO')}</p>
+                            <h4 className="text-lg md:text-xl font-bold text-gray-800">
+                                Sanya Malhotra
+                                </h4>
+                            <p className="ext-sm md:text-[16px] text-pink-500 font-medium">
+                                {t('about.coFounderCOO')}
+                                </p>
                         </div>
                     </div>
                 </div>

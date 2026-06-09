@@ -273,6 +273,14 @@ function SearchBar() {
                                                             className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50 font-medium">
                                                             {t('nav.profile')}
                                                         </p>
+                                                        <p
+                                                            onClick={() => {
+                                                                navigate("/vendor_dashboard");
+                                                                setIsAccountOpen(false);
+                                                            }}
+                                                            className="px-5 py-2 text-[13px] text-gray-600 cursor-pointer transition-colors hover:text-pink-500 hover:bg-pink-50 font-medium">
+                                                            {t('nav.dashboard')}
+                                                        </p>
                                                     </>
                                                 ) : (
                                                     <>
@@ -341,18 +349,20 @@ function SearchBar() {
                                     {isLoading ? (
                                         <p className="p-2 text-sm text-gray-400">{t('search.loading')}</p>
                                     ) : (
-                                        <div className="absolute top-full left-0 mt-2 w-40 md:w-50 bg-white shadow-2xl rounded-xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                                            {catList.map((item, index) => (
-                                                <p
-                                                    key={item._id}
-                                                    onClick={() => {
-                                                        navigate(`/all_products/${item._id}/${item.catName}`);
-                                                        setIsOpen(false)
-                                                    }}
-                                                    className="px-5 py-3 hover:bg-pink-50 hover:text-pink-600 cursor-pointer text-sm transition-colors border-b border-gray-50 last:border-none">
-                                                    {item.catName}
-                                                </p>
-                                            ))}
+                                        <div className="absolute top-full left-0 mt-2 w-[90vw] md:w-50 bg-white shadow-2xl rounded-xl border border-gray-100 overflow-hidden z-70 animate-in fade-in slide-in-from-top-2 duration-200">
+                                            <div className="max-h-75 overflow-y-auto">
+                                                {catList.map((item, index) => (
+                                                    <p
+                                                        key={item._id}
+                                                        onClick={() => {
+                                                            navigate(`/all_products/${item._id}/${item.catName}`);
+                                                            setIsOpen(false)
+                                                        }}
+                                                        className="px-5 py-3 hover:bg-pink-50 hover:text-pink-600 cursor-pointer text-sm transition-colors border-b border-gray-50 last:border-none">
+                                                        {item.catName}
+                                                    </p>
+                                                ))}
+                                            </div>
                                         </div>
                                     )}
                                 </>
@@ -373,7 +383,7 @@ function SearchBar() {
                         />
 
                         {showDropdown && (suggestions.length > 0 || searchFaqs.length > 0) && (
-                            <div className="absolute top-full left-0 w-full bg-white shadow-2xl rounded-xl mt-2 p-4 z-50 border border-gray-100">
+                            <div className="absolute top-full left-0 w-full sm:w-full bg-white shadow-2xl rounded-xl mt-2 p-4 z-60 border border-gray-100 max-h-[60vh] overflow-y-auto chat-scrollbar">
 
                                 {/* Dynamic Product Section */}
                                 {suggestions.length > 0 && (
@@ -394,11 +404,15 @@ function SearchBar() {
                                                 <img
                                                     src={p.prodImage}
                                                     alt={p.prodName}
-                                                    className="w-10 h-10 rounded object-cover"
+                                                    className="w-10 h-10 rounded object-cover shrink-0"
                                                 />
                                                 <div>
-                                                    <h5 className="text-sm font-semibold text-gray-800 group-hover/item:text-pink-500 transition-colors">{p.prodName}</h5>
-                                                    <p className="text-xs text-pink-500 font-bold">₹{p.price}</p>
+                                                    <h5 className="text-[12px] md:text-sm font-semibold text-gray-800 group-hover/item:text-pink-500 transition-colors">
+                                                    {p.prodName}
+                                                    </h5>
+                                                    <p className="text-xs text-pink-500 font-bold">
+                                                        ₹{p.price}
+                                                        </p>
                                                 </div>
                                             </div>
                                         ))}

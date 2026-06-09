@@ -1,9 +1,12 @@
 
 import React, { useState } from 'react';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { HiOutlineShieldCheck } from "react-icons/hi";
 
 function ProfileAccountForm({ vendorData }) {
+
+  const { t } = useTranslation();
 
   const [formData, setformData] = useState({
     accHolderName: "",
@@ -52,7 +55,7 @@ function ProfileAccountForm({ vendorData }) {
           type="text"
           value={formData[fieldId]}
           onChange={(e) => handleInputChange(e, fieldId)}
-          disabled={!isEditing} // Agar isEditing false hai toh disabled rahega
+          disabled={!isEditing}
           className={`flex-1 p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border transition-all text-sm outline-none
                   ${!isEditing
               ? 'bg-slate-100 border-transparent text-slate-500 cursor-not-allowed'
@@ -69,10 +72,10 @@ function ProfileAccountForm({ vendorData }) {
       {/* input fields */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
 
-        {RenderField("Account Holder Name", "accHolderName")}
-        {RenderField("Bank Name", "bankName")}
-        {RenderField("Account Number", "accNumber")}
-        {RenderField("IFSC Code", "ifsc")}
+        {RenderField(t('vendorProfile.fieldAccHolder'), "accHolderName")}
+        {RenderField(t('vendorProfile.fieldBankName'), "bankName")}
+        {RenderField(t('vendorProfile.fieldAccNumber'), "accNumber")}
+        {RenderField(t('vendorProfile.fieldIFSC'), "ifsc")}
 
         {/* Bank Document Upload */}
         {isEditing && (
@@ -80,19 +83,17 @@ function ProfileAccountForm({ vendorData }) {
             <div className="flex flex-col lg:flex-row justify-between text-center lg:text-start gap-4">
               <div>
                 <p className="text-xs font-black text-slate-800 uppercase">
-                  Verification Document
+                  {t('vendorProfile.verifyDocTitle')}
                 </p>
                 <p className="text-[10px] text-slate-500 mt-1 font-bold italic">
-                  {/* ✅ show existing doc from DB */}
                   {vendorData?.bankDocumentUpload
-                    ? `Current: ${vendorData.bankDocumentUpload.split('/').pop()}`
-                    : "Upload Cancelled Cheque or Passbook Front Page"}
+                    ? `${t('vendorProfile.currentFile')}: ${vendorData.bankDocumentUpload.split('/').pop()}`
+                    : t('vendorProfile.verifyDocHint')}
                 </p>
               </div>
 
               <label className="cursor-pointer bg-white px-6 py-2 rounded-xl border border-pink-200 text-pink-500 font-bold text-xs hover:bg-pink-100 transition-all uppercase">
-                Select File
-                {/* ✅ capture bank doc file */}
+                {t('vendorProfile.selectFile')}
                 <input
                   type="file"
                   hidden
@@ -112,7 +113,7 @@ function ProfileAccountForm({ vendorData }) {
             onClick={handleSave}
             disabled={isPending}
             className='px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-black rounded-2xl text-xs transition-all active:scale-95 shadow-xl shadow-pink-100 uppercase tracking-widest cursor-pointer'>
-            {isPending ? "Saving..." : "Save Changes"}
+            {isPending ? t('vendorProfile.savingLabel') : t('vendorProfile.saveChanges')}
           </button>
         </div>
       )}
@@ -123,7 +124,7 @@ function ProfileAccountForm({ vendorData }) {
           <HiOutlineShieldCheck size={20} />
         </div>
         <p className="text-[10px] lg:text-xs text-slate-500 font-medium leading-relaxed">
-          Contact admin to update legal info. Read our <span className="text-pink-500 cursor-pointer hover:underline">Security Protocol</span>.
+          {t('vendorProfile.bankPrivacyNote')} <span className="text-pink-500 cursor-pointer hover:underline">{t('vendorProfile.securityProtocol')}</span>.
         </p>
       </div>
     </div>

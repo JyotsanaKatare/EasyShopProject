@@ -117,29 +117,31 @@ function ReviewRating() {
 
   return (
     <div>
+
       {/* cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-8">
         {statsCards.map((card) => (
           <div
             key={card.id}
             className="p-5 bg-white dark:bg-slate-950 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-all duration-300"
           >
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 truncate">
                   {card.label}
                 </p>
-                <h3 className="text-2xl font-black text-slate-800 dark:text-white">
+                <h3 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white truncate">
                   {card.id === 1 ? `${card.value || 0}` : card.value}
                 </h3>
               </div>
-              <div className={`p-3 rounded-2xl ${card.bgColor} ${card.color} border ${card.borderColor}`}>
+
+              <div className={`p-3 rounded-2xl ${card.bgColor} ${card.color} border ${card.borderColor} shrink-0`}>
                 {card.icon}
               </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-1.5">
-              <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+            <div className="mt-4 flex items-center gap-1.5 min-w-0">
+              <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 truncate">
                 {card.subText}
               </span>
             </div>
@@ -150,25 +152,27 @@ function ReviewRating() {
       <div className="p-6 bg-white dark:bg-slate-950 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
 
         {/* Header & Filter */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <div>
-            <div className="flex gap-2 items-center">
-              <h2 className="text-md md:text-lg font-bold text-slate-800 dark:text-white shrink-0">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-4">
+          {/* Left Side: Title & Info */}
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap gap-2 items-center">
+              <h2 className="text-md md:text-lg font-bold text-slate-800 dark:text-white truncate">
                 {t('vendorReviews.customerFeedback')}
               </h2>
-              <span className="hidden lg:flex bg-pink-100 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 text-xs font-bold px-2.5 py-0.5 rounded-full">
+              <span className="bg-pink-100 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 text-[10px] md:text-xs font-bold px-2 py-0.5 rounded-full shrink-0">
                 {t('vendorReviews.total')} : {totalCount}
               </span>
             </div>
-            <p className="text-[11px] md:text-xs text-slate-500 mt-1">
+            <p className="text-[10px] md:text-xs text-slate-500 mt-1 truncate">
               {t('vendorReviews.subtitle')}
             </p>
           </div>
 
+          {/* Right Side: Filter - Added w-full for mobile tapability */}
           <select
             value={statusFilter}
             onChange={handleStatusChange}
-            className="px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 outline-none focus:ring-2 focus:ring-pink-500/20 transition-all cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 outline-none focus:ring-2 focus:ring-pink-500/20 transition-all cursor-pointer"
           >
             <option value="">{t('vendorReviews.statusAll')}</option>
             <option value="Pending">{t('vendorReviews.statusPending')}</option>
@@ -185,8 +189,8 @@ function ReviewRating() {
                 <th className="pb-4 pl-4 text-[10px] font-black text-slate-400 uppercase tracking-widest w-[25%]">{t('vendorReviews.colCustomer')}</th>
                 <th className="pb-4 text-[10px] font-black text-slate-400 uppercase tracking-widest w-[25%]">{t('vendorReviews.colProduct')}</th>
                 <th className="pb-4 text-[10px] font-black text-slate-400 uppercase tracking-widest w-[30%]">{t('vendorReviews.colRating')}</th>
-                <th className="pb-4 text-[10px] font-black text-slate-400 uppercase tracking-widest w-[10%] text-center">{t('vendorReviews.colStatus')}</th>
-                <th className="pb-4 pr-4 text-[10px] font-black text-slate-400 uppercase tracking-widest w-[10%] text-right">{t('vendorReviews.colAction')}</th>
+                <th className="pb-4 text-[10px] font-black text-slate-400 uppercase tracking-widest min-w-30 text-center">{t('vendorReviews.colStatus')}</th>
+                <th className="pb-4 pr-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">{t('vendorReviews.colAction')}</th>
               </tr>
             </thead>
 

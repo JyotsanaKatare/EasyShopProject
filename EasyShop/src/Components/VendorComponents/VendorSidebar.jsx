@@ -83,7 +83,7 @@ function VendorSidebar({ collapsed, onToggle, currentPage, onPageChange, mobileO
             icon: <HiOutlineChatAlt2 className='w-6 h-6' />,
             label: t('sidebar.customerChats', 'Customer Chats'),
             active: true,
-            Badge: "5"
+            Badge: unreadCount || 0
         },
         {
             id: "Review",
@@ -106,7 +106,7 @@ function VendorSidebar({ collapsed, onToggle, currentPage, onPageChange, mobileO
 
     return (
         <div
-            className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200/50 bg-white/95 shadow-xl backdrop-blur-xl transition-transform duration-300 ease-in-out dark:border-slate-700/50 dark:bg-slate-900/95
+            className={`fixed inset-y-0 left-0 z-60 flex w-72 flex-col border-r border-slate-200/50 bg-white/95 shadow-xl backdrop-blur-xl transition-transform duration-300 ease-in-out dark:border-slate-700/50 dark:bg-slate-900/95
             ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
 
             lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-lg

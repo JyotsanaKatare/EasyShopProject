@@ -122,6 +122,61 @@ export const vendorSignUp = async (req, res) => {
 
         await OTP.deleteMany({ email, role: 'vendor' });
 
+        // welcome mail
+        const emailHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff;">
+        
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, #ec4899, #f43f5e); padding: 30px 20px; border-radius: 12px 12px 0 0; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 28px; letter-spacing: 2px;">EasyShop</h1>
+            <p style="color: #ffe4f0; margin: 5px 0 0; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">Seller Central</p>
+        </div>
+
+        <!-- Body -->
+        <div style="border: 1px solid #f9a8d4; border-top: none; border-radius: 0 0 12px 12px; padding: 30px 25px;">
+            <h2 style="color: #1e293b; margin-top: 0;">Hi ${vendor.name}, Welcome Aboard! 🎉</h2>
+            <p style="color: #475569; font-size: 15px; line-height: 1.6;">
+                Thank you for registering as a vendor on <strong style="color: #ec4899;">EasyShop</strong>. Your application has been received and is currently under review by our admin team.
+            </p>
+
+            <!-- Store Details -->
+            <div style="background-color: #fdf2f8; border-left: 4px solid #ec4899; padding: 15px 20px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 6px 0; color: #1e293b; font-size: 14px;"><strong>Store Name:</strong> ${vendor.storeName}</p>
+                <p style="margin: 6px 0; color: #1e293b; font-size: 14px;"><strong>Email:</strong> ${vendor.email}</p>
+                <p style="margin: 6px 0; color: #1e293b; font-size: 14px;"><strong>Category:</strong> ${vendor.category}</p>
+                <p style="margin: 6px 0; font-size: 14px;">
+                    <strong>Status:</strong> 
+                    <span style="color: #f59e0b; font-weight: bold; background-color: #fef3c7; padding: 2px 10px; border-radius: 20px; font-size: 12px;">Pending Approval</span>
+                </p>
+            </div>
+
+            <p style="color: #475569; font-size: 14px; line-height: 1.6;">
+                Our team will review your documents and get back to you within <strong>24-48 hours</strong>. You will receive an email once your account is approved.
+            </p>
+
+            <!-- What's Next -->
+            <div style="background-color: #f8fafc; padding: 15px 20px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 0 0 10px; color: #1e293b; font-weight: bold; font-size: 14px;">What happens next?</p>
+                <p style="margin: 5px 0; color: #475569; font-size: 13px;">✅ Admin reviews your documents</p>
+                <p style="margin: 5px 0; color: #475569; font-size: 13px;">✅ Account gets approved</p>
+                <p style="margin: 5px 0; color: #475569; font-size: 13px;">✅ You receive approval email</p>
+                <p style="margin: 5px 0; color: #475569; font-size: 13px;">✅ Start listing your products</p>
+            </div>
+
+            <p style="color: #475569; font-size: 14px;">If you have any questions, feel free to contact our support team.</p>
+
+            <p style="color: #1e293b; font-size: 14px;">Thanks, <br/><strong style="color: #ec4899;">EasyShop Team</strong></p>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 20px;">
+            <p style="color: #94a3b8; font-size: 11px;">© 2025 EasyShop. All rights reserved.</p>
+        </div>
+
+    </div>
+`;
+        sendEmail(vendor.email, "Welcome to EasyShop Seller Central!", emailHtml);
+
         return res.status(201).json({
             success: true,
             message: "Registered successfully",

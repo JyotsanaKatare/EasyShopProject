@@ -14,7 +14,7 @@ export const accessChat = async (req, res) => {
             });
         }
 
-        // Check karo ki kya pehle se inka koi room/conversation hai
+       // Check if they already have a room/conversation
         let chat = await Conversation.findOne({
             participants: {
                 $all: [
@@ -24,20 +24,10 @@ export const accessChat = async (req, res) => {
             }
         });
 
-        // Agar nahi hai toh naya Conversation banao
-        if (!chat) {
-            chat = await Conversation.create({
-                participants: [
-                    { participantId: userId, participantModel: 'User' },
-                    { participantId: vendorId, participantModel: 'Vendor' }
-                ],
-                unreadCount: { [userId]: 0, [vendorId]: 0 }
-            });
-        }
-
+        // Don't create here — return null if doesn't exist
         res.status(200).json({
             success: true,
-            data: chat
+            data: chat || null
         });
 
     } catch (err) {
@@ -49,7 +39,7 @@ export const accessChat = async (req, res) => {
     }
 };
 
-// 2. Ek specific chat ke saare messages fetch karna
+// 2. Fetch all messages from a specific chat
 export const fetchMessages = async (req, res) => {
     try {
         const { conversationId } = req.params;
@@ -67,7 +57,7 @@ export const fetchMessages = async (req, res) => {
     }
 };
 
-// 3. Vendor ki saari active chats fetch karna (Sidebar ke liye)
+// 3. Fetch all active chats of the vendor (for sidebar)
 export const getVendorChats = async (req, res) => {
     try {
         const { vendorId } = req.params;
@@ -75,7 +65,8 @@ export const getVendorChats = async (req, res) => {
         const chats = await Conversation.find({
             participants: {
                 $elemMatch: { participantId: vendorId, participantModel: 'Vendor' }
-            }
+            },
+            lastMessage: { $exists: true, $ne: null } // only conversations with messages
         }).sort({ updatedAt: -1 });
 
         // Manually populate User participants
@@ -113,9 +104,11 @@ export const resetUnreadCount = async (req, res) => {
     try {
         const { conversationId, userId } = req.body;
 
-        await Conversation.findByIdAndUpdate(conversationId, {
-            $set: { [`unreadCount.${userId}`]: 0 }
-        });
+        await Conversation.findByIdAndUpdate(
+            conversationId,
+            { $set: { [`unreadCount.${userId}`]: 0 } },
+            { timestamps: false }
+        );
 
         res.status(200).json({
             success: true

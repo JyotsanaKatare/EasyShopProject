@@ -12,13 +12,13 @@ function AccountType() {
     const navigate = useNavigate();
 
     return (
-        <section className="w-full bg-pink-50/30 py-8 md:py-16 px-4 lg:px-6">
+        <section className="w-full bg-pink-50/30 py-8 md:py-16 px-4 sm:px-5 lg:px-6">
             <div className="max-w-4xl mx-auto">
 
                 {/* heading */}
                 <div className="flex flex-col text-center mb-8 md:mb-12">
                     <h2 className="text-2xl md:text-4xl font-bold text-gray-800 tracking-tight">
-                        {t('auth.joinHeading')}
+                        {t('auth.joinHeading')} {' '}
                         <span className="text-pink-500 text-4xl md:text-5xl">Easy</span> {t('auth.joinSubheading')}
                     </h2>
 
@@ -69,18 +69,20 @@ function AccountType() {
                         </p>
 
                         <div className="mt-5 md:mt-8 flex items-center text-pink-500 font-bold group-hover:gap-2 transition-all">
-                           {t('auth.openShop')} <span className="ml-2">→</span>
+                            {t('auth.openShop')} <span className="ml-2">→</span>
                         </div>
                     </div>
 
                 </div>
 
                 {/* Bottom Login */}
-                <p
-                    onClick={() => navigate("/login")}
-                    className="mt-8 md:mt-12 ml-2 text-gray-400 text-sm">
-                    {t('auth.alreadyAccount')} <span className="text-pink-500 font-bold cursor-pointer hover:underline">{t('auth.loginDirectly')}</span>
-                </p>
+                <div className="mt-8 md:mt-12 text-center text-gray-400 text-sm">
+                    <p
+                        onClick={() => navigate("/login")}
+                        className="mt-8 md:mt-12 ml-2 text-gray-400 text-sm ">
+                        {t('auth.alreadyAccount')} <span className="text-pink-500 font-bold cursor-pointer hover:underline">{t('auth.loginDirectly')}</span>
+                    </p>
+                </div>
             </div>
         </section>
     )

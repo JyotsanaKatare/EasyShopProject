@@ -69,7 +69,7 @@ function MyOrders() {
     if (isError) return <div className="py-20 text-center text-red-400">{t('myOrders.failedLoad')}</div>;
 
     return (
-        <section className='w-full min-h-[70vh] py-8 md:py-16 px-4 lg:px-6'>
+        <section className='w-full min-h-[70vh] py-8 md:py-16 px-4 sm:px-5 lg:px-6'>
 
             {/* heading */}
             <div className="flex flex-col items-center mb-12">
@@ -88,7 +88,7 @@ function MyOrders() {
                 >
                     <div className="flex items-center gap-2">
                         <FiFilter className="text-pink-500" />
-                        <span className="font-bold text-gray-800 uppercase text-sm tracking-wide">
+                        <span className="font-bold text-gray-800 uppercase text-[12px] md:text-sm tracking-wide">
                             {t('myOrders.filtersAndSorting')}
                         </span>
                     </div>
@@ -171,14 +171,14 @@ function MyOrders() {
                     <div className="lg:hidden fixed bottom-0 left-0 w-full p-4 bg-white border-t border-gray-100 flex gap-4 shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
                         <button
                             onClick={() => setShowMobileFilters(false)}
-                            className="flex-1 py-4 bg-pink-500 text-white rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-pink-100 active:scale-95 transition-all"
+                            className="flex-1 w-full truncate px-2 text-xs md:text-base bg-pink-500 text-white font-bold py-3 md:py-4 rounded-2xl transition-all active:scale-[0.98] cursor-pointer"
                         >
                             {t('myOrders.applyFilters')}
                         </button>
                     </div>
                 </div>
 
-                {/* right section */}
+                {/* right section - cards */}
                 <div className='w-full lg:w-[75%]'>
 
                     {/* Search Bar */}
@@ -205,29 +205,36 @@ function MyOrders() {
                         orders.map((order) => (
                             <div
                                 key={order._id}
-                                className="bg-white rounded-3xl p-6 mb-6 border-2 border-gray-100 shadow-sm hover:shadow-md transition-all"
+                                className="bg-white rounded-3xl p-4 sm:p-6 mb-6 border-2 border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden"
                             >
                                 {/* Top Section / Header - Details and Status here in single line */}
-                                <div className="flex justify-between items-center pb-4 mb-6 border-b border-gray-50">
-                                    <div>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{t('myOrders.orderId')}</p>
-                                        <h3 className="text-sm font-black text-pink-500">
-                                            #{order._id.slice(-6).toUpperCase()}
-                                        </h3>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        {/* Status Badge */}
-                                        <span className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${statusStyles[order.orderStatus] || 'bg-slate-100 text-slate-500'}`}>
-                                            {order.orderStatus}
-                                        </span>
+                                <div className="pb-4 mb-6 border-b border-gray-50">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="min-w-0">
+                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                                                {t('myOrders.orderId')}
+                                            </p>
 
-                                        {/* FIXED: Details button poore order ke liye sirf ek baar top par dikhega */}
-                                        <button
-                                            onClick={() => navigate(`/order_track/${order._id}`)}
-                                            className="py-1.5 px-4 bg-gray-900 text-white rounded-xl text-[11px] font-bold uppercase hover:bg-gray-800 transition-colors cursor-pointer"
-                                        >
-                                            {t('myOrders.detailsButton')}
-                                        </button>
+                                            <h3 className="text-sm font-black text-pink-500">
+                                                #{order._id.slice(-6).toUpperCase()}
+                                            </h3>
+                                        </div>
+
+                                        <div className="shrink-0 flex flex-col items-end gap-2">
+                                            <span
+                                                className={`inline-flex px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${statusStyles[order.orderStatus] || 'bg-slate-100 text-slate-500'
+                                                    }`}
+                                            >
+                                                {order.orderStatus}
+                                            </span>
+
+                                            <button
+                                                onClick={() => navigate(`/order_track/${order._id}`)}
+                                                className="py-1.5 px-4 bg-gray-900 text-white rounded-xl text-[11px] font-bold uppercase hover:bg-gray-800 transition-colors cursor-pointer whitespace-nowrap"
+                                            >
+                                                {t('myOrders.detailsButton')}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -236,11 +243,11 @@ function MyOrders() {
                                     {order.items.map((item, index) => (
                                         <div
                                             key={item._id}
-                                            className={`flex flex-col sm:flex-row gap-6 items-center justify-between ${index !== 0 ? "pt-6 border-t border-gray-50" : ""
+                                            className={`flex flex-col sm:flex-row gap-4 sm:gap-6 items-center sm:items-start justify-between min-w-0 ${index !== 0 ? "pt-6 border-t border-gray-50" : ""
                                                 }`}
                                         >
                                             {/* Left Side: Image + Product Info Layout */}
-                                            <div className="flex flex-col sm:flex-row gap-4 items-center flex-1 min-w-0 w-full">
+                                            <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start flex-1 min-w-0 w-full">
                                                 {/* Product Image */}
                                                 <div className="w-20 h-20 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 shrink-0">
                                                     <img
@@ -254,8 +261,11 @@ function MyOrders() {
                                                 </div>
 
                                                 {/* Product Info */}
-                                                <div className="text-center sm:text-left min-w-0">
-                                                    <h4 className="font-bold text-gray-900 text-sm truncate">{item.productId?.prodName}</h4>
+                                                <div className="text-center sm:text-left min-w-0 w-full">
+                                                    <h4 className="font-bold text-gray-900 text-sm leading-tight line-clamp-2 wrap-break-words max-w-full">
+                                                        {item.productId?.prodName}
+                                                    </h4>
+
                                                     <div className="flex flex-wrap justify-center sm:justify-start items-center gap-2 mt-1.5">
                                                         {item.selectedColor && (
                                                             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-medium bg-gray-100 text-gray-600 border border-gray-200">
@@ -268,9 +278,11 @@ function MyOrders() {
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-xs text-gray-500 mt-2">
-                                                        {t('myOrders.qty')}: <span className="font-medium text-gray-700">{item.quantity}</span> •
-                                                        <span className="font-bold text-gray-800 ml-1">₹{item.price}</span>
+
+                                                    <p className="text-xs text-gray-500 mt-2 wrap-break-words">
+                                                        {t('myOrders.qty')}: <span className="font-medium text-gray-700">{item.quantity}</span>
+                                                        <span className="mx-1">•</span>
+                                                        <span className="font-bold text-gray-800">₹{item.price}</span>
                                                     </p>
                                                 </div>
                                             </div>

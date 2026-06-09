@@ -137,21 +137,26 @@ function EditBlogDrawer({ blog, isOpen, onClose }) {
                 <form onSubmit={handleSubmit} className="flex flex-col h-full">
 
                     {/* Drawer Header */}
-                    <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                        <div>
-                            <h2 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-2">
-                                {t('editBlogDrawer.title')} <span className="text-pink-500 text-[10px] font-bold px-2 py-0.5 bg-pink-50 dark:bg-pink-950/50 rounded-full uppercase tracking-wider">
-                                    {t('editBlogDrawer.adminMode')}</span>
+                    <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between gap-4">
+
+                        <div className="min-w-0 flex-1">
+                            <h2 className="text-lg md:text-xl font-black text-slate-800 dark:text-white flex flex-wrap items-center gap-2">
+                                {t('editBlogDrawer.title')}
+                                <span className="shrink-0 text-pink-500 text-[10px] font-bold px-2 py-0.5 bg-pink-50 dark:bg-pink-950/50 rounded-full uppercase tracking-wider">
+                                    {t('editBlogDrawer.adminMode')}
+                                </span>
                             </h2>
-                            <p className="text-[11px] text-slate-400 font-mono mt-1">
+
+                            <p className="text-[11px] text-slate-400 font-mono mt-1 truncate max-w-full">
                                 ID: {blog?._id}
                             </p>
                         </div>
 
+                        {/* Close Button - shrink-0 prevents it from getting squashed */}
                         <button
                             type="button"
                             onClick={onClose}
-                            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 rounded-full transition-all"
+                            className="shrink-0 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 rounded-full transition-all -mr-2"
                         >
                             <HiOutlineX size={22} />
                         </button>
@@ -170,7 +175,7 @@ function EditBlogDrawer({ blog, isOpen, onClose }) {
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                                 placeholder={t('editBlogDrawer.titlePlaceholder')}
-                                className="mt-2 w-full text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
+                                className="mt-2 w-full text-[13px] md:text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
                             />
                         </div>
 
@@ -183,7 +188,7 @@ function EditBlogDrawer({ blog, isOpen, onClose }) {
                                     value={category}
                                     onChange={(e) => setCategory(e.target.value)}
                                     placeholder={t('editBlogDrawer.categoryPlaceholder')}
-                                    className="mt-2 w-full text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
+                                    className="mt-2 w-full text-[13px] md:text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -193,7 +198,7 @@ function EditBlogDrawer({ blog, isOpen, onClose }) {
                                     value={readTime}
                                     onChange={(e) => setReadTime(e.target.value)}
                                     placeholder={t('editBlogDrawer.readTimePlaceholder')}
-                                    className="mt-2 w-full text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
+                                    className="mt-2 w-full text-[13px] md:text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
                                 />
                             </div>
                         </div>
@@ -235,11 +240,11 @@ function EditBlogDrawer({ blog, isOpen, onClose }) {
                         <div className="space-y-1">
                             <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">{t('editBlogDrawer.labelShortDesc')}</label>
                             <textarea
-                                rows={2}
+                                rows={3}
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder={t('editBlogDrawer.shortDescPlaceholder')}
-                                className="mt-2 w-full text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all resize-none"
+                                className="mt-2 w-full text-[13px] md:text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all resize-none"
                             />
                         </div>
 
@@ -251,7 +256,7 @@ function EditBlogDrawer({ blog, isOpen, onClose }) {
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
                                 placeholder={t('editBlogDrawer.contentPlaceholder')}
-                                className="mt-2 w-full text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
+                                className="mt-2 w-full text-[13px] md:text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
                             />
                         </div>
 
@@ -263,7 +268,7 @@ function EditBlogDrawer({ blog, isOpen, onClose }) {
                                 value={blockquote}
                                 onChange={(e) => setBlockquote(e.target.value)}
                                 placeholder={t('editBlogDrawer.blockquotePlaceholder')}
-                                className="mt-2 w-full text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
+                                className="mt-2 w-full text-[13px] md:text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
                             />
                         </div>
 
@@ -276,18 +281,21 @@ function EditBlogDrawer({ blog, isOpen, onClose }) {
                                     value={tags}
                                     onChange={(e) => setTags(e.target.value)}
                                     placeholder={t('editBlogDrawer.tagsPlaceholder')}
-                                    className="mt-2 w-full text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
+                                    className="mt-2 w-full text-[13px] md:text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
                                 />
                             </div>
 
                             {/* Dynamic Trends List Section */}
                             <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">{t('editBlogDrawer.labelTrends')}</label>
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide truncate max-w-[60%]">
+                                        {t('editBlogDrawer.labelTrends')}
+                                    </label>
+
                                     <button
                                         type="button"
                                         onClick={addTrendField}
-                                        className="text-xs font-bold text-pink-500 hover:text-pink-600 flex items-center gap-1 transition-all cursor-pointer"
+                                        className="shrink-0 text-xs font-bold text-pink-500 hover:text-pink-600 flex items-center gap-1 transition-all active:scale-95 py-1 px-2 -mr-2 cursor-pointer"
                                     >
                                         {t('editBlogDrawer.addTrendBtn')}
                                     </button>
@@ -304,7 +312,7 @@ function EditBlogDrawer({ blog, isOpen, onClose }) {
                                                 value={trend}
                                                 onChange={(e) => handleTrendChange(index, e.target.value)}
                                                 placeholder={t('editBlogDrawer.trendPlaceholder', { index: index + 1 })}
-                                                className="flex-1 text-sm px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
+                                                className="flex-1 text-[13px] md:text-sm px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
                                             />
                                             <button
                                                 type="button"
@@ -323,12 +331,12 @@ function EditBlogDrawer({ blog, isOpen, onClose }) {
                     </div>
 
                     {/* action */}
-                    <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-end gap-3">
+                    <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 flex flex-col sm:flex-row items-center justify-end gap-3">
                         <button
                             type="button"
                             onClick={onClose}
                             disabled={isUpdating}
-                            className="px-5 py-2.5 rounded-xl text-sm font-bold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+                            className="w-full sm:w-auto px-5 py-3 rounded-xl text-sm font-bold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all disabled:opacity-50"
                         >
                             {t('editBlogDrawer.cancelBtn')}
                         </button>
@@ -336,7 +344,7 @@ function EditBlogDrawer({ blog, isOpen, onClose }) {
                         <button
                             type="submit"
                             disabled={isUpdating}
-                            className="px-6 py-2.5 rounded-xl text-sm font-bold bg-linear-to-br from-pink-500 to-pink-600 text-white hover:shadow-lg hover:shadow-pink-200 dark:hover:shadow-none active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
+                            className="w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-bold bg-linear-to-br from-pink-500 to-pink-600 text-white hover:shadow-lg hover:shadow-pink-200 dark:hover:shadow-none active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {isUpdating ? t('editBlogDrawer.saving') : t('editBlogDrawer.saveBtn')}
                         </button>

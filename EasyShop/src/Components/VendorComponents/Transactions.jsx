@@ -110,24 +110,26 @@ function Transactions() {
     return (
         <div className="space-y-6">
 
-            {/* top Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {/* Top Summary Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
                 {cards.map((stat, i) => (
                     <div
                         key={i}
-                        className="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow truncate"
+                        className="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-200 cursor-default"
                     >
-                        {/* Icon - Mobile pe thoda chota kiya hai */}
-                        <div className={`w-11 h-11 md:w-12 md:h-12 shrink-0 rounded-xl 
-                            ${stat.bg} ${stat.color} flex items-center justify-center text-lg md:text-2xl`}>
+                        {/* Icon Container */}
+                        <div
+                            className={`w-12 h-12 shrink-0 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center text-xl md:text-2xl shadow-inner`}
+                        >
                             {stat.icon}
                         </div>
 
-                        <div className="min-w-0"> {/* min-w-0 truncation handle karne ke liye */}
-                            <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-tight truncate">
+                        {/* Content */}
+                        <div className="min-w-0 flex-1">
+                            <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider truncate">
                                 {stat.label}
                             </p>
-                            <h4 className="text-lg md:text-xl font-black text-slate-700 dark:text-white truncate">
+                            <h4 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white truncate mt-0.5">
                                 {stat.value}
                             </h4>
                         </div>
@@ -139,14 +141,14 @@ function Transactions() {
             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
 
                 {/* Header & Search/Filter */}
-                <div className="p-4 border-b border-slate-50 dark:border-slate-800 flex flex-col lg:flex-row justify-between items-center md:text-start bg-white dark:bg-slate-800/20">
+                <div className="p-4 border-b border-slate-50 dark:border-slate-800 flex flex-col xl:flex-row justify-between xl:items-center items-start gap-3 bg-white dark:bg-slate-800/20">
 
                     <div>
                         <div className='flex gap-2 items-center'>
                             <h2 className="text-md md:text-lg font-bold text-slate-800 dark:text-white shrink-0">
                                 {t('vendorTransactions.historyHeading')}
                             </h2>
-                            <span className="hidden lg:flex bg-pink-100 text-pink-600 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                            <span className="hidden sm:inline-flex bg-pink-100 text-pink-600 text-xs font-bold px-2.5 py-0.5 rounded-full">
                                 {t('vendorTransactions.totalCounter', { total: count || 0 })}
                             </span>
                         </div>
@@ -155,10 +157,10 @@ function Transactions() {
                         </p>
                     </div>
 
-                    <div className="flex flex-col md:flex-row items-center gap-3 w-full lg:w-auto mt-3 lg:mt-0">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full xl:w-auto">
 
                         {/* Search */}
-                        <div className="relative w-full lg:w-80 group">
+                        <div className="relative w-full sm:w-56 xl:w-80 group">
                             <HiOutlineSearch className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
                             <input
                                 type="text"
@@ -173,7 +175,7 @@ function Transactions() {
                         <select
                             value={status}
                             onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-                            className="w-full md:w-auto text-sm px-4 py-2 rounded-xl border border-pink-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
+                            className="w-full sm:w-auto text-sm px-4 py-2 rounded-xl border border-pink-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
                         >
                             <option value="">{t('vendorTransactions.filterAllStatus')}</option>
                             <option value="Pending">{t('vendorTransactions.statusPending')}</option>
@@ -185,7 +187,7 @@ function Transactions() {
                         <select
                             value={paymentMethod}
                             onChange={(e) => { setPaymentMethod(e.target.value); setPage(1); }}
-                            className="w-full md:w-auto text-sm px-4 py-2 rounded-xl border border-pink-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
+                            className="w-full sm:w-auto text-sm px-4 py-2 rounded-xl border border-pink-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all"
                         >
                             <option value="">{t('vendorTransactions.filterAllMethods')}</option>
                             <option value="COD">{t('vendorTransactions.methodCOD')}</option>

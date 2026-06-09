@@ -8,6 +8,7 @@ import ReviewRating from '../Models/reviewRatingModelSchema.js';
 import Transaction from '../Models/transactionModelSchema.js';
 import Withdraw from '../Models/withdrawModelSchema.js';
 import Blog from '../Models/blogModelSchema.js';
+import sendEmail from '../utils/sendEmail.js';
 
 import { deleteCloudinaryFiles, deleteOldFileFromCloudinary } from '../utils/cloudinaryUtils.js';
 import { createNotification } from '../utils/createNotifications.js';
@@ -428,6 +429,37 @@ export const toggleVendorStatus = async (req, res) => {
 
         vendor.isActive = !vendor.isActive;
         await vendor.save();
+
+        // Status update hone ke baad
+        if (vendor.isActive) {
+            const activeEmailHtml = `
+    <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ffe4e6; border-radius: 10px; max-width: 600px; margin: auto;">
+        <h2 style="color: #db2777;">Congratulations ${vendor.name},</h2>
+        <p style="font-size: 16px;">Your vendor account on <strong>EasyShop</strong> has been activated!</p>
+        <div style="background-color: #fff1f2; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #db2777;">
+            <p style="margin: 5px 0;"><strong>Status:</strong> Your account is now Active.</p>
+            <p style="margin: 5px 0;">You can now log in and start managing your products.</p>
+        </div>
+        <p>Best regards, <br/><strong style="color: #db2777;">EasyShop Team</strong></p>
+    </div>`;
+
+            await sendEmail(vendor.email, "Your Vendor Account is Now Active!", activeEmailHtml);
+
+        } else {
+            const inactiveEmailHtml = `
+    <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ffe4e6; border-radius: 10px; max-width: 600px; margin: auto;">
+        <h2 style="color: #db2777;">Account Update: EasyShop</h2>
+        <p style="font-size: 16px;">Hello ${vendor.name},</p>
+        <div style="background-color: #fff1f2; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #db2777;">
+            <p style="margin: 5px 0;"><strong>Status:</strong> Your account has been temporarily deactivated.</p>
+            <p style="margin: 5px 0;">You will not be able to access your vendor dashboard at this time.</p>
+        </div>
+        <p>If you have questions, please contact our support team.</p>
+        <p>Best regards, <br/><strong style="color: #db2777;">EasyShop Team</strong></p>
+    </div>`;
+
+            await sendEmail(vendor.email, "Important: Your EasyShop Account Status", inactiveEmailHtml);
+        }
 
         res.status(200).json({
             success: true,

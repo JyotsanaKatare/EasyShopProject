@@ -341,8 +341,7 @@ function Categories({ setCurrentPage }) {
 
       {/* edit popup */}
       <div
-        className={`fixed inset-0 flex justify-center items-center bg-black/50 backdrop-blur-sm z-100 px-4 transition-all duration-500 
-          ${isEditOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
+        className={`fixed inset-0 flex justify-center items-center bg-black/50 backdrop-blur-sm z-50 p-4 transition-all duration-300 ${isEditOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
       >
         <div
           onClick={() => setIsEditOpen(false)}
@@ -350,176 +349,104 @@ function Categories({ setCurrentPage }) {
         ></div>
 
         {/* Content */}
-        <div className="relative transform max-h-[90vh] overflow-y-auto rounded-md bg-white dark:bg-slate-900 p-8 text-left shadow-2xl transition-all w-full max-w-md border border-pink-50 dark:border-slate-800">
+        <div className="relative w-full max-w-lg max-h-[95vh] flex flex-col rounded-2xl bg-white dark:bg-slate-900 text-left shadow-2xl transition-all border border-pink-50 dark:border-slate-800 overflow-hidden">
 
           <button
             onClick={() => setIsEditOpen(false)}
-            className="absolute top-6 right-6 text-slate-400 hover:text-pink-500 transition-colors"
+            className="absolute top-4 right-4 md:top-6 md:right-6 text-slate-400 hover:text-pink-500 transition-colors"
           >
             <HiOutlineX size={20} />
           </button>
 
-          {/* heading */}
-          <div className="text-center">
-            <h3 className="text-xl font-bold text-slate-800 dark:text-white">
-              {t('adminCategories.editTitle')}
-            </h3>
+          <div className="flex-1 overflow-y-auto p-6 md:p-8">
+            <div className="text-center mb-6">
+              <h3 className="text-lg md:text-xl font-bold text-slate-800 dark:text-white">
+                {t('adminCategories.editTitle')}
+              </h3>
+              <p className="text-[11px] md:text-xs text-slate-400 mt-1">
+                {t('adminCategories.editDescription')}
+              </p>
+            </div>
 
-            <p className="text-xs text-slate-400 mt-1">
-              {t('adminCategories.editDescription')}
-            </p>
-          </div>
+            <div className='flex-1 space-y-4'>
 
-          <div className='mt-5 space-y-4'>
-
-            {/* category Image */}
-            <div className='relative flex flex-col gap-1.5 md:gap-2'>
-              <label
-                htmlFor='catImage'
-                className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
-                {t('adminCategories.editImageLabel')}
-              </label>
-
-              <div className="p-2.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800  dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]">
-                <input
-                  type="file"
-                  id="catImage"
-                  name="catImage"
-                  accept=".jpg,.png"
-                  onChange={handleFileChange}
-                  className="absolute opacity-0 cursor-pointer"
-                />
-
-                <div className="flex gap-2 items-center">
-                  <button className="border border-pink-100 rounded-sm px-2 text-pink-500 bg-pink-50/30">
-                    {t('adminCategories.editChooseFile')}
-                  </button>
-                  <span className={`text-gray-600`}>
-                    {file ? file.name : t('adminCategories.editNoFile')}
-                  </span>
+              {/* Category Image */}
+              <div className='flex flex-col gap-1.5'>
+                <label className='text-[12px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                  {t('adminCategories.editImageLabel')}
+                </label>
+                <div className="relative p-2 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                  <input type="file" id="catImage" accept=".jpg,.png" onChange={handleFileChange} className="absolute inset-0 opacity-0 cursor-pointer" />
+                  <div className="flex gap-2 items-center">
+                    <span className="border border-pink-100 rounded-md px-2 py-1 text-[10px] md:text-xs text-pink-500 bg-pink-50/50">
+                      {t('adminCategories.editChooseFile')}
+                    </span>
+                    <span className="text-slate-500 text-xs truncate">
+                      {file ? file.name : t('adminCategories.editNoFile')}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* items in category  (read-only) */}
-            <div className='flex flex-col gap-1.5 md:gap-2'>
-              <label className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
-                {t('adminCategories.editTotalProducts')}
-              </label>
+              {/* Total Products (Read Only) */}
+              <div className='flex flex-col gap-1.5'>
+                <label className='text-[12px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+                  {t('adminCategories.editTotalProducts')}
+                </label>
+                <div className="p-3 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/50 text-slate-500 text-sm flex items-center justify-between">
+                  <span>{t('adminCategories.editCurrentItems')}</span>
+                  <span className="font-bold text-pink-500">{selectedCategory?.productCount || 0}</span>
+                </div>
+              </div>
 
-              <div className="p-2.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-sm flex items-center justify-between">
-                <span>{t('adminCategories.editCurrentItems')}</span>
-                <span className="font-bold text-pink-500">{selectedCategory?.productCount || 0}</span>
+              {/* Name & Department */}
+              <div className='flex flex-col gap-1.5'>
+                <label className='text-[12px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>{t('adminCategories.editCategoryName')}</label>
+                <input type="text" name='catName' value={formData.catName} onChange={handleInputChange} className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-pink-400 text-sm" />
+              </div>
+
+              <div className='flex flex-col gap-1.5'>
+                <label className='text-[12px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>{t('adminCategories.editDepartment')}</label>
+                <input type="text" name='department' value={formData.department} onChange={handleInputChange} className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-pink-400 text-sm" />
+              </div>
+
+              {/* License Requirement */}
+              <div className="flex flex-col gap-3 p-3 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                <div className="flex items-center justify-between">
+                  <label className="text-[12px] font-semibold text-slate-600 dark:text-slate-400">{t('adminCategories.editRequireLicense')}</label>
+                  <input type="checkbox" name="requiresCertificate" checked={formData.requiresCertificate} onChange={(e) => setFormData({ ...formData, requiresCertificate: e.target.checked })} className="accent-pink-500 w-4 h-4" />
+                </div>
+                {formData.requiresCertificate && (
+                  <input type="text" name="certificateLabel" value={formData.certificateLabel} onChange={handleInputChange} placeholder={t('adminCategories.editLicensePlaceholder')} className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs focus:ring-2 focus:ring-pink-400 outline-none" />
+                )}
+              </div>
+
+              {/* Description */}
+              <div className='flex flex-col gap-1.5'>
+                <label className='text-[12px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>{t('adminCategories.editDescription2')}</label>
+                <textarea name='description' value={formData.description} onChange={handleInputChange} rows={3} className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-pink-400 text-sm resize-none" />
               </div>
             </div>
 
-            {/* category name */}
-            <div className='flex flex-col gap-1.5 md:gap-2'>
-              <label
-                htmlFor='catName'
-                className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
-                {t('adminCategories.editCategoryName')}
-              </label>
-
-              <input
-                type="text"
-                name='catName'
-                value={formData.catName}
-                onChange={handleInputChange}
-                placeholder={t('adminCategories.editCategoryNamePlaceholder')}
-                className="p-2.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all"
-              />
+            {/* Buttons */}
+            <div className="mt-6 flex flex-col-reverse sm:flex-row gap-3">
+              <button onClick={() => setIsEditOpen(false)} className="w-full sm:w-1/2 py-3 rounded-xl bg-slate-50 text-slate-600 font-bold text-sm hover:bg-slate-100 transition-all">
+                {t('adminCategories.editDiscard')}
+              </button>
+              <button onClick={handleUpdate} className="w-full sm:w-1/2 py-3 rounded-xl bg-pink-600 text-white font-bold text-sm hover:bg-pink-700 transition-all shadow-lg shadow-pink-200">
+                {isUpdating ? t('adminCategories.editSaving') : t('adminCategories.editSave')}
+              </button>
             </div>
-
-            {/* department */}
-            <div className='flex flex-col gap-1.5 md:gap-2'>
-              <label
-                htmlFor='department'
-                className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
-                {t('adminCategories.editDepartment')}
-              </label>
-
-              <input
-                type="text"
-                name='department'
-                value={formData.department}
-                onChange={handleInputChange}
-                placeholder={t('adminCategories.editDepartmentPlaceholder')}
-                className="p-2.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all"
-              />
-            </div>
-
-            {/* required license */}
-            <div className="flex flex-col gap-3 p-3 rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50  mt-2">
-              <div className="flex items-center justify-between">
-                <label className="text-[13px] font-semibold text-slate-600">{t('adminCategories.editRequireLicense')}</label>
-                <input
-                  type="checkbox"
-                  name="requiresCertificate"
-                  checked={formData.requiresCertificate}
-                  onChange={(e) => setFormData({ ...formData, requiresCertificate: e.target.checked })}
-                  className="accent-pink-500 w-4 h-4"
-                />
-              </div>
-
-              {formData.requiresCertificate && (
-                <input
-                  type="text"
-                  name="certificateLabel"
-                  value={formData.certificateLabel}
-                  onChange={handleInputChange}
-                  placeholder={t('adminCategories.editLicensePlaceholder')}
-                  className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50  text-xs focus:ring-2 focus:ring-pink-400 outline-none"
-                />
-              )}
-            </div>
-
-            {/* description */}
-            <div className='flex flex-col gap-1.5 md:gap-2'>
-              <label
-                htmlFor='description'
-                className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
-                {t('adminCategories.editDescription2')}
-              </label>
-
-              <textarea
-                type="text"
-                name='description'
-                value={formData.description}
-                onChange={handleInputChange}
-                rows={3}
-                placeholder={t('adminCategories.editDescriptionPlaceholder')}
-                className="p-2.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all resize-none"
-              />
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="mt-8 flex flex-col sm:flex-row gap-3">
-            <button
-              type="button"
-              onClick={() => setIsEditOpen(false)}
-              className="inline-flex w-full justify-center rounded-2xl bg-white px-3 py-3.5 text-sm font-bold text-slate-600 border border-slate-100 hover:bg-slate-50 transition-all sm:w-1/2 active:scale-95 cursor-pointer"
-            >
-              {t('adminCategories.editDiscard')}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleUpdate}
-              className="inline-flex w-full justify-center rounded-2xl bg-linear-to-br from-pink-500 to-pink-600 px-3 py-3.5 text-sm font-bold text-white shadow-lg shadow-pink-100 hover:from-pink-600 hover:to-pink-700 transition-all sm:w-1/2 items-center gap-2 active:scale-95 cursor-pointer"
-            >
-              {isUpdating ? t('adminCategories.editSaving') : t('adminCategories.editSave')}
-            </button>
           </div>
         </div>
       </div>
 
-      {/* delete popup */}
+      {/* Delete Popup */}
       <div
-        className={`fixed inset-0 flex justify-center items-center bg-black/50 backdrop-blur-sm z-100 px-4 transition-all duration-500 
+        className={`fixed inset-0 flex justify-center items-center bg-black/50 backdrop-blur-sm z-100 p-4 transition-all duration-500 
             ${isDeletedOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
       >
+        {/* Backdrop */}
         <div
           onClick={() => {
             setIsDeletedOpen(false);
@@ -528,48 +455,46 @@ function Categories({ setCurrentPage }) {
           className="absolute inset-0"
         ></div>
 
-        {/* Content */}
-        <div className="relative transform overflow-hidden rounded-[2.5rem] bg-white dark:bg-slate-900 p-8 text-left shadow-2xl transition-all w-full max-w-md border border-pink-50 dark:border-slate-800">
+        {/* Content Container */}
+        <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto transform rounded-4xl md:rounded-[2.5rem] bg-white dark:bg-slate-900 p-6 md:p-8 text-left shadow-2xl transition-all border border-pink-50 dark:border-slate-800">
 
-          {/* cross icon */}
+          {/* Cross Icon */}
           <button
             onClick={() => {
               setIsDeletedOpen(false);
               setSelectedCatId(null);
             }}
-            className="absolute top-6 right-6 text-slate-400 hover:text-pink-500 transition-colors"
+            className="absolute top-4 right-4 md:top-6 md:right-6 text-slate-400 hover:text-pink-500 transition-colors"
           >
             <HiOutlineX size={20} />
           </button>
 
           {/* Warning Icon */}
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 dark:bg-red-900/20 mb-6">
-            <HiOutlineExclamation className="h-8 w-8 text-red-500" />
+          <div className="mx-auto flex h-14 w-14 md:h-16 md:w-16 items-center justify-center rounded-2xl bg-red-50 dark:bg-red-900/20 mb-6 mt-2">
+            <HiOutlineExclamation className="h-7 w-7 md:h-8 md:w-8 text-red-500" />
           </div>
 
           {/* Text Content */}
           <div className="text-center">
-            <h3 className="text-xl font-bold text-slate-800 dark:text-white">
+            <h3 className="text-lg md:text-xl font-bold text-slate-800 dark:text-white">
               {t('adminCategories.deleteTitle')}
             </h3>
-
             <p className="mt-3 text-sm text-slate-500 dark:text-slate-400 leading-relaxed px-2">
               {isInfoLoading
                 ? t('adminCategories.deleteChecking')
-                : deleteInfo?.message
-              }
+                : deleteInfo?.message}
             </p>
           </div>
 
           {/* Action Buttons */}
-          <div className="mt-8 flex flex-col sm:flex-row gap-3">
+          <div className="mt-8 flex flex-col-reverse sm:flex-row gap-3">
             <button
               type="button"
               onClick={() => {
                 setIsDeletedOpen(false);
                 setSelectedCatId(null);
               }}
-              className="inline-flex w-full justify-center rounded-2xl bg-white px-3 py-3.5 text-sm font-bold text-slate-600 border border-slate-100 hover:bg-slate-50 transition-all sm:w-1/2 active:scale-95 cursor-pointer"
+              className="w-full flex justify-center items-center rounded-2xl bg-slate-50 dark:bg-slate-800 px-4 py-3.5 text-sm font-bold text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-700 hover:bg-slate-100 transition-all active:scale-95 cursor-pointer"
             >
               {t('adminCategories.deleteKeep')}
             </button>
@@ -579,15 +504,14 @@ function Categories({ setCurrentPage }) {
                 type="button"
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="inline-flex w-full justify-center rounded-2xl bg-linear-to-br from-red-500 to-red-600 px-3 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-100 hover:from-red-600 hover:to-red-700 transition-all sm:w-1/2 items-center gap-2 active:scale-95 cursor-pointer"
+                className="w-full flex justify-center items-center gap-2 rounded-2xl bg-red-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-100 hover:bg-red-700 transition-all active:scale-95 cursor-pointer disabled:opacity-70"
               >
-                <HiOutlineTrash />
+                <HiOutlineTrash size={18} />
                 {isDeleting ? t('adminCategories.deleteDeleting') : t('adminCategories.deleteConfirm')}
               </button>
             )}
           </div>
         </div>
-
       </div>
     </div>
   );

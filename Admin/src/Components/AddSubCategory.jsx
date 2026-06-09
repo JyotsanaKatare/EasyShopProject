@@ -105,7 +105,9 @@ function AddSubCategory({ setCurrentPage }) {
 
         {/* Category Selector */}
         <div className='mb-6 md:mb-8'>
-          <label htmlFor='category' className='text-[12px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5 md:mb-2 block'>
+          <label
+            htmlFor='category'
+            className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5 md:mb-2 block'>
             {t('addSubCategory.selectCategoryLabel')}
           </label>
 
@@ -149,7 +151,8 @@ function AddSubCategory({ setCurrentPage }) {
 
           {/* Sub-Category Name */}
           <div className='flex flex-col gap-1.5 md:gap-2'>
-            <label htmlFor='subCatName' className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+            <label htmlFor='subCatName' 
+            className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
               {t('addSubCategory.subCatNameLabel')}
             </label>
             <input
@@ -158,13 +161,14 @@ function AddSubCategory({ setCurrentPage }) {
               value={formData.subCatName}
               onChange={handleInputChange}
               placeholder={t('addSubCategory.subCatNamePlaceholder')}
-              className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[11px] md:placeholder:text-[14px]"
+              className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all placeholder:text-[12px] md:placeholder:text-[14px]"
             />
           </div>
 
           {/* Allowed Attributes */}
           <div className='flex flex-col gap-1.5 md:gap-2'>
-            <label htmlFor='allowedAttributes' className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+            <label htmlFor='allowedAttributes'
+              className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
               {t('addSubCategory.allowedAttributesLabel')} <span className="text-[10px] font-normal opacity-70">{t('addSubCategory.allowedAttributesHint')}</span>
             </label>
             <input
@@ -173,13 +177,14 @@ function AddSubCategory({ setCurrentPage }) {
               value={formData.allowedAttributes}
               onChange={handleInputChange}
               placeholder={t('addSubCategory.allowedAttributesPlaceholder')}
-              className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all"
+              className="p-2.5 md:p-3.5 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-[12px] md:text-[14px] transition-all"
             />
           </div>
 
           {/* Image Section */}
           <div className="flex flex-col gap-3 col-span-full mt-2">
-            <label htmlFor='subCatImage' className="text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1">
+            <label htmlFor='subCatImage'
+              className="text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1">
               {t('addSubCategory.imageLabel')} <span className="text-pink-500">{t('addSubCategory.imageRequired')}</span>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
@@ -207,7 +212,8 @@ function AddSubCategory({ setCurrentPage }) {
 
           {/* Description */}
           <div className='flex flex-col gap-1.5 md:gap-2 col-span-full mt-2'>
-            <label htmlFor='description' className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
+            <label htmlFor='description'
+              className='text-[13px] md:text-sm font-semibold text-slate-600 dark:text-slate-400 ml-1'>
               {t('addSubCategory.descriptionLabel')}
             </label>
             <textarea
@@ -216,12 +222,12 @@ function AddSubCategory({ setCurrentPage }) {
               value={formData.description}
               onChange={handleInputChange}
               placeholder={t('addSubCategory.descriptionPlaceholder')}
-              className="p-3 md:p-4 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all resize-none placeholder:text-[11px] md:placeholder:text-[14px]"
+              className="p-3 md:p-4 rounded-lg md:rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400 dark:text-white text-sm transition-all resize-none placeholder:text-[12px] md:placeholder:text-[14px]"
             />
           </div>
 
           {/* Action Buttons */}
-          <div className='col-span-full flex flex-col sm:flex-row items-center justify-end gap-3 mt-4 md:mt-6 pt-6 border-t border-slate-50 dark:border-slate-800'>
+          <div className='col-span-full flex flex-col-reverse sm:flex-row items-center justify-end gap-3 mt-4 md:mt-6 pt-6 border-t border-slate-50 dark:border-slate-800'>
             <button
               type="button"
               onClick={() => setCurrentPage('sub-categories')}

@@ -19,7 +19,7 @@ function WishList() {
     const { wishListItems, removeFromWishList } = useWishList();
 
     return (
-        <section className="w-full min-h-[70vh] bg-white py-8 md:py-16 px-4 lg:px-6">
+        <section className="w-full min-h-[70vh] bg-white py-8 md:py-16 px-4 sm:px-5 lg:px-6">
             <div className="max-w-6xl mx-auto">
 
                 {/* heading */}
@@ -63,13 +63,14 @@ function WishList() {
                                     </div>
 
                                     {/* Details */}
-                                    <div className="p-4 text-left">
-                                        <h3 className="text-sm font-medium text-gray-800 truncate hover:text-pink-500 transition-colors cursor-pointer">
+                                    <div className="p-3 md:p-4 text-left">
+                                        <h3
+                                            className="font-bold text-gray-800 text-[12px] md:text-base cursor-pointer line-clamp-2 pr-2">
                                             {product?.prodName}
                                         </h3>
 
                                         <div className="flex items-baseline gap-2 mt-1">
-                                            <span className="text-lg font-bold text-pink-500">
+                                            <span className="md:text-lg font-bold text-pink-500">
                                                 ₹{product?.price}
                                             </span>
                                         </div>
@@ -86,7 +87,7 @@ function WishList() {
                                                         selectedSize: item?.selectedSize || null,
                                                     });
                                                 }}
-                                                className="w-full bg-pink-50 border border-pink-100 text-pink-500 hover:bg-pink-500 hover:text-white font-bold py-2.5 px-1 rounded-2xl transition-all text-[10px] sm:text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-sm hover:shadow-pink-200 truncate"
+                                                className="w-full bg-pink-50 border border-pink-100 text-pink-500 hover:bg-pink-500 hover:text-white font-bold py-2.5 md:py-3 px-1 rounded-2xl transition-all text-[10px] sm:text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-sm hover:shadow-pink-200 truncate"
                                                 title={t('wishlist.addToCart')}
                                             >
                                                 <HiOutlineShoppingBag className='text-base shrink-0' />
@@ -99,14 +100,14 @@ function WishList() {
                         })}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center text-center py-20 px-4 min-h-100">
+                    <div className="flex flex-col items-center justify-center text-center py-15 px-4">
                         <div className="w-18 h-18 md:w-24 md:h-24 bg-pink-50 rounded-full flex items-center justify-center mb-6 animate-pulse">
                             <HiOutlineHeart className="text-pink-300 text-3xl md:text-5xl" />
                         </div>
 
                         {user?.role !== 'user' ? (
                             <>
-                                <h2 className="text-xl md:text-3xl font-black text-gray-900 tracking-tight">
+                                <h2 className="text-xl md:text-3xl font-bold md:font-black text-gray-900 tracking-tight">
                                     {t('wishlist.notAvailableTitle')}
                                 </h2>
                                 <p className="text-sm md:text-lg text-gray-500 mt-3 mb-10 max-w-70 md:max-w-md mx-auto leading-relaxed">
@@ -115,7 +116,7 @@ function WishList() {
                             </>
                         ) : (
                             <>
-                                <h2 className="text-xl md:text-3xl font-black text-gray-900 tracking-tight">
+                                <h2 className="text-xl md:text-3xl font-bold md:font-black text-gray-900 tracking-tight">
                                     {t('wishlist.emptyTitle')}
                                 </h2>
                                 <p className="text-sm md:text-lg text-gray-500 mt-3 mb-10 max-w-70 md:max-w-md mx-auto leading-relaxed">

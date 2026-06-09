@@ -202,7 +202,7 @@ function PlaceOrderForm() {
     };
 
     return (
-        <section className="w-full min-h-[70vh] pb-5 pt-2 px-4 lg:px-6">
+        <section className="w-full min-h-[70vh] pb-5 pt-2 px-4 sm:px-5 lg:px-6">
 
             <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8 md:py-5 lg:py-15">
 
@@ -360,7 +360,7 @@ function PlaceOrderForm() {
 
                 {/* right - summary */}
                 <div className="w-full lg:w-[40%] order-1 lg:order-2">
-                    <div className="bg-white p-5 md:p-8 rounded-4xl md:rounded-[2.5rem] sticky top-24 border border-pink-50 shadow-2xl shadow-pink-100/30">
+                    <div className="bg-white p-4 md:p-8 rounded-4xl md:rounded-[2.5rem] sticky top-24 border border-pink-50 shadow-2xl shadow-pink-100/30">
 
                         <h2 className="text-xl md:text-2xl font-extrabold mb-6 md:mb-8 text-gray-900 flex justify-between items-start md:items-center gap-2">
                             <span className="truncate">{t('placeOrder.orderSummary')}</span>
