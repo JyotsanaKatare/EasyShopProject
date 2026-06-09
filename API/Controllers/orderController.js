@@ -403,10 +403,12 @@ export const placeCartOrder = async (req, res) => {
         });
 
         // 7. Notify Customer (Email)
+        const user = await User.findById(userId).select('name email');
+
         const customerEmailHtml = `
     <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ffe4e6; border-radius: 10px; max-width: 600px; margin: auto;">
         <h2 style="color: #db2777;">Order Confirmed! 🎉</h2>
-        <p>Hi ${req.user.name}, thank you for your order with EasyShop.</p>
+        <p>Hi ${user.name}, thank you for your order with EasyShop.</p>
         <div style="background-color: #fff1f2; padding: 15px; border-radius: 5px; margin: 20px 0;">
             <p><strong>Order ID:</strong> ${newOrder._id}</p>
             <p><strong>Total Amount:</strong> ₹${newOrder.totalAmount}</p>
@@ -416,8 +418,7 @@ export const placeCartOrder = async (req, res) => {
     </div>
 `;
 
-        // Email bhej dein
-        await sendEmail(req.user.email, "Order Confirmation - EasyShop", customerEmailHtml);
+        await sendEmail(user.email, "Order Confirmation - EasyShop", customerEmailHtml);
 
         res.status(201).json({
             success: true,
@@ -582,6 +583,23 @@ export const placeDirectOrder = async (req, res) => {
             { userId },
             { $pull: { items: { productId: prod_id } } }
         );
+
+        const user = await User.findById(userId).select('name email');
+
+        const customerEmailHtml = `
+    <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ffe4e6; border-radius: 10px; max-width: 600px; margin: auto;">
+        <h2 style="color: #db2777;">Order Confirmed! 🎉</h2>
+        <p>Hi ${user.name}, thank you for your order with EasyShop.</p>
+        <div style="background-color: #fff1f2; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <p><strong>Order ID:</strong> ${newOrder._id}</p>
+            <p><strong>Total Amount:</strong> ₹${newOrder.totalAmount}</p>
+        </div>
+        <p>We will notify you once your items are shipped.</p>
+        <p>Thanks, <br/><strong style="color: #db2777;">EasyShop Team</strong></p>
+    </div>
+`;
+
+        await sendEmail(user.email, "Order Confirmation - EasyShop", customerEmailHtml);
 
         res.status(201).json({
             success: true,
